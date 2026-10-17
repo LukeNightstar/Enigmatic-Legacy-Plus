@@ -30,27 +30,31 @@ import java.util.List;
 import java.util.Map;
 
 public class SpellstoneTableRecipe implements Recipe<SpellstoneTableRecipe.Input> {
-    private static final Codec<ItemStack> RESULT_CODEC = ItemStackTemplate.CODEC.xmap(ItemStackTemplate::create, ItemStackTemplate::fromNonEmptyStack);
+    // 26.1.2 port: results stay templates until crafted; stacks can't be built while datapacks load.
     public static final MapCodec<SpellstoneTableRecipe> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-            RESULT_CODEC.fieldOf("result").forGetter(recipe -> recipe.result),
+            ItemStackTemplate.CODEC.fieldOf("result").forGetter(recipe -> recipe.result),
             Codec.INT.optionalFieldOf("debris_count", 0).forGetter(recipe -> recipe.debrisCount),
             Ingredient.CODEC.listOf(1, 7).fieldOf("ingredients").forGetter(recipe -> recipe.ingredients),
             Codec.BOOL.optionalFieldOf("all_different", false).forGetter(recipe -> recipe.allDifferent)
     ).apply(instance, SpellstoneTableRecipe::new));
     public static final StreamCodec<RegistryFriendlyByteBuf, SpellstoneTableRecipe> STREAM_CODEC = StreamCodec.composite(
-            ItemStack.STREAM_CODEC, recipe -> recipe.result,
+            ItemStackTemplate.STREAM_CODEC, recipe -> recipe.result,
             ByteBufCodecs.VAR_INT, recipe -> recipe.debrisCount,
             Ingredient.CONTENTS_STREAM_CODEC.apply(ByteBufCodecs.list()), recipe -> recipe.ingredients,
             ByteBufCodecs.BOOL, recipe -> recipe.allDifferent,
             SpellstoneTableRecipe::new
     );
     public static final RecipeSerializer<SpellstoneTableRecipe> SERIALIZER = new RecipeSerializer<>(MAP_CODEC, STREAM_CODEC);
-    final ItemStack result;
+    final ItemStackTemplate result;
     final int debrisCount;
     final List<Ingredient> ingredients;
     final boolean allDifferent;
 
     public SpellstoneTableRecipe(ItemStack result, int count, List<Ingredient> ingredients, boolean flag) {
+        this(ItemStackTemplate.fromNonEmptyStack(result), count, ingredients, flag);
+    }
+
+    public SpellstoneTableRecipe(ItemStackTemplate result, int count, List<Ingredient> ingredients, boolean flag) {
         this.result = result;
         this.debrisCount = count;
         this.ingredients = ingredients;
@@ -97,7 +101,7 @@ public class SpellstoneTableRecipe implements Recipe<SpellstoneTableRecipe.Input
 
     @Override
     public ItemStack assemble(Input input) {
-        return this.result.copy();
+        return this.result.create();
     }
 
     @Override
@@ -138,7 +142,7 @@ public class SpellstoneTableRecipe implements Recipe<SpellstoneTableRecipe.Input
     }
 
     public ItemStack getResultItem() {
-        return this.result;
+        return this.result.create();
     }
 
     public ItemStack getToastSymbol() {
