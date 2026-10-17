@@ -18,7 +18,7 @@ import net.minecraft.world.item.TooltipFlag;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
-import top.theillusivec4.curios.api.CuriosApi;
+import top.theillusivec4.curios.api.SlotAttribute;
 import top.theillusivec4.curios.api.SlotContext;
 
 import java.util.List;
@@ -59,7 +59,7 @@ public class EnchanterPearl extends CursedCurioItem {
     public Multimap<Holder<Attribute>, AttributeModifier> getAttributeModifiers(SlotContext context, Identifier id, ItemStack stack) {
         Multimap<Holder<Attribute>, AttributeModifier> attributes = HashMultimap.create();
         if (EnigmaticHandler.canUse(context.entity(), stack))
-            CuriosApi.addSlotModifier(attributes, "charm", IItemHelper.getLocation(this), 1.0, AttributeModifier.Operation.ADD_VALUE);
+            attributes.put(SlotAttribute.getOrCreate("charm"), new AttributeModifier(IItemHelper.getLocation(this), 1.0, AttributeModifier.Operation.ADD_VALUE));
         return attributes;
     }
 

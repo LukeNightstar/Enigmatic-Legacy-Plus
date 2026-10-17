@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.item.misc;
 
+import auviotre.enigmatic.legacy.handlers.EnigmaticHandler;
 import auviotre.enigmatic.legacy.api.SubscribeConfig;
 import auviotre.enigmatic.legacy.api.item.IItemHelper;
 import auviotre.enigmatic.legacy.api.item.IPermanentCrystal;
@@ -23,7 +24,6 @@ import net.minecraft.world.item.Rarity;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.ModConfigSpec;
-import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import top.theillusivec4.curios.api.CuriosApi;
 
 import java.util.ArrayList;
@@ -71,13 +71,14 @@ public class StorageCrystal extends BaseItem implements IPermanentCrystal {
                     int i = Integer.parseInt(key.replace("curio", ""));
                     for (ItemStack drop : new ArrayList<>(drops)) {
                         if (ItemStack.isSameItemSameComponents(drop, stack)) {
-                            CuriosApi.getCuriosInventory(player).ifPresent(handler -> {
-                                IItemHandlerModifiable curios = handler.getEquippedCurios();
-                                if (curios.getStackInSlot(i).isEmpty() && curios.isItemValid(i, stack) && i < curios.getSlots()) {
-                                    curios.setStackInSlot(i, stack);
+                            List<EnigmaticHandler.CurioSlot> curios = EnigmaticHandler.getEquippedCurioSlots(player);
+                            if (i < curios.size()) {
+                                EnigmaticHandler.CurioSlot slot = curios.get(i);
+                                if (slot.get().isEmpty() && CuriosApi.isStackValid(slot.context(player), stack)) {
+                                    slot.set(stack);
                                     drops.remove(drop);
                                 }
-                            });
+                            }
                             break;
                         }
                     }

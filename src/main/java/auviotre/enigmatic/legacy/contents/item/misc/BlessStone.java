@@ -27,8 +27,6 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.items.IItemHandlerModifiable;
-import top.theillusivec4.curios.api.CuriosApi;
 
 import java.util.List;
 import net.minecraft.world.item.component.TooltipDisplay;
@@ -66,26 +64,23 @@ public class BlessStone extends BaseCursedItem {
         ItemStack item = player.getItemInHand(hand);
         if (level.getLevelData().isHardcore() && EnigmaticHandler.isTheCursedOne(player)) {
             player.level().playSound(null, player.blockPosition(), SoundEvents.WITHER_DEATH, SoundSource.PLAYERS, 1.0F, 0.5F);
-            CuriosApi.getCuriosInventory(player).ifPresent((handler) -> {
-                IItemHandlerModifiable curios = handler.getEquippedCurios();
-                for (int i = 0; i < handler.getSlots(); ++i) {
-                    ItemStack stackInSlot = curios.getStackInSlot(i);
-                    if (stackInSlot.is(EnigmaticItems.CURSED_RING)) {
-                        ItemStack stack = EnigmaticItems.REDEMPTION_RING.toStack();
-                        stack.set(EnigmaticComponents.REDEMPTION_LEVEL, RedemptionRing.Helper.getPossibleLevel(player));
-                        curios.setStackInSlot(i, stack);
-                    }
+            List<EnigmaticHandler.CurioSlot> curios = EnigmaticHandler.getEquippedCurioSlots(player);
+            for (EnigmaticHandler.CurioSlot slot : curios) {
+                if (slot.get().is(EnigmaticItems.CURSED_RING)) {
+                    ItemStack stack = EnigmaticItems.REDEMPTION_RING.toStack();
+                    stack.set(EnigmaticComponents.REDEMPTION_LEVEL, RedemptionRing.Helper.getPossibleLevel(player));
+                    slot.set(stack);
                 }
-                for (int i = 0; i < handler.getSlots(); ++i) {
-                    ItemStack stackInSlot = curios.getStackInSlot(i);
-                    if (EnigmaticHandler.isCursedItem(stackInSlot)) {
-                        PermanentItemEntity itemEntity = new PermanentItemEntity(player.level(), player.getRandomX(4), player.getRandomY(), player.getRandomZ(4), stackInSlot);
-                        itemEntity.setGlowingTag(true);
-                        player.level().addFreshEntity(itemEntity);
-                        curios.setStackInSlot(i, ItemStack.EMPTY);
-                    }
+            }
+            for (EnigmaticHandler.CurioSlot slot : curios) {
+                ItemStack stackInSlot = slot.get();
+                if (EnigmaticHandler.isCursedItem(stackInSlot)) {
+                    PermanentItemEntity itemEntity = new PermanentItemEntity(player.level(), player.getRandomX(4), player.getRandomY(), player.getRandomZ(4), stackInSlot);
+                    itemEntity.setGlowingTag(true);
+                    player.level().addFreshEntity(itemEntity);
+                    slot.set(ItemStack.EMPTY);
                 }
-            });
+            }
             player.addEffect(new MobEffectInstance(MobEffects.DARKNESS, 200));
             player.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 10));
             player.addEffect(new MobEffectInstance(MobEffects.NAUSEA, 200));

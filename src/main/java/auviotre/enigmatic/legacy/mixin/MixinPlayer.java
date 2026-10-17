@@ -18,13 +18,11 @@ import net.minecraft.world.item.enchantment.EnchantmentEffectComponents;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import top.theillusivec4.curios.api.CuriosApi;
 
 import java.util.List;
 
@@ -42,15 +40,12 @@ public abstract class MixinPlayer extends LivingEntity {
 
     @Inject(method = "destroyVanishingCursedItems", at = @At("TAIL"))
     public void onDestroyVanishingCursedItems(CallbackInfo info) {
-        CuriosApi.getCuriosInventory(this).ifPresent(handler -> {
-            IItemHandlerModifiable curios = handler.getEquippedCurios();
-            for (int i = 0; i < curios.getSlots(); i++) {
-                ItemStack stack = curios.getStackInSlot(i);
-                if (!stack.isEmpty() && EnchantmentHelper.has(stack, EnchantmentEffectComponents.PREVENT_EQUIPMENT_DROP)) {
-                    curios.setStackInSlot(i, ItemStack.EMPTY);
-                }
+        for (EnigmaticHandler.CurioSlot slot : EnigmaticHandler.getEquippedCurioSlots(this)) {
+            ItemStack stack = slot.get();
+            if (!stack.isEmpty() && EnchantmentHelper.has(stack, EnchantmentEffectComponents.PREVENT_EQUIPMENT_DROP)) {
+                slot.set(ItemStack.EMPTY);
             }
-        });
+        }
     }
 
     // 26.1.2 port: Player#sweepAttack was folded into doSweepAttack; mod-triggered sweeps call the same hook.

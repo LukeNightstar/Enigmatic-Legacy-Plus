@@ -11,13 +11,13 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
-import top.theillusivec4.curios.api.CuriosApi;
+import top.theillusivec4.curios.api.CuriosResources;
 
 public interface EnigmaticTags {
     interface Items {
-        TagKey<Item> SCROLLS = register(CuriosApi.MODID, "scroll");
-        TagKey<Item> SPELLSTONES = register(CuriosApi.MODID, "spellstone");
-        TagKey<Item> AMULETS = register(CuriosApi.MODID, "amulet");
+        TagKey<Item> SCROLLS = register(CuriosResources.MOD_ID, "scroll");
+        TagKey<Item> SPELLSTONES = register(CuriosResources.MOD_ID, "spellstone");
+        TagKey<Item> AMULETS = register(CuriosResources.MOD_ID, "amulet");
         TagKey<Item> ENIGMATIC_AMULETS = register("enigmatic_amulets");
         TagKey<Item> THE_CUBE_MATERIAL = register("materials_of_the_cube");
         TagKey<Item> ARMOR_CHECK_EXCLUSION = register("armor_check_exclusions");

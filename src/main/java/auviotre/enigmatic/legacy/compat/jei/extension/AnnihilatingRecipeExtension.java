@@ -49,19 +49,19 @@ public class AnnihilatingRecipeExtension implements ICraftingCategoryExtension<A
         AnnihilatingRecipe recipe = recipeHolder.value();
         List<IRecipeSlotBuilder> inputs = craftingGridHelper.createAndSetInputs(builder, List.of(), 3, 3);
         Ingredient ingredient = abyssalItems();
-        inputs.get(0).addIngredients(ingredient);
-        inputs.get(1).addItemStack(EnigmaticItems.EVIL_INGOT.toStack());
-        inputs.get(2).addIngredients(ingredient);
-        inputs.get(3).addItemStack(ItemStack.EMPTY);
+        inputs.get(0).add(ingredient);
+        inputs.get(1).add(EnigmaticItems.EVIL_INGOT.toStack());
+        inputs.get(2).add(ingredient);
+        inputs.get(3).add(ItemStack.EMPTY);
         ItemStack abyssalHeart = EnigmaticItems.ABYSSAL_HEART.toStack();
         abyssalHeart.set(EnigmaticComponents.TAINTABLE, true);
-        inputs.get(4).addItemStack(abyssalHeart);
-        inputs.get(5).addItemStack(ItemStack.EMPTY);
-        inputs.get(6).addIngredients(ingredient);
+        inputs.get(4).add(abyssalHeart);
+        inputs.get(5).add(ItemStack.EMPTY);
+        inputs.get(6).add(ingredient);
         ItemStack twistedHeart = EnigmaticItems.TWISTED_HEART.toStack();
         twistedHeart.set(EnigmaticComponents.TAINTABLE, true);
-        inputs.get(7).addItemStack(twistedHeart);
-        inputs.get(8).addIngredients(ingredient);
+        inputs.get(7).add(twistedHeart);
+        inputs.get(8).add(ingredient);
         ItemStack result = recipe.getResultItem();
         craftingGridHelper.createAndSetOutputs(builder, List.of(result));
     }

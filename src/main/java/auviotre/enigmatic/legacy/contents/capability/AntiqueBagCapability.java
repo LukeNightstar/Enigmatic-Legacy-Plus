@@ -13,7 +13,6 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.IItemHandlerModifiable;
 
 public class AntiqueBagCapability implements IAntiqueBagHandler {
     public static final Identifier ID = EnigmaticLegacy.location("antique_bag_inventory");
@@ -34,17 +33,17 @@ public class AntiqueBagCapability implements IAntiqueBagHandler {
     }
 
     public ItemStack getBook(int index) {
-        return this.inventory.getStackHandler().getStackInSlot(index);
+        return this.inventory.getStackHandler().getStack(index);
     }
 
     public void setBook(int index, ItemStack book) {
-        this.inventory.getStackHandler().setStackInSlot(index, book);
+        this.inventory.getStackHandler().setStack(index, book);
     }
 
     public ItemStack findBook(Item book) {
-        IItemHandlerModifiable handler = this.getInventory();
-        for (int i = 0; i < handler.getSlots(); i++) {
-            ItemStack stack = handler.getStackInSlot(i);
+        AntiqueBagInventory.BookHandler handler = this.getInventory();
+        for (int i = 0; i < handler.size(); i++) {
+            ItemStack stack = handler.getStack(i);
             if (stack.is(book)) return stack;
         }
         return ItemStack.EMPTY;
@@ -54,7 +53,7 @@ public class AntiqueBagCapability implements IAntiqueBagHandler {
         return owner;
     }
 
-    public IItemHandlerModifiable getInventory() {
+    public AntiqueBagInventory.BookHandler getInventory() {
         return this.inventory.getStackHandler();
     }
 

@@ -4,7 +4,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.IItemHandlerModifiable;
+import auviotre.enigmatic.legacy.contents.attachement.AntiqueBagInventory;
 
 public interface IAntiqueBagHandler {
     void reset();
@@ -23,7 +23,7 @@ public interface IAntiqueBagHandler {
 
     LivingEntity getOwner();
 
-    IItemHandlerModifiable getInventory();
+    AntiqueBagInventory.BookHandler getInventory();
 
     Tag writeTag();
 

@@ -20,9 +20,7 @@ import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.IItemHandlerModifiable;
-import net.neoforged.neoforge.items.SlotItemHandler;
+import net.neoforged.neoforge.transfer.item.ResourceHandlerSlot;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -40,7 +38,7 @@ public class AntiqueBagContainerMenu extends AbstractContainerMenu {
         this.player = inventory.player;
         Optional<IAntiqueBagHandler> optional = EnigmaticCapability.get(player, EnigmaticCapability.ANTIQUE_BAG_INVENTORY);
         optional.ifPresent(bagHandler -> {
-            IItemHandlerModifiable bagInventory = bagHandler.getInventory();
+            AntiqueBagInventory.BookHandler bagInventory = bagHandler.getInventory();
             for (int y = 0; y < 2; y++) {
                 for (int x = 0; x < 6; x++) {
                     this.addSlot(new BookSlot(bagInventory, x + y * 6, x * 18 + 35, y * 18 + 24));
@@ -119,9 +117,10 @@ public class AntiqueBagContainerMenu extends AbstractContainerMenu {
         }
     }
 
-    public static class BookSlot extends SlotItemHandler {
-        public BookSlot(IItemHandler itemHandler, int index, int xPosition, int yPosition) {
-            super(itemHandler, index, xPosition, yPosition);
+    // 26.1.2 port: SlotItemHandler is deprecated for removal; ResourceHandlerSlot is the transfer API equivalent.
+    public static class BookSlot extends ResourceHandlerSlot {
+        public BookSlot(AntiqueBagInventory.BookHandler handler, int index, int xPosition, int yPosition) {
+            super(handler, handler::set, index, xPosition, yPosition);
         }
 
         public boolean mayPlace(@NotNull ItemStack stack) {

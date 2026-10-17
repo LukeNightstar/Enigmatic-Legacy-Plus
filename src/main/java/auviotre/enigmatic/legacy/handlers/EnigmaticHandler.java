@@ -81,12 +81,12 @@ import net.neoforged.fml.ModList;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import net.neoforged.neoforgespi.language.ModFileScanData;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.jetbrains.annotations.NotNull;
 import top.theillusivec4.curios.api.CuriosApi;
+import top.theillusivec4.curios.api.CuriosSlotTypes;
 import top.theillusivec4.curios.api.SlotContext;
 import top.theillusivec4.curios.api.SlotResult;
 import top.theillusivec4.curios.api.type.ISlotType;
@@ -258,14 +258,37 @@ public interface EnigmaticHandler {
     }
 
     static void destroyCurio(LivingEntity entity, ItemLike curio) {
-        CuriosApi.getCuriosInventory(entity).ifPresent(handler -> {
-            IItemHandlerModifiable curios = handler.getEquippedCurios();
-            for (int i = 0; i < curios.getSlots(); i++) {
-                if (curios.getStackInSlot(i).is(curio.asItem())) {
-                    curios.setStackInSlot(i, ItemStack.EMPTY);
-                }
-            }
-        });
+        for (CurioSlot slot : getEquippedCurioSlots(entity)) {
+            if (slot.get().is(curio.asItem())) slot.set(ItemStack.EMPTY);
+        }
+    }
+
+    /**
+     * 26.1.2 port: replaces ICuriosItemHandler#getEquippedCurios, whose flat IItemHandlerModifiable view is deprecated for removal.
+     * Walks the same non-cosmetic stacks in the same order, so a list index matches the old flat slot index.
+     */
+    static List<CurioSlot> getEquippedCurioSlots(LivingEntity entity) {
+        List<CurioSlot> slots = new ArrayList<>();
+        CuriosApi.getCuriosInventory(entity).ifPresent(handler -> handler.getCurios().forEach((id, stacksHandler) -> {
+            IDynamicStackHandler stacks = stacksHandler.getStacks();
+            for (int i = 0; i < stacks.getSlots(); i++)
+                slots.add(new CurioSlot(id, i, stacks, stacksHandler.isVisible()));
+        }));
+        return slots;
+    }
+
+    record CurioSlot(String identifier, int index, IDynamicStackHandler stacks, boolean visible) {
+        public ItemStack get() {
+            return this.stacks.getStackInSlot(this.index);
+        }
+
+        public void set(ItemStack stack) {
+            this.stacks.setStackInSlot(this.index, stack);
+        }
+
+        public SlotContext context(LivingEntity entity) {
+            return new SlotContext(this.identifier, entity, this.index, false, this.visible);
+        }
     }
 
     static boolean isNotAttacker(Mob entity, LivingEntity target) {
@@ -430,7 +453,7 @@ public interface EnigmaticHandler {
 
                     for (int i = 0; i < stackHandler.getSlots(); i++) {
                         ItemStack present = stackHandler.getStackInSlot(i);
-                        Map<String, ISlotType> slots = CuriosApi.getItemStackSlots(curio, entity.level());
+                        Map<String, ISlotType> slots = CuriosSlotTypes.getItemSlotTypes(curio, entity.level().isClientSide());
                         String id = entry.getKey();
 
                         SlotContext context = new SlotContext(id, entity, i, false, entry.getValue().isVisible());

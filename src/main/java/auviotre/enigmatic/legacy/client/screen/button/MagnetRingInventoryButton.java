@@ -53,8 +53,8 @@ public class MagnetRingInventoryButton extends ImageButton {
         Tuple<Integer, Integer> enderOffsets = magnetButton.getOffsets(isCreative);
         int x = enderOffsets.getA();
         int y = enderOffsets.getB();
-        magnetButton.setX(gui.getGuiLeft() + x);
-        magnetButton.setY(gui.getGuiTop() + y);
+        magnetButton.setX(gui.getLeftPos() + x);
+        magnetButton.setY(gui.getTopPos() + y);
         return magnetButton;
     }
 
@@ -65,7 +65,7 @@ public class MagnetRingInventoryButton extends ImageButton {
         // every frame keeps the button in place when the recipe book shifts the inventory.
         if (this.parentGui instanceof InventoryScreen || this.parentGui instanceof ICuriosScreen) {
             Tuple<Integer, Integer> offsets = this.getOffsets(false);
-            this.setPosition(this.parentGui.getGuiLeft() + offsets.getA(), this.parentGui.getGuiTop() + offsets.getB());
+            this.setPosition(this.parentGui.getLeftPos() + offsets.getA(), this.parentGui.getTopPos() + offsets.getB());
         } else if (this.parentGui instanceof CreativeModeInventoryScreen creative) {
             if (!creative.isInventoryOpen()) {
                 this.active = false;

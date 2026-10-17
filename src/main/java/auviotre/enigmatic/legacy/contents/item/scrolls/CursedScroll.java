@@ -37,9 +37,7 @@ import net.neoforged.neoforge.common.ModConfigSpec;
 import net.neoforged.neoforge.event.entity.living.LivingHealEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import org.jetbrains.annotations.NotNull;
-import top.theillusivec4.curios.api.CuriosApi;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -71,15 +69,12 @@ public class CursedScroll extends CursedCurioItem {
         AtomicInteger amount = new AtomicInteger();
         for (EquipmentSlot slot : EquipmentSlotGroup.ARMOR.slots()) amount.addAndGet(getItemCurseLevel(entity.getItemBySlot(slot)));
         for (EquipmentSlot slot : EquipmentSlotGroup.HAND.slots()) amount.addAndGet(getItemCurseLevel(entity.getItemBySlot(slot)));
-        CuriosApi.getCuriosInventory(entity).ifPresent(handler -> {
-            IItemHandlerModifiable curios = handler.getEquippedCurios();
-            for (int i = 0; i < curios.getSlots(); i++) {
-                ItemStack stack = curios.getStackInSlot(i);
-                amount.addAndGet(getItemCurseLevel(stack));
-                if (stack.is(EnigmaticItems.VIOLENCE_SCROLL))
-                    amount.addAndGet(ViolenceScroll.AbsorbedEnchants.getCount(stack));
-            }
-        });
+        for (EnigmaticHandler.CurioSlot slot : EnigmaticHandler.getEquippedCurioSlots(entity)) {
+            ItemStack stack = slot.get();
+            amount.addAndGet(getItemCurseLevel(stack));
+            if (stack.is(EnigmaticItems.VIOLENCE_SCROLL))
+                amount.addAndGet(ViolenceScroll.AbsorbedEnchants.getCount(stack));
+        }
         ItemStack curio = EnigmaticHandler.getCurio(entity, EnigmaticItems.VIOLENCE_SCROLL);
         if (!curio.isEmpty()) {
             int count = ViolenceScroll.AbsorbedEnchants.getCount(curio);

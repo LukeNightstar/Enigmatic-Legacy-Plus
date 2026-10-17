@@ -61,11 +61,11 @@ public class TaintingCategory implements IRecipeCategory<TaintingCategory.Recipe
     }
 
     public void setRecipe(@NotNull IRecipeLayoutBuilder builder, @NotNull TaintingCategory.Recipe recipe, IFocusGroup focuses) {
-        builder.addInputSlot(13, 13).addItemStack(recipe.input()).setStandardSlotBackground();
+        builder.addInputSlot(13, 13).add(recipe.input()).setStandardSlotBackground();
         ItemStack output = recipe.input().copy();
         if (output.getItem() instanceof ITaintable) output.set(EnigmaticComponents.TAINTABLE.get(), true);
-        builder.addOutputSlot(79, 13).addItemStack(output).setStandardSlotBackground();
-        builder.addSlot(RecipeIngredientRole.CRAFTING_STATION, 46, 23).addIngredients(recipe.condition());
+        builder.addOutputSlot(79, 13).add(output).setStandardSlotBackground();
+        builder.addSlot(RecipeIngredientRole.CRAFTING_STATION, 46, 23).add(recipe.condition());
     }
 
     public record Recipe(ItemStack input, Ingredient condition) {

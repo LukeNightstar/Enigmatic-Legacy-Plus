@@ -79,12 +79,10 @@ import net.neoforged.neoforge.event.entity.living.*;
 import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
-import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import com.google.common.collect.ImmutableMap;
-import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curios.api.SlotContext;
 import top.theillusivec4.curios.api.event.DropRulesEvent;
 
@@ -300,18 +298,15 @@ public class CursedRing extends CursedCurioItem {
         LivingEntity entity = context.entity();
         entity.getAttributes().removeAttributeModifiers(this.getArmorModifiers(entity));
         EnigmaticHandler.setCurrentWorldCursed(false);
-        CuriosApi.getCuriosInventory(entity).ifPresent(handler -> {
-            IItemHandlerModifiable curios = handler.getEquippedCurios();
-            for (int i = 0; i < handler.getSlots(); ++i) {
-                ItemStack stackInSlot = curios.getStackInSlot(i);
-                if (EnigmaticHandler.isCursedItem(stackInSlot)) {
-                    PermanentItemEntity itemEntity = new PermanentItemEntity(entity.level(), entity.getRandomX(4), entity.getRandomY(), entity.getRandomZ(4), stackInSlot);
-                    itemEntity.setGlowingTag(true);
-                    entity.level().addFreshEntity(itemEntity);
-                    curios.setStackInSlot(i, ItemStack.EMPTY);
-                }
+        for (EnigmaticHandler.CurioSlot slot : EnigmaticHandler.getEquippedCurioSlots(entity)) {
+            ItemStack stackInSlot = slot.get();
+            if (EnigmaticHandler.isCursedItem(stackInSlot)) {
+                PermanentItemEntity itemEntity = new PermanentItemEntity(entity.level(), entity.getRandomX(4), entity.getRandomY(), entity.getRandomZ(4), stackInSlot);
+                itemEntity.setGlowingTag(true);
+                entity.level().addFreshEntity(itemEntity);
+                slot.set(ItemStack.EMPTY);
             }
-        });
+        }
         super.onUnequip(context, newStack, stack);
     }
 
@@ -354,13 +349,11 @@ public class CursedRing extends CursedCurioItem {
                         if (!item.isEmpty()) builder.put(String.valueOf(i), item);
                     }
                     // Curios
-                    CuriosApi.getCuriosInventory(player).ifPresent(handler -> {
-                        IItemHandlerModifiable curios = handler.getEquippedCurios();
-                        for (int i = 0; i < curios.getSlots(); i++) {
-                            ItemStack curio = curios.getStackInSlot(i);
-                            if (!curio.isEmpty()) builder.put("curio" + i, curio);
-                        }
-                    });
+                    List<EnigmaticHandler.CurioSlot> curios = EnigmaticHandler.getEquippedCurioSlots(player);
+                    for (int i = 0; i < curios.size(); i++) {
+                        ItemStack curio = curios.get(i).get();
+                        if (!curio.isEmpty()) builder.put("curio" + i, curio);
+                    }
                     RESTORE_MAP.put(player, builder.build());
                 }
 
@@ -667,28 +660,25 @@ public class CursedRing extends CursedCurioItem {
                     event.addOverride(stack -> stack != null && stack.is(EnigmaticItems.CURSED_RING), DropRule.DESTROY);
                     player.level().playSound(null, player.blockPosition(), SoundEvents.WITHER_DEATH, SoundSource.PLAYERS, 1.0F, 0.5F);
                     EnigmaticHandler.getPersistedData(player).putBoolean("DestroyedCursedRing", true);
-                    CuriosApi.getCuriosInventory(player).ifPresent(handler -> {
-                        IItemHandlerModifiable curios = handler.getEquippedCurios();
-                        for (int i = 0; i < handler.getSlots(); ++i) {
-                            ItemStack stackInSlot = curios.getStackInSlot(i);
-                            if (stackInSlot.is(EnigmaticItems.CURSED_RING)) {
-                                ItemStack stack = EnigmaticItems.REDEMPTION_RING.toStack();
-                                stack.set(EnigmaticComponents.REDEMPTION_LEVEL, RedemptionRing.Helper.getPossibleLevel(player));
-                                long time = player.getData(EnigmaticAttachments.ENIGMATIC_DATA).getTimeWithoutCurses();
-                                stack.set(EnigmaticComponents.REDEMPTION_THRESHOLD, time / 16L);
-                                curios.setStackInSlot(i, stack);
-                            }
+                    List<EnigmaticHandler.CurioSlot> curios = EnigmaticHandler.getEquippedCurioSlots(player);
+                    for (EnigmaticHandler.CurioSlot slot : curios) {
+                        if (slot.get().is(EnigmaticItems.CURSED_RING)) {
+                            ItemStack stack = EnigmaticItems.REDEMPTION_RING.toStack();
+                            stack.set(EnigmaticComponents.REDEMPTION_LEVEL, RedemptionRing.Helper.getPossibleLevel(player));
+                            long time = player.getData(EnigmaticAttachments.ENIGMATIC_DATA).getTimeWithoutCurses();
+                            stack.set(EnigmaticComponents.REDEMPTION_THRESHOLD, time / 16L);
+                            slot.set(stack);
                         }
-                        for (int i = 0; i < handler.getSlots(); ++i) {
-                            ItemStack stackInSlot = curios.getStackInSlot(i);
-                            if (EnigmaticHandler.isCursedItem(stackInSlot)) {
-                                PermanentItemEntity itemEntity = new PermanentItemEntity(player.level(), player.getRandomX(4), player.getRandomY(), player.getRandomZ(4), stackInSlot);
-                                itemEntity.setGlowingTag(true);
-                                player.level().addFreshEntity(itemEntity);
-                                curios.setStackInSlot(i, ItemStack.EMPTY);
-                            }
+                    }
+                    for (EnigmaticHandler.CurioSlot slot : curios) {
+                        ItemStack stackInSlot = slot.get();
+                        if (EnigmaticHandler.isCursedItem(stackInSlot)) {
+                            PermanentItemEntity itemEntity = new PermanentItemEntity(player.level(), player.getRandomX(4), player.getRandomY(), player.getRandomZ(4), stackInSlot);
+                            itemEntity.setGlowingTag(true);
+                            player.level().addFreshEntity(itemEntity);
+                            slot.set(ItemStack.EMPTY);
                         }
-                    });
+                    }
                 }
             }
         }

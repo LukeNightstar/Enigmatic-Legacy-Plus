@@ -100,17 +100,17 @@ public class SpellstoneCraftingCategory implements IRecipeCategory<RecipeHolder<
                         list.set(j, items.get((j + i) % items.size()));
                     }
                     builder.addInputSlot(pair.getA(), pair.getB()).addItemStacks(list);
-                } else builder.addInputSlot(pair.getA(), pair.getB()).addIngredients(ingredient);
+                } else builder.addInputSlot(pair.getA(), pair.getB()).add(ingredient);
             } else builder.addInputSlot(pair.getA(), pair.getB());
         }
         if (holder.id().equals(FRAGMENTATION)) {
-            spell.addIngredients(Ingredient.of(BuiltInRegistries.ITEM.getOrThrow(EnigmaticTags.Items.SPELLSTONES)));
-            builder.addOutputSlot(58, 59).addItemStack(EnigmaticItems.SPELLSTONE_DEBRIS.toStack(4));
+            spell.add(Ingredient.of(BuiltInRegistries.ITEM.getOrThrow(EnigmaticTags.Items.SPELLSTONES)));
+            builder.addOutputSlot(58, 59).add(EnigmaticItems.SPELLSTONE_DEBRIS.toStack(4));
             return;
         }
 
-        if (recipe.getCount() > 0) slot.addItemStack(EnigmaticItems.SPELLSTONE_DEBRIS.toStack(recipe.getCount()));
-        core.addItemStack(EnigmaticItems.SPELLCORE.toStack());
-        builder.addOutputSlot(58, 59).addItemStack(recipe.getResultItem());
+        if (recipe.getCount() > 0) slot.add(EnigmaticItems.SPELLSTONE_DEBRIS.toStack(recipe.getCount()));
+        core.add(EnigmaticItems.SPELLCORE.toStack());
+        builder.addOutputSlot(58, 59).add(recipe.getResultItem());
     }
 }
