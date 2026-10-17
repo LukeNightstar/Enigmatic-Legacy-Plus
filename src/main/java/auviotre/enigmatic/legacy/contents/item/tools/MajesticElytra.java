@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.item.tools;
 
+import auviotre.enigmatic.legacy.client.ClientAccess;
 import auviotre.enigmatic.legacy.registries.EnigmaticTags;
 import net.minecraft.core.particles.PowerParticleOption;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
@@ -76,8 +77,8 @@ public class MajesticElytra extends BaseElytraItem {
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.majesticElytra1");
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.majesticElytra2");
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.majesticElytra3");
-            if (Minecraft.getInstance().level != null) {
-                var holder = EnigmaticHandler.get(Minecraft.getInstance().level, Registries.ENCHANTMENT, EnigmaticEnchantments.ETHERIC_RESONANCE);
+            if (ClientAccess.level() != null) {
+                var holder = EnigmaticHandler.get(ClientAccess.level(), Registries.ENCHANTMENT, EnigmaticEnchantments.ETHERIC_RESONANCE);
                 if (stack.getEnchantmentLevel(holder) > 0)
                     TooltipHandler.line(list, "tooltip.enigmaticlegacy.majesticElytraBuff", ChatFormatting.GOLD, String.format("%d%%", resistanceModifier.get()));
             }

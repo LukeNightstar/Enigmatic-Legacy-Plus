@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.item.rings;
 
+import auviotre.enigmatic.legacy.client.ClientAccess;
 import net.minecraft.core.particles.ColorParticleOption;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.api.SubscribeConfig;
@@ -75,13 +76,13 @@ public class EarthPromise extends CursedCurioItem {
         try {
             TooltipHandler.line(list);
             if (Minecraft.getInstance().hasShiftDown()) {
-                if (EnigmaticHandler.isTheCursedOne(Minecraft.getInstance().player)) {
+                if (EnigmaticHandler.isTheCursedOne(ClientAccess.player())) {
                     TooltipHandler.line(list, "tooltip.enigmaticlegacy.curseAlteration", ChatFormatting.GOLD, Component.translatable("tooltip.enigmaticlegacy.firstCurse"));
                     TooltipHandler.line(list, "tooltip.enigmaticlegacy.firstCurseAlteration", ChatFormatting.GOLD, firstCurseModifier.get() + "%");
                     TooltipHandler.line(list);
                 }
                 TooltipHandler.line(list, "tooltip.enigmaticlegacy.earthPromise1", ChatFormatting.GOLD, healthThreshold.get() + "%");
-                int cool = RedemptionRing.Helper.canUseRelic(Minecraft.getInstance().player) ? cooldown.get() / 25 : cooldown.get() / 20;
+                int cool = RedemptionRing.Helper.canUseRelic(ClientAccess.player()) ? cooldown.get() / 25 : cooldown.get() / 20;
                 TooltipHandler.line(list, "tooltip.enigmaticlegacy.earthPromise2", ChatFormatting.GOLD, cool);
             } else TooltipHandler.holdShift(list);
             TooltipHandler.line(list);
@@ -109,7 +110,7 @@ public class EarthPromise extends CursedCurioItem {
     public List<Component> getAttributesTooltip(List<Component> tooltips, TooltipContext context, ItemStack stack) {
         List<Component> list = super.getAttributesTooltip(tooltips, context, stack);
         if (!list.isEmpty())
-            list.add(Component.translatable("attribute.modifier.plus.0", EnigmaticHandler.hasCurio(Minecraft.getInstance().player, EnigmaticItems.MINING_CHARM) ? 3 : 2, Component.translatable("attribute.name.fortune_level")).withStyle(ChatFormatting.BLUE));
+            list.add(Component.translatable("attribute.modifier.plus.0", EnigmaticHandler.hasCurio(ClientAccess.player(), EnigmaticItems.MINING_CHARM) ? 3 : 2, Component.translatable("attribute.name.fortune_level")).withStyle(ChatFormatting.BLUE));
         return list;
     }
 

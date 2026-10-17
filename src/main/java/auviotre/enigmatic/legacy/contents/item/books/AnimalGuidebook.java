@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.item.books;
 
+import auviotre.enigmatic.legacy.client.ClientAccess;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.api.item.IItemHelper;
 import auviotre.enigmatic.legacy.contents.item.generic.BaseItem;
@@ -42,7 +43,7 @@ public class AnimalGuidebook extends BaseItem {
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.inInventory", ChatFormatting.GOLD);
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.animalGuidebook1");
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.animalGuidebook2");
-            if (EnigmaticHandler.isTheCursedOne(Minecraft.getInstance().player)) {
+            if (EnigmaticHandler.isTheCursedOne(ClientAccess.player())) {
                 TooltipHandler.line(list);
                 TooltipHandler.line(list, "tooltip.enigmaticlegacy.curseAlteration", ChatFormatting.GOLD, Component.translatable("tooltip.enigmaticlegacy.secondCurse"));
                 TooltipHandler.line(list, "tooltip.enigmaticlegacy.secondCurseAlteration1");

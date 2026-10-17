@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.item.charms;
 
+import auviotre.enigmatic.legacy.client.ClientAccess;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
@@ -79,7 +80,7 @@ public class ScorchedCharm extends CursedCurioItem {
                 TooltipHandler.line(list, "tooltip.enigmaticlegacy.scorchedCharm2");
                 TooltipHandler.line(list, "tooltip.enigmaticlegacy.scorchedCharm3");
                 TooltipHandler.line(list, "tooltip.enigmaticlegacy.scorchedCharm4");
-                LocalPlayer player = Minecraft.getInstance().player;
+                Player player = ClientAccess.player();
                 if (RedemptionRing.Helper.canUseRelic(player) && player != null) {
                     int value = resistanceProbability.get() * (player.isInLava() ? 2 : 1);
                     TooltipHandler.line(list, "tooltip.enigmaticlegacy.scorchedCharm5", ChatFormatting.GOLD, String.format("%d%%", value));

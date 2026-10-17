@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.item.spellstones.other;
 
+import auviotre.enigmatic.legacy.client.ClientAccess;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
@@ -922,6 +923,26 @@ public class SpellstoneSword extends Item {
     }
 
     @Mod(value = EnigmaticLegacy.MODID)
+    // 26.1.2 port: client-only handlers live in their own subscriber; Events is registered on the server too.
+    @EventBusSubscriber(modid = EnigmaticLegacy.MODID, value = Dist.CLIENT)
+    public static class ClientEvents {
+        @SubscribeEvent
+        private static void onHand(RenderHandEvent event) {
+            Player player = ClientAccess.player();
+            if (player == null) return;
+            ItemStack useItem = player.getUseItem();
+            if (useItem.is(EnigmaticItems.SPELLSTONE_SWORD) && isResonatingWith(useItem, EnigmaticItems.ANGEL_BLESSING)) {
+                int i = useItem.getOrDefault(INT, 0);
+                if (i == 0 && event.getHand() != player.getUsedItemHand()) event.setCanceled(true);
+            }
+            ItemStack mainHandItem = player.getMainHandItem();
+            if (event.getHand() == InteractionHand.OFF_HAND && mainHandItem.is(EnigmaticItems.SPELLSTONE_SWORD)) {
+                if (isResonatingWith(mainHandItem, EnigmaticItems.ANGEL_BLESSING) && mainHandItem.getOrDefault(INT, 0) > 0)
+                    event.setCanceled(true);
+            }
+        }
+    }
+
     @EventBusSubscriber(modid = EnigmaticLegacy.MODID)
     public static class Events {
         @SubscribeEvent(priority = EventPriority.LOWEST)
@@ -1178,23 +1199,6 @@ public class SpellstoneSword extends Item {
                         stack.set(INT, getMaxEnergy(stack));
                     }
                 }
-            }
-        }
-
-        @SubscribeEvent
-        @OnlyIn(Dist.CLIENT)
-        private static void onHand(RenderHandEvent event) {
-            LocalPlayer player = Minecraft.getInstance().player;
-            if (player == null) return;
-            ItemStack useItem = player.getUseItem();
-            if (useItem.is(EnigmaticItems.SPELLSTONE_SWORD) && isResonatingWith(useItem, EnigmaticItems.ANGEL_BLESSING)) {
-                int i = useItem.getOrDefault(INT, 0);
-                if (i == 0 && event.getHand() != player.getUsedItemHand()) event.setCanceled(true);
-            }
-            ItemStack mainHandItem = player.getMainHandItem();
-            if (event.getHand() == InteractionHand.OFF_HAND && mainHandItem.is(EnigmaticItems.SPELLSTONE_SWORD)) {
-                if (isResonatingWith(mainHandItem, EnigmaticItems.ANGEL_BLESSING) && mainHandItem.getOrDefault(INT, 0) > 0)
-                    event.setCanceled(true);
             }
         }
     }

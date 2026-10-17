@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.item.etherium;
 
+import auviotre.enigmatic.legacy.client.ClientAccess;
 import net.minecraft.sounds.SoundEvents;
 import auviotre.enigmatic.legacy.api.item.IItemHelper;
 import auviotre.enigmatic.legacy.handlers.EnigmaticHandler;
@@ -67,8 +68,8 @@ public class EtheriumScythe extends Item {
         try {
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.etheriumScythe", ChatFormatting.GOLD, 3, 3);
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.etheriumDisable");
-            if (Minecraft.getInstance().level != null) {
-                var holder = EnigmaticHandler.get(Minecraft.getInstance().level, Registries.ENCHANTMENT, EnigmaticEnchantments.ETHERIC_RESONANCE);
+            if (ClientAccess.level() != null) {
+                var holder = EnigmaticHandler.get(ClientAccess.level(), Registries.ENCHANTMENT, EnigmaticEnchantments.ETHERIC_RESONANCE);
                 if (stack.getEnchantmentLevel(holder) > 0)
                     TooltipHandler.line(list, "tooltip.enigmaticlegacy.etheriumScytheBuff");
             }

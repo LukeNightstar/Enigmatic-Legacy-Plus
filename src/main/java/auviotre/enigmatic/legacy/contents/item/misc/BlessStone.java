@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.item.misc;
 
+import auviotre.enigmatic.legacy.client.ClientAccess;
 import auviotre.enigmatic.legacy.api.item.IItemHelper;
 import auviotre.enigmatic.legacy.contents.entity.misc.PermanentItemEntity;
 import auviotre.enigmatic.legacy.contents.item.generic.BaseCursedItem;
@@ -50,10 +51,10 @@ public class BlessStone extends BaseCursedItem {
             TooltipHandler.line(list);
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.canUndone");
             if (flag.isAdvanced()) {
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.blessLevel", ChatFormatting.DARK_GRAY, RedemptionRing.Helper.getPossibleLevel(Minecraft.getInstance().player));
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.blessLevel", ChatFormatting.DARK_GRAY, RedemptionRing.Helper.getPossibleLevel(ClientAccess.player()));
             }
             TooltipHandler.line(list);
-            ChatFormatting color = EnigmaticHandler.isTheCursedOne(Minecraft.getInstance().player) ? ChatFormatting.GOLD : ChatFormatting.DARK_RED;
+            ChatFormatting color = EnigmaticHandler.isTheCursedOne(ClientAccess.player()) ? ChatFormatting.GOLD : ChatFormatting.DARK_RED;
             list.add(Component.translatable("tooltip.enigmaticlegacy.cursedOnesOnly1").withStyle(color));
             list.add(Component.translatable("tooltip.enigmaticlegacy.cursedOnesOnly2").withStyle(color));
         } finally {

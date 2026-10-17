@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.item.scrolls;
 
+import auviotre.enigmatic.legacy.client.ClientAccess;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.api.SubscribeConfig;
 import auviotre.enigmatic.legacy.api.item.IItemHelper;
@@ -94,7 +95,7 @@ public class NightScroll extends CursedCurioItem {
             } else TooltipHandler.holdShift(list);
             TooltipHandler.line(list);
             TooltipHandler.line(list, "curios.modifiers.scroll", ChatFormatting.GOLD);
-            float darkModifier = getDarkModifier(Minecraft.getInstance().player);
+            float darkModifier = getDarkModifier(ClientAccess.player());
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.nightScroll3", ChatFormatting.GOLD, String.format("%.01f%%", darkModifier * damageBoost.get()));
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.nightScroll4", ChatFormatting.GOLD, String.format("%.01f%%", darkModifier * damageResistance.get()));
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.nightScroll5", ChatFormatting.GOLD, String.format("%.01f%%", darkModifier * lifeSteal.get()));

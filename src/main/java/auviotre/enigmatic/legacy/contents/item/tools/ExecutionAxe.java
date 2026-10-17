@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.item.tools;
 
+import auviotre.enigmatic.legacy.client.ClientAccess;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ToolMaterial;
 import auviotre.enigmatic.legacy.api.item.IItemHelper;
@@ -100,8 +101,8 @@ public class ExecutionAxe extends Item {
             }
 
             int looting = beheadingBase.get();
-            if (Minecraft.getInstance().player != null && Minecraft.getInstance().level != null) {
-                looting += beheadingBonus.get() * getLootingLevel(Minecraft.getInstance().player, Minecraft.getInstance().level);
+            if (ClientAccess.player() != null && ClientAccess.level() != null) {
+                looting += beheadingBonus.get() * getLootingLevel(ClientAccess.player(), ClientAccess.level());
             }
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.executionAxeBeheadingChance", ChatFormatting.GOLD, looting + "%");
             TooltipHandler.line(list);

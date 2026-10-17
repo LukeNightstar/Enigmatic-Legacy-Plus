@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.item.charms;
 
+import auviotre.enigmatic.legacy.client.ClientAccess;
 import auviotre.enigmatic.legacy.api.item.IItemHelper;
 import auviotre.enigmatic.legacy.contents.item.generic.BaseCurioItem;
 import auviotre.enigmatic.legacy.handlers.EnigmaticHandler;
@@ -49,8 +50,8 @@ public class EtherealForgingCharm extends BaseCurioItem {
                 TooltipHandler.line(list);
                 TooltipHandler.line(list, "tooltip.enigmaticlegacy.etherealForgingCharm3");
             }
-            if (Minecraft.getInstance().level != null) {
-                var holder = EnigmaticHandler.get(Minecraft.getInstance().level, Registries.ENCHANTMENT, EnigmaticEnchantments.ETHERIC_RESONANCE);
+            if (ClientAccess.level() != null) {
+                var holder = EnigmaticHandler.get(ClientAccess.level(), Registries.ENCHANTMENT, EnigmaticEnchantments.ETHERIC_RESONANCE);
                 if (stack.getEnchantmentLevel(holder) > 0)
                     TooltipHandler.line(list, "tooltip.enigmaticlegacy.etherealForgingCharmBuff");
             }

@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.item.rings;
 
+import auviotre.enigmatic.legacy.client.ClientAccess;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.api.SubscribeConfig;
 import auviotre.enigmatic.legacy.api.item.IItemHelper;
@@ -76,7 +77,7 @@ public class DesolationRing extends BaseCurioItem {
                 TooltipHandler.line(list, "tooltip.enigmaticlegacy.desolationRing3");
                 TooltipHandler.line(list);
                 TooltipHandler.line(list, "tooltip.enigmaticlegacy.desolationRing4");
-                if (EnigmaticHandler.isAbyssBoosted(Minecraft.getInstance().player)) {
+                if (EnigmaticHandler.isAbyssBoosted(ClientAccess.player())) {
                     TooltipHandler.line(list);
                     TooltipHandler.line(list, "tooltip.enigmaticlegacy.abyssBoost");
                     TooltipHandler.line(list, "tooltip.enigmaticlegacy.desolationRingBoost");

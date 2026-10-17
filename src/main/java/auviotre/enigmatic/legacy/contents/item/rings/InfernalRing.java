@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.item.rings;
 
+import auviotre.enigmatic.legacy.client.ClientAccess;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.api.SubscribeConfig;
 import auviotre.enigmatic.legacy.api.item.IItemHelper;
@@ -63,7 +64,7 @@ public class InfernalRing extends BaseCurioItem {
                 TooltipHandler.line(list, "tooltip.enigmaticlegacy.infernalRing1");
                 TooltipHandler.line(list, "tooltip.enigmaticlegacy.infernalRing2");
                 int value = resistance.get();
-                if (EnigmaticHandler.hasCurio(Minecraft.getInstance().player, EnigmaticItems.HELL_BLADE_CHARM))
+                if (EnigmaticHandler.hasCurio(ClientAccess.player(), EnigmaticItems.HELL_BLADE_CHARM))
                     value = Math.min(99, value / 3 * 4);
                 TooltipHandler.line(list, "tooltip.enigmaticlegacy.infernalRing3", ChatFormatting.GOLD, value + "%");
             } else TooltipHandler.holdShift(list);

@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.item.scrolls;
 
+import auviotre.enigmatic.legacy.client.ClientAccess;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.api.item.IItemHelper;
 import auviotre.enigmatic.legacy.contents.item.generic.CursedCurioItem;
@@ -70,7 +71,7 @@ public class ThunderScroll extends CursedCurioItem {
                 TooltipHandler.line(list, "tooltip.enigmaticlegacy.thunderScroll2");
                 TooltipHandler.line(list, "tooltip.enigmaticlegacy.thunderScroll3");
                 TooltipHandler.line(list, "tooltip.enigmaticlegacy.thunderScroll4");
-                if (RedemptionRing.Helper.canUseRelic(Minecraft.getInstance().player)) {
+                if (RedemptionRing.Helper.canUseRelic(ClientAccess.player())) {
                     TooltipHandler.line(list);
                     TooltipHandler.line(list, "tooltip.enigmaticlegacy.thunderScroll5");
                 }

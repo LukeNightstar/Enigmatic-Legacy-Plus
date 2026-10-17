@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.handlers;
 
+import auviotre.enigmatic.legacy.client.ClientAccess;
 import auviotre.enigmatic.legacy.contents.item.materials.AbyssalHeart;
 import auviotre.enigmatic.legacy.contents.item.rings.CursedRing;
 import auviotre.enigmatic.legacy.contents.item.rings.RedemptionRing;
@@ -44,11 +45,11 @@ public interface TooltipHandler {
     }
 
     static void cursedOnly(List<Component> list, ItemStack stack) {
-        if (EnigmaticHandler.isBlessedItem(stack) && RedemptionRing.Helper.canUseRelic(Minecraft.getInstance().player) && RedemptionRing.uniqueLegacy.get()) {
+        if (EnigmaticHandler.isBlessedItem(stack) && RedemptionRing.Helper.canUseRelic(ClientAccess.player()) && RedemptionRing.uniqueLegacy.get()) {
             list.add(Component.translatable("tooltip.enigmaticlegacy.blessOneAvailable1").withStyle(ChatFormatting.GOLD));
             list.add(Component.translatable("tooltip.enigmaticlegacy.blessOneAvailable2").withStyle(ChatFormatting.GOLD));
         } else {
-            ChatFormatting color = EnigmaticHandler.isTheCursedOne(Minecraft.getInstance().player) && CursedRing.uniqueLegacy.get() ? ChatFormatting.GOLD : ChatFormatting.DARK_RED;
+            ChatFormatting color = EnigmaticHandler.isTheCursedOne(ClientAccess.player()) && CursedRing.uniqueLegacy.get() ? ChatFormatting.GOLD : ChatFormatting.DARK_RED;
             list.add(Component.translatable("tooltip.enigmaticlegacy.cursedOnesOnly1").withStyle(color));
             list.add(Component.translatable("tooltip.enigmaticlegacy.cursedOnesOnly2").withStyle(color));
         }
@@ -57,7 +58,7 @@ public interface TooltipHandler {
 
     static void worthyOnly(List<Component> list, ItemStack stack) {
         if (Minecraft.getInstance().hasShiftDown()) {
-            Player player = Minecraft.getInstance().player;
+            Player player = ClientAccess.player();
             ChatFormatting color = player != null && EnigmaticHandler.isTheWorthyOne(player) ? ChatFormatting.GOLD : ChatFormatting.DARK_RED;
             double threshold = AbyssalHeart.abyssThreshold.get();
             if (!EnigmaticHandler.getCurio(player, EnigmaticItems.DIMNESS_CHARM).isEmpty() || stack.is(EnigmaticItems.DIMNESS_CHARM)) threshold = Math.clamp(2 * threshold - 1, 0, 0.999);

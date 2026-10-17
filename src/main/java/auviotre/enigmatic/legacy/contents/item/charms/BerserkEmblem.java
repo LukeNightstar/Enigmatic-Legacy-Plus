@@ -1,5 +1,7 @@
 package auviotre.enigmatic.legacy.contents.item.charms;
 
+import net.minecraft.world.entity.player.Player;
+import auviotre.enigmatic.legacy.client.ClientAccess;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.api.SubscribeConfig;
 import auviotre.enigmatic.legacy.api.item.IItemHelper;
@@ -92,7 +94,7 @@ public class BerserkEmblem extends CursedCurioItem {
                 TooltipHandler.line(list, "tooltip.enigmaticlegacy.berserkCharm8");
                 TooltipHandler.line(list, "tooltip.enigmaticlegacy.berserkCharm9");
             } else TooltipHandler.holdShift(list);
-            LocalPlayer player = Minecraft.getInstance().player;
+            Player player = ClientAccess.player();
             if (player != null && ItemStack.isSameItemSameComponents(stack, EnigmaticHandler.getCurio(player, this))) {
                 float missingPool = getMissingHealthPool(player);
                 int percentage = (int) (missingPool * 100F);

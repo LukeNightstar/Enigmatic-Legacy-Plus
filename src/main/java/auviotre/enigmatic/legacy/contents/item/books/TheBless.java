@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.item.books;
 
+import auviotre.enigmatic.legacy.client.ClientAccess;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.api.SubscribeConfig;
 import auviotre.enigmatic.legacy.api.item.IItemHelper;
@@ -64,7 +65,7 @@ public class TheBless extends TheAcknowledgment {
     public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
         List<Component> list = new ArrayList<>();
         try {
-            LocalPlayer player = Minecraft.getInstance().player;
+            Player player = ClientAccess.player();
             if (Minecraft.getInstance().hasShiftDown()) {
                 if (EnigmaticHandler.isTheCursedOne(player)) {
                     TooltipHandler.line(list, "tooltip.enigmaticlegacy.curseAlteration", ChatFormatting.GOLD, Component.translatable("tooltip.enigmaticlegacy.fourthCurse"));

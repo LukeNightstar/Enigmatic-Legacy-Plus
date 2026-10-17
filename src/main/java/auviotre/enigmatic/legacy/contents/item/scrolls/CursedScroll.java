@@ -1,5 +1,7 @@
 package auviotre.enigmatic.legacy.contents.item.scrolls;
 
+import net.minecraft.world.entity.player.Player;
+import auviotre.enigmatic.legacy.client.ClientAccess;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
@@ -112,7 +114,7 @@ public class CursedScroll extends CursedCurioItem {
                 TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedScroll4");
                 TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedScroll5");
             } else TooltipHandler.holdShift(list);
-            LocalPlayer player = Minecraft.getInstance().player;
+            Player player = ClientAccess.player();
             if (player != null && ItemStack.isSameItemSameComponents(stack, EnigmaticHandler.getCurio(player, this))) {
                 double curses = getCurseAmount(player);
                 TooltipHandler.line(list);

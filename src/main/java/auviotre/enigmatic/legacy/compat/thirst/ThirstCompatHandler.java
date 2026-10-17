@@ -1,22 +1,16 @@
 package auviotre.enigmatic.legacy.compat.thirst;
 
-import net.minecraft.client.renderer.RenderPipelines;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.contents.item.potions.ForbiddenJuice;
 import auviotre.enigmatic.legacy.registries.EnigmaticItems;
 import cn.mlus.thirst.foundation.common.capability.ModAttachment;
 import cn.mlus.thirst.foundation.common.event.RegisterThirstValueEvent;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import org.jetbrains.annotations.NotNull;
 
-import net.minecraft.util.profiling.Profiler;
 public class ThirstCompatHandler {
     public static final Identifier FORBIDDEN_DRINK_FULL_SPRITE = EnigmaticLegacy.location("hud/forbidden_drink_full");
     public static final Identifier FORBIDDEN_DRINK_HALF_SPRITE = EnigmaticLegacy.location("hud/forbidden_drink_half");
@@ -25,33 +19,6 @@ public class ThirstCompatHandler {
     public static void setHellBladeRecover(Player player) {
         var data = player.getData(ModAttachment.PLAYER_THIRST);
         data.setQuenched(data.getThirst());
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    public static void renderBar(int width, int height, GuiGraphicsExtractor guiGraphics) {
-        Minecraft minecraft = Minecraft.getInstance();
-        if (minecraft.player == null) return;
-        Profiler.get().push("thirst");
-        int left = width / 2 + 91; // + ClientConfig.THIRST_BAR_X_OFFSET.get();
-        int top = height - minecraft.gui.rightHeight; // + ClientConfig.THIRST_BAR_Y_OFFSET.get();
-        minecraft.gui.rightHeight += 10;
-        int level = minecraft.player.getData(ModAttachment.PLAYER_THIRST).getThirst();
-
-        for (int i = 0; i < 10; ++i) {
-            int idx = i * 2 + 1;
-            int x = left - i * 8 - 9;
-            int y = top;
-            if (minecraft.gui.getGuiTicks() % (level * 3 + 1) == 0) {
-                y = top + (minecraft.player.getRandom().nextInt(3) - 1);
-            }
-            guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, FORBIDDEN_DRINK_EMPTY_SPRITE, x, y, 9, 9);
-            if (idx < level) {
-                guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, FORBIDDEN_DRINK_FULL_SPRITE, x, y, 9, 9);
-            } else if (idx == level) {
-                guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, FORBIDDEN_DRINK_HALF_SPRITE, x, y, 9, 9);
-            }
-        }
-        Profiler.get().pop();
     }
 
     @SubscribeEvent

@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.item.tools;
 
+import auviotre.enigmatic.legacy.client.ClientAccess;
 import net.minecraft.world.item.component.Weapon;
 import net.minecraft.core.component.DataComponents;
 import auviotre.enigmatic.legacy.registries.EnigmaticTags;
@@ -212,7 +213,7 @@ public class AnnihilatingSword extends Item {
         List<Component> list = new ArrayList<>();
         try {
             if (Minecraft.getInstance().hasShiftDown()) {
-                LocalPlayer player = Minecraft.getInstance().player;
+                Player player = ClientAccess.player();
                 TooltipHandler.line(list, "tooltip.enigmaticlegacy.annihilatingSword1");
                 TooltipHandler.line(list, "tooltip.enigmaticlegacy.annihilatingSword2");
                 TooltipHandler.line(list, "tooltip.enigmaticlegacy.annihilatingSword3");
@@ -231,7 +232,7 @@ public class AnnihilatingSword extends Item {
                     TooltipHandler.line(list, "tooltip.enigmaticlegacy.annihilatingSword7", ChatFormatting.GOLD, energy);
                     TooltipHandler.line(list, "tooltip.enigmaticlegacy.annihilatingSword8", ChatFormatting.GOLD, String.format("×%.02f", 1 + energy * 0.2));
                 }
-                if (EnigmaticHandler.isAbyssBoosted(Minecraft.getInstance().player)) {
+                if (EnigmaticHandler.isAbyssBoosted(ClientAccess.player())) {
                     TooltipHandler.line(list);
                     TooltipHandler.line(list, "tooltip.enigmaticlegacy.abyssBoost");
                     TooltipHandler.line(list, "tooltip.enigmaticlegacy.annihilatingSwordBoost");

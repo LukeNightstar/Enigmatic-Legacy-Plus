@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.item.scrolls;
 
+import auviotre.enigmatic.legacy.client.ClientAccess;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.api.SubscribeConfig;
 import auviotre.enigmatic.legacy.api.item.IItemHelper;
@@ -114,8 +115,8 @@ public class ViolenceScroll extends BaseCurioItem {
                 TooltipHandler.line(list, "tooltip.enigmaticlegacy.violenceScroll4");
                 TooltipHandler.line(list, "tooltip.enigmaticlegacy.violenceScrollCount", ChatFormatting.GOLD, count);
                 if (count > 0) {
-                    if (Minecraft.getInstance().player != null) {
-                        MobEffectInstance effect = Minecraft.getInstance().player.getEffect(EnigmaticEffects.VIOLENCE_CURSE);
+                    if (ClientAccess.player() != null) {
+                        MobEffectInstance effect = ClientAccess.player().getEffect(EnigmaticEffects.VIOLENCE_CURSE);
                         if (effect != null) count += (int) ((effect.getAmplifier() + 1) * (1 + count * 0.08));
                     }
                     TooltipHandler.line(list);
@@ -123,7 +124,7 @@ public class ViolenceScroll extends BaseCurioItem {
                     TooltipHandler.line(list, "tooltip.enigmaticlegacy.violenceScroll6", ChatFormatting.GOLD, String.format("+%d%%", count * entityReach.get()));
                     TooltipHandler.line(list, "tooltip.enigmaticlegacy.violenceScroll7", ChatFormatting.GOLD, String.format("+%d%%", count * krBoost.get()));
                 }
-                if (EnigmaticHandler.isAbyssBoosted(Minecraft.getInstance().player)) {
+                if (EnigmaticHandler.isAbyssBoosted(ClientAccess.player())) {
                     TooltipHandler.line(list);
                     TooltipHandler.line(list, "tooltip.enigmaticlegacy.abyssBoost");
                     TooltipHandler.line(list, "tooltip.enigmaticlegacy.violenceScrollBoost");

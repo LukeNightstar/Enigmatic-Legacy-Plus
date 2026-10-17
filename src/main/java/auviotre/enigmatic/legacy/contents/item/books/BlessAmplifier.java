@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.item.books;
 
+import auviotre.enigmatic.legacy.client.ClientAccess;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.api.item.IItemHelper;
 import auviotre.enigmatic.legacy.contents.item.generic.BaseCursedItem;
@@ -45,7 +46,7 @@ public class BlessAmplifier extends BaseCursedItem {
         try {
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.blessAmplifier1");
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.blessAmplifier2");
-            if (RedemptionRing.Helper.canUseRelic(Minecraft.getInstance().player)) {
+            if (RedemptionRing.Helper.canUseRelic(ClientAccess.player())) {
                 TooltipHandler.line(list);
                 TooltipHandler.line(list, "tooltip.enigmaticlegacy.blessAmplifier3");
             }

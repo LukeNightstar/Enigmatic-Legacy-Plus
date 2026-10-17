@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.item.tools;
 
+import auviotre.enigmatic.legacy.client.ClientAccess;
 import auviotre.enigmatic.legacy.api.item.IItemHelper;
 import auviotre.enigmatic.legacy.contents.item.generic.BaseCursedItem;
 import auviotre.enigmatic.legacy.contents.item.rings.RedemptionRing;
@@ -46,7 +47,7 @@ public class SacredChalice extends BaseCursedItem {
                 TooltipHandler.line(list, "tooltip.enigmaticlegacy.sacredChalice2");
             } else {
                 TooltipHandler.line(list, "tooltip.enigmaticlegacy.sacredChalice3");
-                if (RedemptionRing.Helper.canUseRelic(Minecraft.getInstance().player))
+                if (RedemptionRing.Helper.canUseRelic(ClientAccess.player()))
                     TooltipHandler.line(list, "tooltip.enigmaticlegacy.sacredChalice4Alt");
                 else TooltipHandler.line(list, "tooltip.enigmaticlegacy.sacredChalice4");
             }

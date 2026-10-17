@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.entity.misc;
 
+import auviotre.enigmatic.legacy.client.ClientAccess;
 import java.util.Optional;
 import java.util.Objects;
 import java.util.ArrayList;
@@ -165,7 +166,7 @@ public class PermanentItemEntity extends Entity {
 
             if (this.level().isClientSide()) {
                 this.noPhysics = false;
-                LocalPlayer player = Minecraft.getInstance().player;
+                Player player = ClientAccess.player();
                 if (this.acceptors == null || (player != null && this.acceptors.contains(player.getUUID()))) {
                     this.level().addParticle(ParticleTypes.PORTAL, this.getX(), this.getY() + (this.getBbHeight() / 2), this.getZ(), ((Math.random() - 0.5) * 2.0), ((Math.random() - 0.5) * 2.0), ((Math.random() - 0.5) * 2.0));
                 }

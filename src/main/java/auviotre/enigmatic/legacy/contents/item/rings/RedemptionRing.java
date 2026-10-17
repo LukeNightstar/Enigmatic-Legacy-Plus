@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.item.rings;
 
+import auviotre.enigmatic.legacy.client.ClientAccess;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.api.SubscribeConfig;
 import auviotre.enigmatic.legacy.api.item.IItemHelper;
@@ -120,7 +121,7 @@ public class RedemptionRing extends BaseCurioItem {
                 TooltipHandler.line(list, "tooltip.enigmaticlegacy.redemptionRingLore3");
                 TooltipHandler.line(list);
                 TooltipHandler.line(list, "tooltip.enigmaticlegacy.eternallyBound1");
-                if (EnigmaticHandler.canUnequipBoundRelics(Minecraft.getInstance().player)) {
+                if (EnigmaticHandler.canUnequipBoundRelics(ClientAccess.player())) {
                     TooltipHandler.line(list, "tooltip.enigmaticlegacy.eternallyBound2_creative");
                 } else TooltipHandler.line(list, "tooltip.enigmaticlegacy.eternallyBound2");
                 TooltipHandler.line(list);

@@ -28,12 +28,6 @@ import java.util.function.Consumer;
 
 @Mixin(ItemStack.class)
 public abstract class MixinItemStack implements DataComponentHolder {
-    @Shadow
-    public abstract boolean is(Item item);
-
-    @Shadow
-    public abstract boolean is(TagKey<Item> tag);
-
     @Inject(method = "hurtAndBreak(ILnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/entity/LivingEntity;Ljava/util/function/Consumer;)V", at = @At("HEAD"), cancellable = true)
     public void breakMix(int amount, ServerLevel level, @Nullable LivingEntity user, Consumer<Item> consumer, CallbackInfo info) {
         ItemStack curio = EnigmaticHandler.getCurio(user, EnigmaticItems.ETHEREAL_FORGING_CHARM);
@@ -48,7 +42,8 @@ public abstract class MixinItemStack implements DataComponentHolder {
 
     @Inject(method = "hasFoil", at = @At("RETURN"), cancellable = true)
     public void hasFoilMix(CallbackInfoReturnable<Boolean> info) {
-        if (this.is(Tags.Items.POTIONS) || this.is(Items.TIPPED_ARROW)) {
+        ItemStack self = (ItemStack) (Object) this;
+        if (self.is(Tags.Items.POTIONS) || self.is(Items.TIPPED_ARROW)) {
             PotionContents contents = this.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY);
             if (contents.potion().isPresent() && EnigmaticPotions.ULTIMATE_POTIONS.contains(contents.potion().get())) {
                 info.setReturnValue(true);

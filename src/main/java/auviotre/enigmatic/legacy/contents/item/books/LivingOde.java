@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.item.books;
 
+import auviotre.enigmatic.legacy.client.ClientAccess;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.api.SubscribeConfig;
 import auviotre.enigmatic.legacy.api.item.IItemHelper;
@@ -86,7 +87,7 @@ public class LivingOde extends BaseItem {
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.hunterGuidebook1", ChatFormatting.GOLD, String.format("%.0f", effectiveRange.get()));
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.hunterGuidebook2");
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.odeToLiving1", ChatFormatting.GOLD, redirectResistance.get() + "%");
-            if (EnigmaticHandler.isTheCursedOne(Minecraft.getInstance().player)) {
+            if (EnigmaticHandler.isTheCursedOne(ClientAccess.player())) {
                 TooltipHandler.line(list);
                 TooltipHandler.line(list, "tooltip.enigmaticlegacy.curseAlteration", ChatFormatting.GOLD, Component.translatable("tooltip.enigmaticlegacy.secondCurse"));
                 TooltipHandler.line(list, "tooltip.enigmaticlegacy.secondCurseAlteration2");

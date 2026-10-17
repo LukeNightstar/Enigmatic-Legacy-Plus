@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.item.amulets;
 
+import auviotre.enigmatic.legacy.client.ClientAccess;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.api.item.IAmulet;
 import auviotre.enigmatic.legacy.api.item.IItemHelper;
@@ -64,7 +65,7 @@ public class RedemptionAmulet extends CursedCurioItem implements IAmulet {
                 TooltipHandler.line(list, "tooltip.enigmaticlegacy.enigmaticAmuletShift4");
                 TooltipHandler.line(list);
                 TooltipHandler.line(list, "tooltip.enigmaticlegacy.redemptionAmulet1");
-                if (RedemptionRing.Helper.canUseRelic(Minecraft.getInstance().player))
+                if (RedemptionRing.Helper.canUseRelic(ClientAccess.player()))
                     TooltipHandler.line(list, "tooltip.enigmaticlegacy.redemptionAmulet2");
             } else TooltipHandler.holdShift(list);
             TooltipHandler.line(list);

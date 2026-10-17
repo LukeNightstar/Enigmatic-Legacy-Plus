@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.item.tools;
 
+import auviotre.enigmatic.legacy.client.ClientAccess;
 import auviotre.enigmatic.legacy.registries.EnigmaticTags;
 import net.minecraft.core.particles.PowerParticleOption;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
@@ -89,7 +90,7 @@ public class ChaosElytra extends BaseElytraItem {
         try {
             TooltipHandler.line(list);
             if (Minecraft.getInstance().hasShiftDown()) {
-                boolean boosted = EnigmaticHandler.isAbyssBoosted(Minecraft.getInstance().player);
+                boolean boosted = EnigmaticHandler.isAbyssBoosted(ClientAccess.player());
                 TooltipHandler.line(list, "tooltip.enigmaticlegacy.majesticElytra1");
                 TooltipHandler.line(list, "tooltip.enigmaticlegacy.majesticElytra2");
                 TooltipHandler.line(list, "tooltip.enigmaticlegacy.majesticElytra3");

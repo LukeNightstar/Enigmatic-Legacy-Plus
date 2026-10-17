@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.item.spellstones;
 
+import auviotre.enigmatic.legacy.client.ClientAccess;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.api.SubscribeConfig;
 import auviotre.enigmatic.legacy.api.item.IItemHelper;
@@ -116,7 +117,7 @@ public class TheCube extends SpellstoneItem {
                 TooltipHandler.line(list, "tooltip.enigmaticlegacy.theCube2");
                 TooltipHandler.line(list, "tooltip.enigmaticlegacy.theCube3");
                 TooltipHandler.line(list, "tooltip.enigmaticlegacy.theCube4");
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.theCube5", ChatFormatting.GOLD, String.format("%d", (int) getDamageLimit(Minecraft.getInstance().player)));
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.theCube5", ChatFormatting.GOLD, String.format("%d", (int) getDamageLimit(ClientAccess.player())));
                 TooltipHandler.line(list, "tooltip.enigmaticlegacy.theCube6");
                 TooltipHandler.line(list, "tooltip.enigmaticlegacy.theCube7");
                 TooltipHandler.line(list, "tooltip.enigmaticlegacy.theCube8");

@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.item.charms;
 
+import auviotre.enigmatic.legacy.client.ClientAccess;
 import auviotre.enigmatic.legacy.api.item.IItemHelper;
 import auviotre.enigmatic.legacy.contents.item.generic.CursedCurioItem;
 import auviotre.enigmatic.legacy.contents.item.materials.AbyssalHeart;
@@ -50,7 +51,7 @@ public class DimnessCharm extends CursedCurioItem {
             } else TooltipHandler.holdShift(list);
             TooltipHandler.line(list);
             if (Minecraft.getInstance().hasShiftDown()) {
-                Player player = Minecraft.getInstance().player;
+                Player player = ClientAccess.player();
                 ChatFormatting color = player != null && canEquip(player) ? ChatFormatting.GOLD : ChatFormatting.DARK_RED;
                 double rate = 200 * AbyssalHeart.abyssThreshold.get() - 100;
                 Component percent = Component.literal(String.format("%.01f%%", Math.clamp(rate, 0.05, 99.9))).withStyle(ChatFormatting.GOLD);

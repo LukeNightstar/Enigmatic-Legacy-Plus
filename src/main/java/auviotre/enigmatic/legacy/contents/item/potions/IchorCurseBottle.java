@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.item.potions;
 
+import auviotre.enigmatic.legacy.client.ClientAccess;
 import net.minecraft.world.item.consume_effects.ApplyStatusEffectsConsumeEffect;
 import net.minecraft.world.item.component.Consumables;
 import net.minecraft.world.item.component.Consumable;
@@ -54,7 +55,7 @@ public class IchorCurseBottle extends BaseDrinkableItem {
         try {
             MutableComponent component = Component.translatable(EnigmaticEffects.ICHOR_CURSE.get().getDescriptionId());
             list.add(Component.translatable("potion.withDuration", component, Component.literal(StringUtil.formatTickDuration(9600 * 4, context.tickRate()))).withStyle(ChatFormatting.RED));
-            if (EnigmaticHandler.isTheBlessedOne(Minecraft.getInstance().player)) {
+            if (EnigmaticHandler.isTheBlessedOne(ClientAccess.player())) {
                 component = Component.translatable(MobEffects.ABSORPTION.value().getDescriptionId());
                 component = Component.translatable("potion.withAmplifier", component, Component.translatable("potion.potency.4"));
                 list.add(Component.translatable("potion.withDuration", component, Component.literal(StringUtil.formatTickDuration(2400, context.tickRate()))).withStyle(ChatFormatting.BLUE));

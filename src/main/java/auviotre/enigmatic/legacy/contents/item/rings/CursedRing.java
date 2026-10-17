@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.item.rings;
 
+import auviotre.enigmatic.legacy.client.ClientAccess;
 import top.theillusivec4.curios.api.common.DropRule;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.api.SubscribeConfig;
@@ -194,7 +195,7 @@ public class CursedRing extends CursedCurioItem {
                 TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedRingLore7");
                 TooltipHandler.line(list);
                 TooltipHandler.line(list, "tooltip.enigmaticlegacy.eternallyBound1");
-                if (EnigmaticHandler.canUnequipBoundRelics(Minecraft.getInstance().player)) {
+                if (EnigmaticHandler.canUnequipBoundRelics(ClientAccess.player())) {
                     TooltipHandler.line(list, "tooltip.enigmaticlegacy.eternallyBound2_creative");
                 } else TooltipHandler.line(list, "tooltip.enigmaticlegacy.eternallyBound2");
 

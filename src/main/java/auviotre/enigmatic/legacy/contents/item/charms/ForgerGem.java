@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.item.charms;
 
+import auviotre.enigmatic.legacy.client.ClientAccess;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.api.SubscribeConfig;
 import auviotre.enigmatic.legacy.api.item.IItemHelper;
@@ -71,7 +72,7 @@ public class ForgerGem extends BaseCurioItem {
                 TooltipHandler.line(list);
                 TooltipHandler.line(list, "tooltip.enigmaticlegacy.forgerGem1");
                 TooltipHandler.line(list, "tooltip.enigmaticlegacy.forgerGem2");
-                if (EnigmaticHandler.isTheOne(Minecraft.getInstance().player)) {
+                if (EnigmaticHandler.isTheOne(ClientAccess.player())) {
                     TooltipHandler.line(list);
                     TooltipHandler.line(list, "tooltip.enigmaticlegacy.forgerGem3");
                 }

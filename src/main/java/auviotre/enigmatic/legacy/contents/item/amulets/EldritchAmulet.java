@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.item.amulets;
 
+import auviotre.enigmatic.legacy.client.ClientAccess;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.resources.RegistryOps;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
@@ -149,7 +150,7 @@ public class EldritchAmulet extends BaseCurioItem {
                 TooltipHandler.line(list, "tooltip.enigmaticlegacy.eldritchAmulet3");
                 TooltipHandler.line(list, "tooltip.enigmaticlegacy.eldritchAmulet4");
                 TooltipHandler.line(list, "tooltip.enigmaticlegacy.eldritchAmulet5");
-                if (EnigmaticHandler.isAbyssBoosted(Minecraft.getInstance().player)) {
+                if (EnigmaticHandler.isAbyssBoosted(ClientAccess.player())) {
                     TooltipHandler.line(list);
                     TooltipHandler.line(list, "tooltip.enigmaticlegacy.abyssBoost");
                     TooltipHandler.line(list, "tooltip.enigmaticlegacy.eldritchAmuletBoost", ChatFormatting.GOLD, "80%");

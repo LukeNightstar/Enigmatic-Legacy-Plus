@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.item.spellstones;
 
+import auviotre.enigmatic.legacy.client.ClientAccess;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.api.SubscribeConfig;
 import auviotre.enigmatic.legacy.api.item.IItemHelper;
@@ -154,7 +155,7 @@ public class LostEngine extends SpellstoneItem {
             Player player = event.getEntity();
             if (ISpellstone.get(player).is(EnigmaticItems.LOST_ENGINE)) {
                 if (!player.level().isClientSide() && player.tickCount % 3 == 0) player.getCooldowns().tick();
-                if (player.level().isClientSide() && Minecraft.getInstance().player == player) {
+                if (player.level().isClientSide() && ClientAccess.player() == player) {
                     boolean spaceDown = Minecraft.getInstance().options.keyJump.isDown();
                     if (spaceDown && player.getDeltaMovement().y > 0.225F && !player.level().getBlockState(player.blockPosition()).canOcclude()) {
                         player.addDeltaMovement(new Vec3(0.0D, 0.0256D, 0.0D));

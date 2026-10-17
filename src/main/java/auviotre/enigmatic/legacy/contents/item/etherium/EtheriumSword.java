@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.item.etherium;
 
+import auviotre.enigmatic.legacy.client.ClientAccess;
 import net.minecraft.world.item.Item;
 import auviotre.enigmatic.legacy.api.item.IItemHelper;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
@@ -53,15 +54,15 @@ public class EtheriumSword extends Item {
         List<Component> list = new ArrayList<>();
         try {
             double power = 10;
-            LocalPlayer player = Minecraft.getInstance().player;
+            Player player = ClientAccess.player();
             if (player != null) {
                 power += EtheriumProperties.getShieldThreshold(player) * 50;
                 if (player.isUsingItem() && player.getUseItem().is(EnigmaticItems.ETHERIUM_SWORD))
                     power *= 1.5;
             }
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.etheriumSword", ChatFormatting.GOLD, String.format("%.1f%%", power));
-            if (Minecraft.getInstance().level != null) {
-                var holder = EnigmaticHandler.get(Minecraft.getInstance().level, Registries.ENCHANTMENT, EnigmaticEnchantments.ETHERIC_RESONANCE);
+            if (ClientAccess.level() != null) {
+                var holder = EnigmaticHandler.get(ClientAccess.level(), Registries.ENCHANTMENT, EnigmaticEnchantments.ETHERIC_RESONANCE);
                 if (stack.getEnchantmentLevel(holder) > 0)
                     TooltipHandler.line(list, "tooltip.enigmaticlegacy.etheriumSwordBuff");
             }

@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.item.charms;
 
+import auviotre.enigmatic.legacy.client.ClientAccess;
 import net.minecraft.util.Unit;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.api.SubscribeConfig;
@@ -65,7 +66,7 @@ public class ForgerCrystal extends CursedCurioItem {
                 TooltipHandler.line(list, "tooltip.enigmaticlegacy.forgerCrystal1");
                 TooltipHandler.line(list, "tooltip.enigmaticlegacy.forgerCrystal2");
                 TooltipHandler.line(list, "tooltip.enigmaticlegacy.forgerCrystal3");
-                LocalPlayer player = Minecraft.getInstance().player;
+                Player player = ClientAccess.player();
                 if (RedemptionRing.Helper.canUseRelic(player) && player != null) {
                     TooltipHandler.line(list);
                     TooltipHandler.line(list, "tooltip.enigmaticlegacy.forgerCrystal4");

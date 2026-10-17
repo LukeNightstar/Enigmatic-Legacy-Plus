@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.item.etherium;
 
+import auviotre.enigmatic.legacy.client.ClientAccess;
 import net.minecraft.world.item.equipment.ArmorType;
 import net.minecraft.world.item.Item;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
@@ -80,8 +81,8 @@ public class EtheriumArmor extends Item {
         List<Component> list = new ArrayList<>();
         try {
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.etheriumArmor");
-            if (Minecraft.getInstance().level != null) {
-                var holder = EnigmaticHandler.get(Minecraft.getInstance().level, Registries.ENCHANTMENT, EnigmaticEnchantments.ETHERIC_RESONANCE);
+            if (ClientAccess.level() != null) {
+                var holder = EnigmaticHandler.get(ClientAccess.level(), Registries.ENCHANTMENT, EnigmaticEnchantments.ETHERIC_RESONANCE);
                 if (stack.getEnchantmentLevel(holder) > 0)
                     TooltipHandler.line(list, "tooltip.enigmaticlegacy.etheriumArmorBuff");
             }
