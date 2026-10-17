@@ -83,7 +83,9 @@ public class AnnihilatingSword extends Item {
     private static final ToolMaterial TIER = new ToolMaterial(BlockTags.INCORRECT_FOR_NETHERITE_TOOL, 3268, 10.8F, 8.0F, 64, EnigmaticTags.Items.UNREPAIRABLE);
 
     public AnnihilatingSword() {
-        super(IItemHelper.singleProperties().sword(TIER, 0.0F, 0.0F).component(DataComponents.ATTRIBUTE_MODIFIERS, null)
+        super(IItemHelper.singleProperties().sword(TIER, 0.0F, 0.0F)
+                // 26.1.2 port: an empty component (not null, which removes it) makes NeoForge fall back to getDefaultAttributeModifiers(ItemStack).
+                .component(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY)
                 // 26.1.2 port: canDisableShield became the WEAPON component's disable time (axe value).
                 .component(DataComponents.WEAPON, new Weapon(1, Weapon.AXE_DISABLES_BLOCKING_FOR_SECONDS)).fireResistant().rarity(Rarity.EPIC).component(EnigmaticComponents.CURSED, true)
                 .component(EnigmaticComponents.ELDRITCH, true).component(EnigmaticComponents.ANNI_ENERGY, 0.0F));
