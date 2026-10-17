@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.client.screen.button;
 
+import net.minecraft.client.renderer.RenderPipelines;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.contents.attachement.EnigmaticData;
 import auviotre.enigmatic.legacy.contents.item.rings.MagnetRing;
@@ -79,7 +80,7 @@ public class MagnetRingInventoryButton extends ImageButton {
             EnigmaticData data = player.getData(EnigmaticAttachments.ENIGMATIC_DATA);
             if (EnigmaticHandler.hasCurio(player, EnigmaticItems.MAGNET_RING) || EnigmaticHandler.hasCurio(player, EnigmaticItems.DISLOCATION_RING)) {
                 Identifier location = SPRITES.get(data.isMagnetRingEnable(), isHoveredOrFocused());
-                graphics.blitSprite(location, this.getX(), this.getY(), this.width, this.height);
+                graphics.blitSprite(RenderPipelines.GUI_TEXTURED, location, this.getX(), this.getY(), this.width, this.height);
             } else this.active = false;
         } else this.active = false;
     }

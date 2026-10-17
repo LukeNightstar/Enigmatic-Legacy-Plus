@@ -132,18 +132,14 @@ public class QuoteHandler {
             layerAlpha = Mth.clamp(layerAlpha, 0, 255);
             int bgColor = (layerAlpha << 24);
 
-            graphics.fill(
-                    x - offset, y - offset,
-                    x + maxWidth + offset, y + lines.size() * (font.lineHeight + 2) + offset,
-                    bgColor
-            );
+            graphics.fill(x - offset, y - offset, x + maxWidth + offset, y + lines.size() * (font.lineHeight + 2) + offset, bgColor);
         }
 
         // Draw text
         int lineY = y;
         int textColor = ChatFormatting.YELLOW.getColor() | (alpha << 24);
         for (FormattedCharSequence line : lines) {
-            graphics.drawString(font, line, window.getGuiScaledWidth() / 2 - font.width(line) / 2, lineY, textColor, true);
+            graphics.text(font, line, window.getGuiScaledWidth() / 2 - font.width(line) / 2, lineY, textColor, true);
             lineY += font.lineHeight + 2;
         }
     }

@@ -1,9 +1,9 @@
 package auviotre.enigmatic.legacy.compat.thirst;
 
+import net.minecraft.client.renderer.RenderPipelines;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.contents.item.potions.ForbiddenJuice;
 import auviotre.enigmatic.legacy.registries.EnigmaticItems;
-import com.mojang.blaze3d.systems.RenderSystem;
 import cn.mlus.thirst.foundation.common.capability.ModAttachment;
 import cn.mlus.thirst.foundation.common.event.RegisterThirstValueEvent;
 import net.minecraft.client.Minecraft;
@@ -32,7 +32,6 @@ public class ThirstCompatHandler {
         Minecraft minecraft = Minecraft.getInstance();
         if (minecraft.player == null) return;
         Profiler.get().push("thirst");
-        RenderSystem.enableBlend();
         int left = width / 2 + 91; // + ClientConfig.THIRST_BAR_X_OFFSET.get();
         int top = height - minecraft.gui.rightHeight; // + ClientConfig.THIRST_BAR_Y_OFFSET.get();
         minecraft.gui.rightHeight += 10;
@@ -45,14 +44,13 @@ public class ThirstCompatHandler {
             if (minecraft.gui.getGuiTicks() % (level * 3 + 1) == 0) {
                 y = top + (minecraft.player.getRandom().nextInt(3) - 1);
             }
-            guiGraphics.blitSprite(FORBIDDEN_DRINK_EMPTY_SPRITE, x, y, 9, 9);
+            guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, FORBIDDEN_DRINK_EMPTY_SPRITE, x, y, 9, 9);
             if (idx < level) {
-                guiGraphics.blitSprite(FORBIDDEN_DRINK_FULL_SPRITE, x, y, 9, 9);
+                guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, FORBIDDEN_DRINK_FULL_SPRITE, x, y, 9, 9);
             } else if (idx == level) {
-                guiGraphics.blitSprite(FORBIDDEN_DRINK_HALF_SPRITE, x, y, 9, 9);
+                guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, FORBIDDEN_DRINK_HALF_SPRITE, x, y, 9, 9);
             }
         }
-        RenderSystem.disableBlend();
         Profiler.get().pop();
     }
 

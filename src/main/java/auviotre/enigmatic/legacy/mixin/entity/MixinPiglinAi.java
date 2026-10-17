@@ -40,7 +40,7 @@ public class MixinPiglinAi {
     }
 
     @Inject(at = @At("RETURN"), method = "pickUpItem")
-    private static void onPiglinItemPickup(Piglin piglin, ItemEntity itemEntity, CallbackInfo info) {
+    private static void onPiglinItemPickup(ServerLevel level, Piglin piglin, ItemEntity itemEntity, CallbackInfo info) {
         Entity owner = itemEntity.getOwner();
         if (!itemEntity.isAlive() && itemEntity.level() instanceof ServerLevel world && owner instanceof Player player) {
             markPiglinWithCondition(piglin, player);
@@ -48,14 +48,14 @@ public class MixinPiglinAi {
     }
 
     @Inject(at = @At("RETURN"), method = "mobInteract")
-    private static void onBarterByHand(Piglin piglin, Player player, InteractionHand hand, @NotNull CallbackInfoReturnable<InteractionResult> info) {
+    private static void onBarterByHand(ServerLevel level, Piglin piglin, Player player, InteractionHand hand, @NotNull CallbackInfoReturnable<InteractionResult> info) {
         if (info.getReturnValue() == InteractionResult.CONSUME) {
             markPiglinWithCondition(piglin, player);
         }
     }
 
     @Inject(at = @At("HEAD"), method = "stopHoldingOffHandItem", cancellable = true)
-    private static void onPiglinBarter(@NotNull Piglin piglin, boolean repay, CallbackInfo info) {
+    private static void onPiglinBarter(ServerLevel level, @NotNull Piglin piglin, boolean repay, CallbackInfo info) {
         ItemStack stack = piglin.getItemInHand(InteractionHand.OFF_HAND);
         if (piglin.level() instanceof ServerLevel && piglin.entityTags().contains(AvariceScroll.EFFECT_TAG)) {
             piglin.removeTag(AvariceScroll.EFFECT_TAG);

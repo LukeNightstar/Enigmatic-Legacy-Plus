@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.item.tools;
 
+import net.minecraft.util.ARGB;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.api.SubscribeConfig;
 import auviotre.enigmatic.legacy.api.item.IItemHelper;
@@ -130,8 +131,7 @@ public class TotemOfMalice extends BaseCurioItem {
                 graphics.pose().pushMatrix();
                 String s = String.valueOf(durability);
                 float f = Math.clamp((float) getDurability(stack) / getMaxDurability(stack), 0.0F, 0.8F);
-                graphics.pose().translate(0.0F, 0.0F, 200.0F);
-                graphics.drawString(font, s, x + 19 - 2 - font.width(s), y + 6 + 3, Mth.hsvToRgb(5.0F / 6, 1.0F, 0.6F + f * 0.5F), true);
+                graphics.text(font, s, x + 19 - 2 - font.width(s), y + 6 + 3, ARGB.opaque(Mth.hsvToRgb(5.0F / 6, 1.0F, 0.6F + f * 0.5F)), true);
                 graphics.pose().popMatrix();
                 return true;
             }

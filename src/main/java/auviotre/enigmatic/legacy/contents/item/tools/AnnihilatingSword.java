@@ -332,8 +332,7 @@ public class AnnihilatingSword extends Item {
             if (stack.getCount() == 1 && energy > 0) {
                 graphics.pose().pushMatrix();
                 String s = String.valueOf(energy);
-                graphics.pose().translate(0.0F, 0.0F, 200.0F);
-                graphics.drawString(font, s, x + 19 - 2 - font.width(s), y + 6 + 3, 16733695, true);
+                graphics.text(font, s, x + 19 - 2 - font.width(s), y + 6 + 3, 0xFFFF55FF, true);
                 graphics.pose().popMatrix();
                 return true;
             }

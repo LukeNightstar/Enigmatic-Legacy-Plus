@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.item.generic;
 
+import net.minecraft.client.renderer.RenderPipelines;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.api.item.IItemHelper;
 import net.minecraft.ChatFormatting;
@@ -66,7 +67,7 @@ public class BaseItem extends Item {
 
         public boolean render(@NotNull GuiGraphicsExtractor graphics, Font font, @NotNull ItemStack stack, int x, int y) {
             graphics.pose().pushMatrix();
-            graphics.blitSprite(SPRITE, x, y, 16, 16);
+            graphics.blitSprite(RenderPipelines.GUI_TEXTURED, SPRITE, x, y, 16, 16);
             graphics.pose().popMatrix();
             return true;
         }
@@ -78,7 +79,7 @@ public class BaseItem extends Item {
 
         public boolean render(@NotNull GuiGraphicsExtractor graphics, Font font, @NotNull ItemStack stack, int x, int y) {
             graphics.pose().pushMatrix();
-            graphics.blitSprite(SPRITE, x, y, 16, 16);
+            graphics.blitSprite(RenderPipelines.GUI_TEXTURED, SPRITE, x, y, 16, 16);
             graphics.pose().popMatrix();
             return true;
         }

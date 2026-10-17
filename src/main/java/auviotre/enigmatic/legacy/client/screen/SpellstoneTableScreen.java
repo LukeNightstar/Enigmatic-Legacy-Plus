@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.client.screen;
 
+import net.minecraft.client.renderer.RenderPipelines;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.contents.gui.SpellstoneTableMenu;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -25,7 +26,6 @@ public class SpellstoneTableScreen extends AbstractContainerScreen<SpellstoneTab
 
     public void render(GuiGraphicsExtractor graphics, int x, int y, float partialTick) {
         super.render(graphics, x, y, partialTick);
-        RenderSystem.disableBlend();
         this.renderTooltip(graphics, x, y);
     }
 
@@ -34,9 +34,9 @@ public class SpellstoneTableScreen extends AbstractContainerScreen<SpellstoneTab
         RenderSystem.setShaderTexture(0, TEXTURE);
         int i = (this.width - this.imageWidth) / 2;
         int j = (this.height - this.imageHeight) / 2;
-        graphics.blit(TEXTURE, i, j, 0, 0, this.imageWidth, this.imageHeight);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, i, j, (float) 0, (float) 0, this.imageWidth, this.imageHeight, 256, 256);
         if (this.menu.hasOutput()) {
-            graphics.blit(TEXTURE, i + 85, j + 53, 176, 0, 6, 6);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, i + 85, j + 53, (float) 176, (float) 0, 6, 6, 256, 256);
         }
     }
 }

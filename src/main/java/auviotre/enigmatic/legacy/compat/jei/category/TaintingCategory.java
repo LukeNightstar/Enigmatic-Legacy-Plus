@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.compat.jei.category;
 
+import net.minecraft.client.renderer.RenderPipelines;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.api.item.ITaintable;
 import auviotre.enigmatic.legacy.compat.jei.EnigmaticRecipeTypes;
@@ -55,7 +56,7 @@ public class TaintingCategory implements IRecipeCategory<TaintingCategory.Recipe
     }
 
     public void draw(Recipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphicsExtractor guiGraphics, double mouseX, double mouseY) {
-        guiGraphics.blitSprite(SPRITE, 0, 0, getWidth(), getHeight());
+        guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, SPRITE, 0, 0, getWidth(), getHeight());
     }
 
     public void setRecipe(@NotNull IRecipeLayoutBuilder builder, @NotNull TaintingCategory.Recipe recipe, IFocusGroup focuses) {

@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.client.screen;
 
+import net.minecraft.client.renderer.RenderPipelines;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.api.item.IBagContent;
 import auviotre.enigmatic.legacy.contents.gui.AntiqueBagContainerMenu;
@@ -37,14 +38,14 @@ public class AntiqueBagScreen extends AbstractContainerScreen<AntiqueBagContaine
     }
 
     protected void renderLabels(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY) {
-        guiGraphics.drawString(this.font, this.title, this.titleLabelX + 1, this.titleLabelY + 1, 0x8f7ec4, false);
-        guiGraphics.drawString(this.font, this.title, this.titleLabelX, this.titleLabelY, 0xb2cfdb, false);
-        guiGraphics.drawString(this.font, this.playerInventoryTitle, this.inventoryLabelX, this.inventoryLabelY, 4210752, false);
+        guiGraphics.text(this.font, this.title, this.titleLabelX + 1, this.titleLabelY + 1, 0xFF8F7EC4, false);
+        guiGraphics.text(this.font, this.title, this.titleLabelX, this.titleLabelY, 0xFFB2CFDB, false);
+        guiGraphics.text(this.font, this.playerInventoryTitle, this.inventoryLabelX, this.inventoryLabelY, 0xFF404040, false);
     }
 
     protected void renderBg(@Nonnull GuiGraphicsExtractor guiGraphics, float partialTicks, int mouseX, int mouseY) {
         int x = (this.width - this.imageWidth) / 2;
         int y = (this.height - this.imageHeight) / 2;
-        guiGraphics.blit(TEXTURE, x, y, 0, 0, this.imageWidth, this.imageHeight);
+        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, x, y, (float) 0, (float) 0, this.imageWidth, this.imageHeight, 256, 256);
     }
 }

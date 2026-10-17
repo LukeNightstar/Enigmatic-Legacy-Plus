@@ -1,5 +1,7 @@
 package auviotre.enigmatic.legacy.handlers;
 
+import net.minecraft.world.effect.MobEffectInstance;
+import auviotre.enigmatic.legacy.contents.item.spellstones.other.SpellstoneSword;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Inventory;
@@ -163,6 +165,22 @@ public interface EnigmaticHandler {
         double dz = Mth.cos(player.getYRot() * (float) (Math.PI / 180.0));
         if (player.level() instanceof ServerLevel serverLevel)
             serverLevel.sendParticles(ParticleTypes.SWEEP_ATTACK, player.getX() + dx, player.getY(0.5), player.getZ() + dz, 0, dx, 0.0, dz, 0.0);
+        onSweepAttack(player);
+    }
+
+    static void onSweepAttack(Player player) {
+        ItemStack stack = player.getWeaponItem();
+        if (stack.is(EnigmaticItems.SPELLSTONE_SWORD) && SpellstoneSword.isResonatingWith(stack, EnigmaticItems.VOID_PEARL)) {
+            if (stack.getOrDefault(EnigmaticComponents.INT, 0) > 0) {
+                List<LivingEntity> entities = player.level().getEntitiesOfClass(LivingEntity.class, player.getBoundingBox().inflate(5));
+                for (LivingEntity entity : entities) {
+                    if (entity == player) continue;
+                    entity.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 100, 3));
+                    entity.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 100, 3));
+                    entity.addDeltaMovement(new Vec3(0, -2, 0));
+                }
+            }
+        }
     }
 
     static boolean isTheOne(LivingEntity entity) {
@@ -575,14 +593,12 @@ public interface EnigmaticHandler {
         return returnedStack;
     }
 
+    // 26.1.2 port: called from LivingShieldBlockEvent; vanilla BLOCKS_ATTACKS now decides whether the hit was blocked.
     static boolean onDamageSourceBlocking(LivingEntity blocker, ItemStack useItem, DamageSource source) {
         if (blocker instanceof Player player && useItem != null) {
             if (useItem.getItem() instanceof InfernalShield) {
                 if (!source.is(DamageTypeTags.BYPASSES_SHIELD) && source.getSourcePosition() != null) {
-                    Vec3 sourcePos = source.getSourcePosition();
-                    Vec3 viewVec = blocker.calculateViewVector(0.0F, blocker.getYHeadRot());
-                    Vec3 sourceToSelf = sourcePos.vectorTo(blocker.position());
-                    if (sourceToSelf.dot(viewVec) < 0.0D) {
+                    {
                         BlazingMight.addAmplifier(player, useItem.getUseDuration(player) - player.getUseItemRemainingTicks() < 20 ? 2 : 1, 1200);
                         if (source.getDirectEntity() instanceof LivingEntity living && living.isAlive()) {
                             if (!living.fireImmune() && !(living instanceof Guardian)) {

@@ -40,7 +40,7 @@ public abstract class MixinAnvilMenu extends ItemCombinerMenu {
         super(type, containerId, playerInventory, access, slotDefinition);
     }
 
-    @Inject(method = "createResult", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/inventory/AnvilMenu;broadcastChanges()V"))
+    @Inject(method = "createResultInternal", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/inventory/AnvilMenu;broadcastChanges()V"))
     public void createResultMix(CallbackInfo ci) {
         if (EnigmaticHandler.hasCurio(player, EnigmaticItems.FORGER_GEM) || EnigmaticHandler.hasCurio(player, EnigmaticItems.FORGER_CRYSTAL)) {
             int xp = 0;

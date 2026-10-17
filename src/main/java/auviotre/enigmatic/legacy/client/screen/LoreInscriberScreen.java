@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.client.screen;
 
+import net.minecraft.client.renderer.RenderPipelines;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.contents.gui.LoreInscriberMenu;
 import auviotre.enigmatic.legacy.packets.server.LoreInscriberRenamePacket;
@@ -55,7 +56,6 @@ public class LoreInscriberScreen extends AbstractContainerScreen<LoreInscriberMe
 
     public void render(GuiGraphicsExtractor graphics, int x, int y, float partialTick) {
         super.render(graphics, x, y, partialTick);
-        RenderSystem.disableBlend();
         this.renderNameField(graphics, x, y, partialTick);
         this.renderTooltip(graphics, x, y);
     }
@@ -65,10 +65,10 @@ public class LoreInscriberScreen extends AbstractContainerScreen<LoreInscriberMe
         RenderSystem.setShaderTexture(0, TEXTURE);
         int i = (this.width - this.imageWidth) / 2;
         int j = (this.height - this.imageHeight) / 2;
-        graphics.blit(TEXTURE, i, j, 0, 0, this.imageWidth, this.imageHeight);
-        graphics.blit(TEXTURE, i + 52, j + 26, 0, this.imageHeight + (this.menu.getSlot(0).hasItem() ? 0 : 16), 102, 16);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, i, j, (float) 0, (float) 0, this.imageWidth, this.imageHeight, 256, 256);
+        graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, i + 52, j + 26, (float) 0, (float) this.imageHeight + (this.menu.getSlot(0).hasItem() ? 0 : 16), 102, 16, 256, 256);
         if (this.menu.getSlot(0).hasItem() && !this.menu.getSlot(1).hasItem()) {
-            graphics.blit(TEXTURE, i + 71, j + 49, this.imageWidth, 0, 28, 21);
+            graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, i + 71, j + 49, (float) this.imageWidth, (float) 0, 28, 21, 256, 256);
         }
     }
 
@@ -84,8 +84,7 @@ public class LoreInscriberScreen extends AbstractContainerScreen<LoreInscriberMe
     }
 
     protected void renderLabels(GuiGraphicsExtractor graphics, int x, int y) {
-        graphics.drawString(this.font, this.title, 52, 13, 4210752);
-        RenderSystem.disableBlend();
+        graphics.text(this.font, this.title, 52, 13, 0xFF404040);
     }
 
     public void renderNameField(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {

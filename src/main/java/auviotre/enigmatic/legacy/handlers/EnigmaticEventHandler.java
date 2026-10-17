@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.handlers;
 
+import net.neoforged.neoforge.event.entity.living.LivingShieldBlockEvent;
 import net.minecraft.tags.ItemTags;
 import auviotre.enigmatic.legacy.handlers.EnigmaticHandler;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
@@ -72,6 +73,13 @@ import net.minecraft.world.entity.monster.illager.Vindicator;
 @Mod(value = EnigmaticLegacy.MODID)
 @EventBusSubscriber(modid = EnigmaticLegacy.MODID)
 public class EnigmaticEventHandler {
+    @SubscribeEvent
+    private static void onShieldBlock(@NotNull LivingShieldBlockEvent event) {
+        LivingEntity blocker = event.getEntity();
+        if (event.getBlocked() && blocker.isUsingItem())
+            EnigmaticHandler.onDamageSourceBlocking(blocker, blocker.getUseItem(), event.getDamageSource());
+    }
+
     @SubscribeEvent
     private static void canEquip(@NotNull CurioCanEquipEvent event) {
         if (!EnigmaticHandler.canUse(event.getEntity(), event.getStack())) event.setEquipResult(TriState.FALSE);

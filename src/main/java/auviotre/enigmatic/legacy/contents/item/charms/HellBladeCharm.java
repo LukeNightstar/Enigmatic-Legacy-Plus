@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.item.charms;
 
+import net.minecraft.client.renderer.RenderPipelines;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.api.SubscribeConfig;
 import auviotre.enigmatic.legacy.api.item.IItemHelper;
@@ -167,7 +168,7 @@ public class HellBladeCharm extends BaseCurioItem {
             ItemStack curio = EnigmaticHandler.getCurio(Minecraft.getInstance().player, EnigmaticItems.HELL_BLADE_CHARM);
             if (curio == stack && !stack.getOrDefault(EnigmaticComponents.BOOLEAN, false)) {
                 graphics.pose().pushMatrix();
-                graphics.blitSprite(SPRITE, x - 1, y - 1, 18, 18);
+                graphics.blitSprite(RenderPipelines.GUI_TEXTURED, SPRITE, x - 1, y - 1, 18, 18);
                 graphics.pose().popMatrix();
                 return true;
             }

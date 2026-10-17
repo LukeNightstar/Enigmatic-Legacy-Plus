@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.item.spellstones.other;
 
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
 import java.util.Optional;
 import net.minecraft.world.item.component.BlocksAttacks;
@@ -907,8 +908,8 @@ public class SpellstoneSword extends Item {
                 int k = y + 12;
                 int width = Mth.floor(13.0F * energy / getMaxEnergy(stack));
                 int color = getColor(stack);
-                graphics.fill(RenderType.guiOverlay(), j, k, j + 13, k + (stack.isBarVisible() ? 1 : 2), 0xFF000000);
-                graphics.fill(RenderType.guiOverlay(), j, k, j + width, k + 1, color | 0xFF000000);
+                graphics.fill(RenderPipelines.GUI, j, k, j + 13, k + (stack.isBarVisible() ? 1 : 2), 0xFF000000);
+                graphics.fill(RenderPipelines.GUI, j, k, j + width, k + 1, color | 0xFF000000);
                 graphics.pose().popMatrix();
                 return true;
             }

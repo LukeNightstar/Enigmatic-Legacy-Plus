@@ -47,7 +47,9 @@ public class InfernalShield extends BaseCursedItem {
     public InfernalShield() {
         super(IItemHelper.singleProperties().fireResistant().rarity(Rarity.RARE).durability(ToolMaterial.NETHERITE.durability())
                 .enchantable(16).repairable(Items.OBSIDIAN).equippableUnswappable(EquipmentSlot.OFFHAND)
-                .delayedComponent(DataComponents.BLOCKS_ATTACKS, context -> new BlocksAttacks(0.25F, 1.0F,
+                // 26.1.2 port: the old mixins made this shield block instantly and immune to axe disabling,
+                // so block delay and disable cooldown scale are both zero.
+                .delayedComponent(DataComponents.BLOCKS_ATTACKS, context -> new BlocksAttacks(0.0F, 0.0F,
                         List.of(new BlocksAttacks.DamageReduction(90.0F, Optional.empty(), 0.0F, 1.0F)),
                         new BlocksAttacks.ItemDamageFunction(3.0F, 1.0F, 1.0F),
                         Optional.of(context.getOrThrow(DamageTypeTags.BYPASSES_SHIELD)),

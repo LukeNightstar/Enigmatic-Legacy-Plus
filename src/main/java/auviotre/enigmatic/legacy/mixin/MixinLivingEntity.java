@@ -94,20 +94,6 @@ public abstract class MixinLivingEntity extends Entity implements ILivingEntityE
         // !this.self().hasEffect(EnigmaticAddonEffects.FROZEN_HEART_EFFECT) &&
     }
 
-    @Inject(method = "isDamageSourceBlocked", at = @At("HEAD"), cancellable = true)
-    private void onDamageSourceBlocking(DamageSource source, CallbackInfoReturnable<Boolean> info) {
-        if (EnigmaticHandler.onDamageSourceBlocking(this.self(), this.useItem, source)) {
-            info.setReturnValue(true);
-        }
-    }
-
-    @Inject(method = "isBlocking", at = @At("HEAD"), cancellable = true)
-    private void isBlockingMix(CallbackInfoReturnable<Boolean> info) {
-        if (this.isUsingItem() && this.useItem.getItem() instanceof InfernalShield) {
-            info.setReturnValue(true);
-        }
-    }
-
     @Inject(method = "canStandOnFluid", at = @At("RETURN"), cancellable = true)
     public void canStandOnFluidMix(FluidState fluidState, @NotNull CallbackInfoReturnable<Boolean> info) {
         if (!info.getReturnValue() && fluidState.is(FluidTags.LAVA)) {

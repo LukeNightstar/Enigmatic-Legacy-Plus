@@ -41,7 +41,7 @@ public class PermanentDeathScreen extends Screen {
 
     public void render(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
         super.render(guiGraphics, mouseX, mouseY, partialTick);
-        guiGraphics.drawCenteredString(this.font, this.title, this.width / 2, this.height / 2 - this.textHeight / 2 - 9 * 2, 11184810);
+        guiGraphics.centeredText(this.font, this.title, this.width / 2, this.height / 2 - this.textHeight / 2 - 9 * 2, 0xFFAAAAAA);
         this.message.renderCentered(guiGraphics, this.width / 2, this.height / 2 - this.textHeight / 2);
     }
 }

@@ -1,5 +1,7 @@
 package auviotre.enigmatic.legacy.mixin.entity;
 
+import net.minecraft.server.level.ServerLevel;
+
 import auviotre.enigmatic.legacy.handlers.EnigmaticHandler;
 import auviotre.enigmatic.legacy.registries.EnigmaticItems;
 import net.minecraft.world.entity.LivingEntity;
@@ -16,7 +18,7 @@ import java.util.Optional;
 @Mixin(HoglinAi.class)
 public class MixinHoglinAi {
     @Inject(at = @At("RETURN"), method = "findNearestValidAttackTarget", cancellable = true)
-    private static void onHoglinShallAttack(Hoglin hoglin, CallbackInfoReturnable<Optional<? extends LivingEntity>> info) {
+    private static void onHoglinShallAttack(ServerLevel level, Hoglin hoglin, CallbackInfoReturnable<Optional<? extends LivingEntity>> info) {
         Optional<? extends LivingEntity> target = info.getReturnValue();
         if (target.isPresent() && target.orElse(null) instanceof Player player) {
             if (EnigmaticHandler.hasItem(player, EnigmaticItems.ANIMAL_GUIDEBOOK) || EnigmaticHandler.hasItem(player, EnigmaticItems.ODE_TO_LIVING)) {

@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.compat.jei.category;
 
+import net.minecraft.client.renderer.RenderPipelines;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.compat.jei.EnigmaticRecipeTypes;
 import auviotre.enigmatic.legacy.compat.jei.JEIHandler;
@@ -67,8 +68,8 @@ public class SpellstoneCraftingCategory implements IRecipeCategory<RecipeHolder<
     }
 
     public void draw(RecipeHolder<SpellstoneTableRecipe> recipe, IRecipeSlotsView recipeSlotsView, GuiGraphicsExtractor guiGraphics, double mouseX, double mouseY) {
-        guiGraphics.blitSprite(SPRITE, 0, 0, getWidth(), getHeight());
-        if (recipe.value().isAllDifferent()) guiGraphics.blitSprite(ICON, 124, 0, 8, 8);
+        guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, SPRITE, 0, 0, getWidth(), getHeight());
+        if (recipe.value().isAllDifferent()) guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, ICON, 124, 0, 8, 8);
     }
 
     public void getTooltip(ITooltipBuilder tooltip, RecipeHolder<SpellstoneTableRecipe> recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {

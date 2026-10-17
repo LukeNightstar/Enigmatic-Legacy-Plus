@@ -1,5 +1,9 @@
 package auviotre.enigmatic.legacy.mixin;
 
+import auviotre.enigmatic.legacy.handlers.EnigmaticHandler;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
 import auviotre.enigmatic.legacy.contents.item.spellstones.other.SpellstoneSword;
 import auviotre.enigmatic.legacy.contents.item.tools.InfernalShield;
 import auviotre.enigmatic.legacy.registries.EnigmaticComponents;
@@ -36,11 +40,6 @@ public abstract class MixinPlayer extends LivingEntity {
         if (this.getUseItem().is(EnigmaticItems.STARLIGHT_BUCKET)) info.setReturnValue(true);
     }
 
-    @Inject(method = "disableShield", at = @At("HEAD"), cancellable = true)
-    public void disableShieldMix(CallbackInfo info) {
-        if (this.getUseItem().getItem() instanceof InfernalShield) info.cancel();
-    }
-
     @Inject(method = "destroyVanishingCursedItems", at = @At("TAIL"))
     public void onDestroyVanishingCursedItems(CallbackInfo info) {
         CuriosApi.getCuriosInventory(this).ifPresent(handler -> {
@@ -54,19 +53,9 @@ public abstract class MixinPlayer extends LivingEntity {
         });
     }
 
-    @Inject(method = "sweepAttack", at = @At("TAIL"))
-    public void sweepMix(CallbackInfo info) {
-        ItemStack stack = getWeaponItem();
-        if (stack.is(EnigmaticItems.SPELLSTONE_SWORD) && SpellstoneSword.isResonatingWith(stack, EnigmaticItems.VOID_PEARL)) {
-            if (stack.getOrDefault(EnigmaticComponents.INT, 0) > 0) {
-                List<LivingEntity> entities = this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(5));
-                for (LivingEntity entity : entities) {
-                    if (entity.is(this)) continue;
-                    entity.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 100, 3));
-                    entity.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 100, 3));
-                    entity.addDeltaMovement(new Vec3(0, -2, 0));
-                }
-            }
-        }
+    // 26.1.2 port: Player#sweepAttack was folded into doSweepAttack; mod-triggered sweeps call the same hook.
+    @Inject(method = "doSweepAttack(Lnet/minecraft/world/entity/Entity;FLnet/minecraft/world/damagesource/DamageSource;FLnet/minecraft/world/phys/AABB;)V", at = @At("TAIL"))
+    public void sweepMix(Entity entity, float baseDamage, DamageSource damageSource, float attackStrengthScale, AABB sweepHitBox, CallbackInfo info) {
+        EnigmaticHandler.onSweepAttack((Player) (Object) this);
     }
 }
