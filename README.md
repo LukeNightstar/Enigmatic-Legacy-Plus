@@ -23,15 +23,26 @@ This repository **modifies** Auviotre's Enigmatic Legacy Plus (1.21.1-1.1.2). Th
 
 - Porting the mod from Minecraft 1.21.1 / NeoForge 21.1 to **Minecraft 26.1.2 / NeoForge 26.1.2**.
 - Updating dependencies to their 26.1.2 versions (Curios, Patchouli, JEI and compat mods).
-- Replacing the **Caelus API** dependency, which is not available for 26.1.2.
-- Any code, asset or data changes required by the above.
+- Replacing the **Caelus API** dependency, which is not available for 26.1.2: curio elytra glide through the vanilla
+  `GLIDER` component plus a small mixin, and the cape is hidden through a NeoForge render state modifier.
+- Any code, asset or data changes required by the above. Notable ones:
+  - Wandering trader trades are data driven (`data/enigmaticlegacyplus/villager_trade`) instead of code.
+  - Item model overrides are converted to 26.1.2 item model definitions (`assets/enigmaticlegacyplus/items`).
+  - The screen darkening shader of the Annihilating Sword / Violence Scroll is replaced by a dark screen overlay,
+    because 26.1.2 post effects can no longer take per-frame values.
+  - Cursed/blessed/eldritch tooltip colors are tooltip sprites generated from the vanilla tooltip shapes.
+  - The Infernal Shield's instant block and axe immunity are expressed through the `BLOCKS_ATTACKS` component.
+  - Spellstone table recipes are synced to clients so JEI can show them.
+- The data generators (`auviotre.enigmatic.legacy.data`) are not ported and are excluded from the build; the
+  generated data that was already committed is used as is.
 
 Every individual change is recorded in the git history of the `26.1.2` branch
 (`git log main..26.1.2`). The `main` branch tracks Auviotre's upstream 1.21.1 version unmodified.
 
 ## Status
 
-**Work in progress.** The port is not finished and is not yet playable.
+**Work in progress.** The mod builds, and a dedicated server starts and generates a world without errors.
+In-game testing (client and gameplay) is still ongoing.
 
 - **Minecraft Version:** 26.1.2
 - **NeoForge Version:** 26.1.2
