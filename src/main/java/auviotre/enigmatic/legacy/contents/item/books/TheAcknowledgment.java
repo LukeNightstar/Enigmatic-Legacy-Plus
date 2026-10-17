@@ -39,7 +39,7 @@ public class TheAcknowledgment extends Item implements IBagContent {
     }
 
     public TheAcknowledgment() {
-        this(IItemHelper.singleProperties().rarity(Rarity.EPIC), 3.5F, -2.1F);
+        this(IItemHelper.singleProperties().enchantable(24).rarity(Rarity.EPIC), 3.5F, -2.1F);
     }
 
     public static boolean isOpen() {
@@ -85,16 +85,10 @@ public class TheAcknowledgment extends Item implements IBagContent {
         return InteractionResult.SUCCESS;
     }
 
-    public boolean hurtEnemy(ItemStack stack, @NotNull LivingEntity target, LivingEntity attacker) {
+    @Override
+    public void hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
         target.igniteForSeconds(4);
-        return super.hurtEnemy(stack, target, attacker);
+        super.hurtEnemy(stack, target, attacker);
     }
 
-    public boolean isEnchantable(ItemStack stack) {
-        return true;
-    }
-
-    public int getEnchantmentValue(ItemStack stack) {
-        return 24;
-    }
 }

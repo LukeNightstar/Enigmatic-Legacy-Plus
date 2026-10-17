@@ -97,7 +97,8 @@ public class TheBless extends TheAcknowledgment {
         return list;
     }
 
-    public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+    @Override
+    public void hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
         target.igniteForTicks(target.getRemainingFireTicks() + 80);
         if (attacker.getRandom().nextInt(5) == 0) {
             target.addEffect(new MobEffectInstance(EnigmaticEffects.ICHOR_CORROSION, 100), attacker);
@@ -107,7 +108,7 @@ public class TheBless extends TheAcknowledgment {
         for (MobEffectInstance effect : effects) {
             if (effect.getEffect().value().isBeneficial()) target.removeEffect(effect.getEffect());
         }
-        return super.hurtEnemy(stack, target, attacker);
+        super.hurtEnemy(stack, target, attacker);
     }
 
     public InteractionResult use(Level level, Player player, InteractionHand hand) {

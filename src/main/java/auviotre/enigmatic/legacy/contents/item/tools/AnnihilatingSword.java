@@ -1,5 +1,9 @@
 package auviotre.enigmatic.legacy.contents.item.tools;
 
+import net.minecraft.core.component.DataComponents;
+import auviotre.enigmatic.legacy.registries.EnigmaticTags;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ToolMaterial;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.api.item.IItemHelper;
 import auviotre.enigmatic.legacy.contents.attachement.EnigmaticData;
@@ -58,7 +62,6 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.IItemDecorator;
-import net.neoforged.neoforge.common.SimpleTier;
 import net.neoforged.neoforge.common.util.AttributeUtil;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
@@ -74,11 +77,11 @@ import net.minecraft.world.entity.EquipmentSlot;
 import org.jspecify.annotations.Nullable;
 
 import net.minecraft.world.item.ItemStack;
-public class AnnihilatingSword extends SwordItem {
-    private static final Tier TIER = new SimpleTier(BlockTags.INCORRECT_FOR_NETHERITE_TOOL, 3268, 10.8F, 8.0F, 64, () -> Ingredient.EMPTY);
+public class AnnihilatingSword extends Item {
+    private static final ToolMaterial TIER = new ToolMaterial(BlockTags.INCORRECT_FOR_NETHERITE_TOOL, 3268, 10.8F, 8.0F, 64, EnigmaticTags.Items.UNREPAIRABLE);
 
     public AnnihilatingSword() {
-        super(TIER, IItemHelper.singleProperties().fireResistant().rarity(Rarity.EPIC).component(EnigmaticComponents.CURSED, true)
+        super(IItemHelper.singleProperties().sword(TIER, 0.0F, 0.0F).component(DataComponents.ATTRIBUTE_MODIFIERS, null).fireResistant().rarity(Rarity.EPIC).component(EnigmaticComponents.CURSED, true)
                 .component(EnigmaticComponents.ELDRITCH, true).component(EnigmaticComponents.ANNI_ENERGY, 0.0F));
     }
 
@@ -189,6 +192,7 @@ public class AnnihilatingSword extends SwordItem {
         stack.set(EnigmaticComponents.ANNI_ENERGY, Math.clamp(energy, 0.0F, getMaxEnergy(entity)));
     }
 
+    @Override
     public ItemAttributeModifiers getDefaultAttributeModifiers(ItemStack stack) {
         int energy = stack.getOrDefault(EnigmaticComponents.ANNI_ENERGY, 0.0F).intValue();
         ItemAttributeModifiers.Builder builder = ItemAttributeModifiers.builder()
@@ -265,10 +269,12 @@ public class AnnihilatingSword extends SwordItem {
         return InteractionResult.PASS;
     }
 
-    public void releaseUsing(ItemStack stack, Level level, LivingEntity entity, int tick) {
+    @Override
+    public boolean releaseUsing(ItemStack stack, Level level, LivingEntity entity, int tick) {
         if (entity instanceof Player player && player.getOffhandItem().is(this)) {
             player.getCooldowns().addCooldown(new ItemStack(this), 8);
         }
+        return true;
     }
 
     public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entity) {

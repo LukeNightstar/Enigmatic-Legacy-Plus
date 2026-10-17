@@ -38,7 +38,7 @@ import java.util.function.Consumer;
 
 public class DragonBreathBow extends ProjectileWeaponItem {
     public DragonBreathBow() {
-        super(IItemHelper.singleProperties().rarity(Rarity.RARE).durability(1574));
+        super(IItemHelper.singleProperties().enchantable(16).rarity(Rarity.RARE).durability(1574));
     }
 
     public static float getPowerForTime(int tick) {
@@ -78,16 +78,13 @@ public class DragonBreathBow extends ProjectileWeaponItem {
         }
     }
 
-    public int getEnchantmentValue(ItemStack stack) {
-        return 16;
-    }
-
-    public void releaseUsing(ItemStack stack, Level level, LivingEntity entityLiving, int timeLeft) {
+    @Override
+    public boolean releaseUsing(ItemStack stack, Level level, LivingEntity entityLiving, int timeLeft) {
         if (entityLiving instanceof Player player) {
             ItemStack projectile = Items.DRAGON_BREATH.getDefaultInstance();
             int tick = this.getUseDuration(stack, entityLiving) - timeLeft;
             tick = EventHooks.onArrowLoose(stack, level, player, tick, true);
-            if (tick < 0) return;
+            if (tick < 0) return false;
             float f = getPowerForTime(tick);
             if (f > 0.1F) {
                 List<ItemStack> list = List.of(projectile);
@@ -98,6 +95,7 @@ public class DragonBreathBow extends ProjectileWeaponItem {
                 player.awardStat(Stats.ITEM_USED.get(this));
             }
         }
+        return true;
     }
 
     public AbstractArrow customArrow(@NotNull AbstractArrow arrow, ItemStack projectile, ItemStack bow) {

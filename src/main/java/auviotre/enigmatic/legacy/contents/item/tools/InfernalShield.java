@@ -1,5 +1,12 @@
 package auviotre.enigmatic.legacy.contents.item.tools;
 
+import java.util.Optional;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.item.component.BlocksAttacks;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.ToolMaterial;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.api.item.IItemHelper;
 import auviotre.enigmatic.legacy.contents.item.generic.BaseCursedItem;
@@ -16,7 +23,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -39,8 +45,14 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemInstance;
 public class InfernalShield extends BaseCursedItem {
     public InfernalShield() {
-        super(IItemHelper.singleProperties().fireResistant().rarity(Rarity.RARE).durability(Tiers.NETHERITE.getUses()));
-        DispenserBlock.registerBehavior(this, ArmorItem.DISPENSE_ITEM_BEHAVIOR);
+        super(IItemHelper.singleProperties().fireResistant().rarity(Rarity.RARE).durability(ToolMaterial.NETHERITE.durability())
+                .enchantable(16).repairable(Items.OBSIDIAN).equippableUnswappable(EquipmentSlot.OFFHAND)
+                .delayedComponent(DataComponents.BLOCKS_ATTACKS, context -> new BlocksAttacks(0.25F, 1.0F,
+                        List.of(new BlocksAttacks.DamageReduction(90.0F, Optional.empty(), 0.0F, 1.0F)),
+                        new BlocksAttacks.ItemDamageFunction(3.0F, 1.0F, 1.0F),
+                        Optional.of(context.getOrThrow(DamageTypeTags.BYPASSES_SHIELD)),
+                        Optional.of(SoundEvents.SHIELD_BLOCK), Optional.of(SoundEvents.SHIELD_BREAK)))
+                .component(DataComponents.BREAK_SOUND, SoundEvents.SHIELD_BREAK));
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -83,15 +95,7 @@ public class InfernalShield extends BaseCursedItem {
 
     @Override
     public boolean canPerformAction(ItemInstance stack, ItemAbility itemAbility) {
-        return ItemAbilities.DEFAULT_SHIELD_ACTIONS.contains(itemAbility);
-    }
-
-    public boolean isValidRepairItem(ItemStack stack, ItemStack repairCandidate) {
-        return super.isValidRepairItem(stack, repairCandidate) || repairCandidate.is(Blocks.OBSIDIAN.asItem());
-    }
-
-    public @Nullable EquipmentSlot getEquipmentSlot(ItemStack stack) {
-        return EquipmentSlot.OFFHAND;
+        return false;
     }
 
     public ItemUseAnimation getUseAnimation(ItemStack stack) {
@@ -100,10 +104,6 @@ public class InfernalShield extends BaseCursedItem {
 
     public int getUseDuration(ItemStack stack, LivingEntity entity) {
         return 32000;
-    }
-
-    public int getEnchantmentValue(ItemStack stack) {
-        return 16;
     }
 
     @Mod(value = EnigmaticLegacy.MODID)

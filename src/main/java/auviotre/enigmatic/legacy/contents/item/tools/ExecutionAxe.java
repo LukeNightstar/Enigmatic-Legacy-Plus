@@ -1,5 +1,7 @@
 package auviotre.enigmatic.legacy.contents.item.tools;
 
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ToolMaterial;
 import auviotre.enigmatic.legacy.api.item.IItemHelper;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.api.SubscribeConfig;
@@ -49,7 +51,7 @@ import net.minecraft.world.item.component.TooltipDisplay;
 import java.util.function.Consumer;
 import java.util.ArrayList;
 
-public class ExecutionAxe extends SwordItem {
+public class ExecutionAxe extends Item {
     public static final Map<Class<? extends LivingEntity>, ItemLike> SKULL_MAP = Map.of(
             Zombie.class, Items.ZOMBIE_HEAD,
             Skeleton.class, Items.SKELETON_SKULL,
@@ -64,7 +66,7 @@ public class ExecutionAxe extends SwordItem {
     public static ModConfigSpec.IntValue beheadingBonus;
 
     public ExecutionAxe() {
-        super(Tiers.NETHERITE, IItemHelper.properties().fireResistant().rarity(Rarity.UNCOMMON).attributes(createAttributes(Tiers.NETHERITE, 5.0F, -2.4F)));
+        super(IItemHelper.properties().fireResistant().rarity(Rarity.UNCOMMON).sword(ToolMaterial.NETHERITE, 5.0F, -2.4F));
     }
 
     @SubscribeConfig

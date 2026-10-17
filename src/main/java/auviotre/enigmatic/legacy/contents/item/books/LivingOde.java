@@ -101,7 +101,7 @@ public class LivingOde extends BaseItem {
     }
 
     public InteractionResult interactLivingEntity(ItemStack stack, Player player, LivingEntity target, InteractionHand hand) {
-        if (!player.getCooldowns().isOnCooldown(this) && player.level() instanceof ServerLevel level) {
+        if (!player.getCooldowns().isOnCooldown(new ItemStack(this)) && player.level() instanceof ServerLevel level) {
             boolean noAction = true;
             if (containInList(stack, target)) {
                 removeFromList(stack, target);

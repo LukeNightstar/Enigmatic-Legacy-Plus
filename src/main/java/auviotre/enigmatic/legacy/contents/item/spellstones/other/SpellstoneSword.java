@@ -102,7 +102,7 @@ public class SpellstoneSword extends Item {
     private static final float BASE_DAMAGE = 6.0F;
 
     public SpellstoneSword() {
-        super(IItemHelper.singleProperties().fireResistant().rarity(Rarity.RARE).durability(999).component(SPELL_LEVEL, 0).component(INT, 0));
+        super(IItemHelper.singleProperties().enchantable(64).repairable(EnigmaticItems.SPELLSTONE_DEBRIS.get()).fireResistant().rarity(Rarity.RARE).durability(999).component(SPELL_LEVEL, 0).component(INT, 0));
     }
 
     public static void parry(Level level, LivingEntity blocker, DamageSource source, float damage) {
@@ -329,8 +329,9 @@ public class SpellstoneSword extends Item {
         return !player.isCreative();
     }
 
-    public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-        return true;
+    @Override
+    public void hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+        return;
     }
 
     public void postHurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
@@ -510,7 +511,8 @@ public class SpellstoneSword extends Item {
         }
     }
 
-    public void releaseUsing(ItemStack stack, Level level, LivingEntity user, int remainingDuration) {
+    @Override
+    public boolean releaseUsing(ItemStack stack, Level level, LivingEntity user, int remainingDuration) {
         InteractionHand hand = user.getUsedItemHand();
         int tick = stack.getUseDuration(user) - remainingDuration;
         if (hand == InteractionHand.MAIN_HAND && stack.is(this)) {
@@ -591,6 +593,7 @@ public class SpellstoneSword extends Item {
                     level.playSound(user, user.blockPosition(), SoundEvents.PLAYER_TELEPORT, SoundSource.PLAYERS, 0.6F, 0.25F);
             }
         }
+        return true;
     }
 
     public InteractionResult useOn(UseOnContext context) {
@@ -677,14 +680,6 @@ public class SpellstoneSword extends Item {
         if (isResonatingWith(stack, EnigmaticItems.VOID_PEARL))
             return ItemAbilities.DEFAULT_SHIELD_ACTIONS.contains(ability);
         return false;
-    }
-
-    public int getEnchantmentValue(ItemStack stack) {
-        return 64;
-    }
-
-    public boolean isValidRepairItem(ItemStack stack, ItemStack repairCandidate) {
-        return repairCandidate.is(EnigmaticItems.SPELLSTONE_DEBRIS);
     }
 
     public boolean overrideOtherStackedOnMe(ItemStack stack, ItemStack other, Slot slot, ClickAction action, Player player, SlotAccess access) {

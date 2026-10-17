@@ -53,7 +53,7 @@ public class ExplorerScroll extends BaseCurioItem {
     }
 
     public static void trigger(Level level, ServerPlayer player) {
-        if (player.getCooldowns().isOnCooldown(EnigmaticItems.EXPLORER_SCROLL.get())) return;
+        if (player.getCooldowns().isOnCooldown(new ItemStack(EnigmaticItems.EXPLORER_SCROLL.get()))) return;
         player.playNotifySound(EnigmaticSounds.SCROLL_TRIGGER.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
         player.getCooldowns().addCooldown(new ItemStack(EnigmaticItems.EXPLORER_SCROLL.get()), player.hasInfiniteMaterials() ? 20 : cooldown.get());
         BlockPos blockPos = player.blockPosition();

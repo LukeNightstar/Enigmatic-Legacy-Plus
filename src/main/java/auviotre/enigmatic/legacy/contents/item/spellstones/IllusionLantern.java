@@ -114,7 +114,7 @@ public class IllusionLantern extends SpellstoneItem {
         if (context.entity() instanceof ServerPlayer entity) {
             int count = stack.getOrDefault(EnigmaticComponents.ILLUSION_COUNT, 0);
             if (count > 0 && checkAttack(entity, entity.level())) count--;
-            if (!entity.getCooldowns().isOnCooldown(this)) {
+            if (!entity.getCooldowns().isOnCooldown(new ItemStack(this))) {
                 if (count < 5) {
                     count++;
                     entity.getCooldowns().addCooldown(new ItemStack(this), cooldown.get());

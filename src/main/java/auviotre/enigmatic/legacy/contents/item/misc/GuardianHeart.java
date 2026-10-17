@@ -125,7 +125,7 @@ public class GuardianHeart extends BaseCursedItem {
     public void inventoryTick(ItemStack stack, ServerLevel level, Entity entity, @Nullable EquipmentSlot slotId) {
         if (entity instanceof Player player && !level.isClientSide()) {
             List<Monster> monsters = player.level().getEntitiesOfClass(Monster.class, player.getBoundingBox().inflate(effectiveRange.get()));
-            if (EnigmaticHandler.isTheCursedOne(player) && Inventory.isHotbarSlot(slotId) && !player.getCooldowns().isOnCooldown(this)) {
+            if (EnigmaticHandler.isTheCursedOne(player) && Inventory.isHotbarSlot(slotId) && !player.getCooldowns().isOnCooldown(new ItemStack(this))) {
                 Monster oneWatched = null;
                 for (Monster monster : monsters) {
                     if (doesObserveEntity(player, monster) && !monster.is(EnigmaticTags.EntityTypes.GUARDIAN_HEART_EXCLUDED)) {

@@ -42,7 +42,7 @@ public interface ISpellstone {
     default void triggerActiveAbility(ServerLevel level, @NotNull ServerPlayer player, ItemStack stack) {
         ItemCooldowns cooldowns = player.getCooldowns();
         int cooldown = getCooldown(stack);
-        if (cooldown > 0 && !cooldowns.isOnCooldown(stack.getItem())) {
+        if (cooldown > 0 && !cooldowns.isOnCooldown(new ItemStack(stack.getItem()))) {
             cooldown = player.hasInfiniteMaterials() ? Math.min(15, cooldown) : cooldown;
             if (EnigmaticHandler.hasCurio(player, EnigmaticItems.COSMIC_SCROLL))
                 cooldown = (int) (cooldown * (1.0F - CosmicScroll.spellstoneCooldown.get() * 0.01F));

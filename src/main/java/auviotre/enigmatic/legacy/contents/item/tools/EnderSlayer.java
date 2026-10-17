@@ -1,5 +1,7 @@
 package auviotre.enigmatic.legacy.contents.item.tools;
 
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ToolMaterial;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.api.SubscribeConfig;
 import auviotre.enigmatic.legacy.api.item.IItemHelper;
@@ -33,7 +35,6 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.ModConfigSpec;
-import net.neoforged.neoforge.common.SimpleTier;
 import net.neoforged.neoforge.event.entity.EntityTeleportEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
@@ -47,12 +48,12 @@ import net.minecraft.world.item.component.TooltipDisplay;
 import java.util.function.Consumer;
 import java.util.ArrayList;
 import net.minecraft.world.item.ItemStack;
-public class EnderSlayer extends SwordItem {
-    public static final Tier TIER = new SimpleTier(BlockTags.INCORRECT_FOR_DIAMOND_TOOL, 1876, 8.5F, 3.5F, 12, () -> Ingredient.of(Blocks.OBSIDIAN));
+public class EnderSlayer extends Item {
+    public static final ToolMaterial TIER = new ToolMaterial(BlockTags.INCORRECT_FOR_DIAMOND_TOOL, 1876, 8.5F, 3.5F, 12, EnigmaticTags.Items.ENDER_SLAYER_REPAIR_MATERIALS);
     public static ModConfigSpec.IntValue specialDamageBoost;
 
     public EnderSlayer() {
-        super(TIER, IItemHelper.singleProperties().fireResistant().rarity(Rarity.RARE).component(EnigmaticComponents.CURSED, true).attributes(createAttributes(TIER, 3.5F, -2.6F)));
+        super(IItemHelper.singleProperties().fireResistant().rarity(Rarity.RARE).component(EnigmaticComponents.CURSED, true).sword(TIER, 3.5F, -2.6F));
     }
 
     @SubscribeConfig

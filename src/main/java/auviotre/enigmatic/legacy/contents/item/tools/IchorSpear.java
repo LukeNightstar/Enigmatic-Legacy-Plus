@@ -69,7 +69,8 @@ public class IchorSpear extends BaseItem implements ProjectileItem {
         }
     }
 
-    public void releaseUsing(ItemStack stack, Level level, LivingEntity entity, int tickCount) {
+    @Override
+    public boolean releaseUsing(ItemStack stack, Level level, LivingEntity entity, int tickCount) {
         int duration = this.getUseDuration(stack, entity) - tickCount;
         if (duration >= 8) {
             if (!level.isClientSide()) {
@@ -92,6 +93,7 @@ public class IchorSpear extends BaseItem implements ProjectileItem {
                 player.swing(player.getUsedItemHand());
             }
         }
+        return true;
     }
 
     public InteractionResult use(Level level, Player player, InteractionHand hand) {

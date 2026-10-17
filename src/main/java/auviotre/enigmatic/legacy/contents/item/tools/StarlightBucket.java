@@ -37,7 +37,6 @@ import net.minecraft.world.phys.HitResult;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.fml.config.ModConfig;
-import net.neoforged.neoforge.common.EffectCures;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -46,6 +45,7 @@ import java.util.List;
 import net.minecraft.world.item.component.TooltipDisplay;
 import java.util.function.Consumer;
 import java.util.ArrayList;
+import net.minecraft.world.item.Items;
 
 public class StarlightBucket extends Item {
     public static ModConfigSpec.BooleanValue checkExtraContent;
@@ -73,7 +73,7 @@ public class StarlightBucket extends Item {
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.starlightBucket1");
             Component component = Component.translatable("tooltip.enigmaticlegacy.starlightBucketEmpty");
             Item content = getContent(stack);
-            if (content instanceof MilkBucketItem) {
+            if (content == Items.MILK_BUCKET) {
                 component = Component.translatable("fluid_type.minecraft.milk");
             } else if (content instanceof BucketItem bucket) {
                 if (bucket.content != Fluids.EMPTY)
@@ -90,7 +90,7 @@ public class StarlightBucket extends Item {
     public InteractionResult use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         Item content = getContent(stack);
-        if (content instanceof MilkBucketItem) return ItemUtils.startUsingInstantly(level, player, hand);
+        if (content == Items.MILK_BUCKET) return ItemUtils.startUsingInstantly(level, player, hand);
         if (content instanceof BucketItem bucket) {
             BlockHitResult result = getPlayerPOVHitResult(level, player, bucket.content == Fluids.EMPTY ? ClipContext.Fluid.SOURCE_ONLY : ClipContext.Fluid.NONE);
             if (result.getType() == HitResult.Type.MISS) return InteractionResult.PASS;
@@ -145,12 +145,12 @@ public class StarlightBucket extends Item {
     }
 
     public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entity) {
-        if (getContent(stack) instanceof MilkBucketItem) {
+        if (getContent(stack) == Items.MILK_BUCKET) {
             if (entity instanceof ServerPlayer player) {
                 CriteriaTriggers.CONSUME_ITEM.trigger(player, stack);
                 player.awardStat(Stats.ITEM_USED.get(this));
             }
-            if (!level.isClientSide()) entity.removeEffectsCuredBy(EffectCures.MILK);
+            if (!level.isClientSide()) entity.removeAllEffects();
         }
         return stack;
     }

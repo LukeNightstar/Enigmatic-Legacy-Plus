@@ -51,7 +51,7 @@ public class TwistedMirror extends BaseCursedItem {
 
     public InteractionResult use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
-        if (!EnigmaticHandler.canUse(player, stack) || player.getCooldowns().isOnCooldown(this))
+        if (!EnigmaticHandler.canUse(player, stack) || player.getCooldowns().isOnCooldown(new ItemStack(this)))
             return InteractionResult.PASS;
         player.startUsingItem(hand);
         return InteractionResult.SUCCESS;

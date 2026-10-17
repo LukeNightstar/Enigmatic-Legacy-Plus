@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.item.tools;
 
+import net.minecraft.world.item.ToolMaterial;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.api.item.IItemHelper;
 import auviotre.enigmatic.legacy.contents.effect.BlazingMight;
@@ -55,8 +56,8 @@ import java.util.function.Consumer;
 import java.util.ArrayList;
 public class InfernalSpear extends BaseItem {
     public InfernalSpear() {
-        super(IItemHelper.singleProperties().fireResistant().durability(Tiers.NETHERITE.getUses())
-                .component(DataComponents.TOOL, SwordItem.createToolProperties())
+        super(IItemHelper.singleProperties().fireResistant().sword(ToolMaterial.NETHERITE, 0.0F, 0.0F)
+                .enchantable(24).repairable(Items.NETHERITE_SCRAP)
                 .attributes(ItemAttributeModifiers.builder()
                         .add(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_ID, 5, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
                         .add(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_ID, -1.6, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
@@ -126,14 +127,6 @@ public class InfernalSpear extends BaseItem {
             if (effect != null) return effect.getAmplifier() * 1.5F + 2.0F;
         }
         return super.getAttackDamageBonus(target, damage, source);
-    }
-
-    public boolean isValidRepairItem(ItemStack stack, ItemStack repairCandidate) {
-        return super.isValidRepairItem(stack, repairCandidate) || repairCandidate.is(Items.NETHERITE_SCRAP);
-    }
-
-    public int getEnchantmentValue(ItemStack stack) {
-        return 24;
     }
 
     @Mod(value = EnigmaticLegacy.MODID)

@@ -23,7 +23,7 @@ public record SpellstoneKeyPacket() implements CustomPacketPayload {
                 if (player instanceof ServerPlayer serverPlayer && player.level() instanceof ServerLevel level) {
                     ItemStack stack = ISpellstone.get(serverPlayer);
                     if (stack.isEmpty() || !(stack.getItem() instanceof ISpellstone spellstone)) return;
-                    if (!player.getCooldowns().isOnCooldown(stack.getItem()))
+                    if (!player.getCooldowns().isOnCooldown(new ItemStack(stack.getItem())))
                         spellstone.triggerActiveAbility(level, serverPlayer, stack);
                 }
             });

@@ -33,8 +33,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.FluidState;
 import net.neoforged.neoforge.common.CommonHooks;
-import net.neoforged.neoforge.common.EffectCure;
-import net.neoforged.neoforge.common.EffectCures;
 import net.neoforged.neoforge.common.extensions.ILivingEntityExtension;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
@@ -156,7 +154,7 @@ public abstract class MixinLivingEntity extends Entity implements ILivingEntityE
                 }
 
                 this.setHealth(Math.max(1.0F, this.getMaxHealth() - 1.0F));
-                this.removeEffectsCuredBy(EffectCures.PROTECTED_BY_TOTEM);
+                this.removeAllEffects();
                 if (this.isOnFire()) this.clearFire();
                 if (this.isFreezing()) this.setTicksFrozen(0);
                 if (level() instanceof ServerLevel level)
@@ -180,7 +178,7 @@ public abstract class MixinLivingEntity extends Entity implements ILivingEntityE
                 unbreakable.remove(DataComponents.UNBREAKABLE);
 
                 this.setHealth(Math.max(2.0F, this.getMaxHealth() * 0.1F));
-                this.removeEffectsCuredBy(EffectCures.PROTECTED_BY_TOTEM);
+                this.removeAllEffects();
                 this.self().addEffect(new MobEffectInstance(MobEffects.REGENERATION, 900, 1));
                 this.self().addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 100, 1));
                 this.self().addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 800, 0));

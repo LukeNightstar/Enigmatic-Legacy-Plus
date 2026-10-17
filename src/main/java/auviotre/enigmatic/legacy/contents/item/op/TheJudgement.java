@@ -63,8 +63,9 @@ public class TheJudgement extends Item {
         }
     }
 
-    public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-        if (attacker.level().isClientSide()) return false;
+    @Override
+    public void hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+        if (attacker.level().isClientSide()) return;
         boolean player = attacker instanceof Player;
         AABB box = target.getBoundingBox().inflate(ATTACK_RADIUS);
         List<LivingEntity> targets = target.level().getEntitiesOfClass(LivingEntity.class, box, entity -> entity != attacker && entity != target && entity.distanceToSqr(target) < ATTACK_RADIUS * ATTACK_RADIUS);
@@ -74,7 +75,7 @@ public class TheJudgement extends Item {
             List<Entity> drops = target.level().getEntitiesOfClass(Entity.class, box, entity -> (entity instanceof ItemEntity || entity instanceof ExperienceOrb) && entity.distanceToSqr(target) < ATTACK_RADIUS * ATTACK_RADIUS);
             drops.forEach(Entity::kill);
         }
-        return false;
+        return;
     }
 
     @Override
