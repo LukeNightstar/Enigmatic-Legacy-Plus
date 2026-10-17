@@ -20,14 +20,16 @@ import java.util.Optional;
 @Mixin(ServerPlayer.class)
 public class MixinServerPlayer {
     @Inject(method = "findRespawnAndUseSpawnBlock", at = @At("HEAD"), cancellable = true)
-    private static void findMix(@NotNull ServerLevel level, BlockPos pos, float angle, boolean forced, boolean keepInventory, CallbackInfoReturnable<Optional<ServerPlayer.RespawnPosAngle>> info) {
+    private static void findMix(@NotNull ServerLevel level, ServerPlayer.RespawnConfig respawnConfig, boolean consumeSpawnBlock, CallbackInfoReturnable<Optional<ServerPlayer.RespawnPosAngle>> info) {
+        BlockPos pos = respawnConfig.respawnData().pos();
+        boolean forced = respawnConfig.forced();
         BlockState blockstate = level.getBlockState(pos);
         if (blockstate.getBlock() instanceof DimensionalAnchor && (forced || blockstate.getValue(DimensionalAnchor.CHARGE) > 0) && DimensionalAnchor.canSetSpawn(level)) {
             Optional<Vec3> optional = RespawnAnchorBlock.findStandUpPosition(EntityType.PLAYER, level, pos);
-            if (!forced && !keepInventory && optional.isPresent()) {
+            if (!forced && consumeSpawnBlock && optional.isPresent()) {
                 level.setBlock(pos, blockstate.setValue(DimensionalAnchor.CHARGE, blockstate.getValue(DimensionalAnchor.CHARGE) - 1), Block.UPDATE_ALL);
             }
-            info.setReturnValue(optional.map((vec3) -> ServerPlayer.RespawnPosAngle.of(vec3, pos)));
+            info.setReturnValue(optional.map((vec3) -> ServerPlayer.RespawnPosAngle.of(vec3, pos, 0.0F)));
         }
     }
 }

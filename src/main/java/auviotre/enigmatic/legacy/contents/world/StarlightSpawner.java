@@ -25,8 +25,13 @@ public class StarlightSpawner implements CustomSpawner {
         this.offsetZ = (level.getRandom().nextFloat() - 0.5F) * 3.2F;
     }
 
-    public int tick(ServerLevel level, boolean spawnEnemies, boolean spawnFriendlies) {
-        if (!spawnFriendlies) return 0;
+    // 26.1.2 port: CustomSpawner#tick no longer has a spawnFriendlies flag, and returns nothing.
+    @Override
+    public void tick(ServerLevel level, boolean spawnEnemies) {
+        this.spawnMeteors(level);
+    }
+
+    private int spawnMeteors(ServerLevel level) {
         if (!Level.END.equals(level.dimension())) return 0;
         RandomSource random = level.getRandom();
         --this.nextTick;

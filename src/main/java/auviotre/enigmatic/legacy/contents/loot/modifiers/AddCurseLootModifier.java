@@ -30,21 +30,21 @@ public class AddCurseLootModifier extends AddTableLootModifier {
                     .apply(inst, AddCurseLootModifier::new)));
     private final ResourceKey<LootTable> lootTable;
 
-    public AddCurseLootModifier(LootItemCondition[] conditionsIn, ResourceKey<LootTable> table) {
-        super(conditionsIn, table);
+    public AddCurseLootModifier(LootItemCondition[] conditionsIn, int priority, ResourceKey<LootTable> table) {
+        super(conditionsIn, priority, table);
         this.lootTable = table;
     }
 
     protected @Nonnull ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> list, LootContext context) {
-        if (!context.hasParam(LootContextParams.ATTACKING_ENTITY)) return list;
-        Entity entity = context.getParam(LootContextParams.ATTACKING_ENTITY);
+        if (!context.hasParameter(LootContextParams.ATTACKING_ENTITY)) return list;
+        Entity entity = context.getParameter(LootContextParams.ATTACKING_ENTITY);
         if (entity instanceof LivingEntity attacker) {
             if (EnigmaticHandler.isTheCursedOne(attacker)) {
                 if (!CursedRing.enableSpecialDrops.get()) return list;
             } else if (RedemptionRing.Helper.getLevel(attacker) > 3) {
                 if (!RedemptionRing.enableSpecialDrops.get()) return list;
             } else return list;
-            context.getResolver().get(Registries.LOOT_TABLE, this.lootTable).ifPresent(tableRefer -> {
+            context.getResolver().get(this.lootTable).ifPresent(tableRefer -> {
                 LootTable table = tableRefer.value();
                 Objects.requireNonNull(list);
                 table.getRandomItemsRaw(context, LootTable.createStackSplitter(context.getLevel(), list::add));

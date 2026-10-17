@@ -43,16 +43,16 @@ public class SpecialLootModifier extends LootModifier {
             BuiltInLootTables.TRAIL_RUINS_ARCHAEOLOGY_RARE.identifier()
     );
 
-    public SpecialLootModifier(LootItemCondition[] conditionsIn) {
-        super(conditionsIn);
+    public SpecialLootModifier(LootItemCondition[] conditionsIn, int priority) {
+        super(conditionsIn, priority);
     }
 
     protected ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> list, LootContext context) {
         ServerLevel level = context.getLevel();
         if (list.isEmpty()) return list;
-        Entity entity = context.getParamOrNull(LootContextParams.THIS_ENTITY);
-        Vec3 origin = context.getParamOrNull(LootContextParams.ORIGIN);
-        BlockState blockState = context.getParamOrNull(LootContextParams.BLOCK_STATE);
+        Entity entity = context.getOptionalParameter(LootContextParams.THIS_ENTITY);
+        Vec3 origin = context.getOptionalParameter(LootContextParams.ORIGIN);
+        BlockState blockState = context.getOptionalParameter(LootContextParams.BLOCK_STATE);
         if (entity instanceof ServerPlayer player) {
             CompoundTag data = EnigmaticHandler.getPersistedData(player);
 

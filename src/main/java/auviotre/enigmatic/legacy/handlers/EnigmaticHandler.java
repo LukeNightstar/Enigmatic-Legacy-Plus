@@ -1,5 +1,8 @@
 package auviotre.enigmatic.legacy.handlers;
 
+import net.minecraft.world.entity.EquipmentSlotGroup;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.Items;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
@@ -222,14 +225,16 @@ public interface EnigmaticHandler {
         Item item = itemLike.asItem();
         if (!canUse(entity, item.getDefaultInstance())) return ItemStack.EMPTY;
         if (entity instanceof Player player) {
-            for (NonNullList<ItemStack> compartment : player.getInventory().compartments) {
-                for (ItemStack stack : compartment) {
-                    if (stack.is(item.asItem())) return stack;
-                }
+            Inventory inventory = player.getInventory();
+            for (int i = 0; i < inventory.getContainerSize(); i++) {
+                ItemStack stack = inventory.getItem(i);
+                if (stack.is(item.asItem())) return stack;
             }
         } else {
-            for (ItemStack stack : entity.getAllSlots())
+            for (EquipmentSlot slot : EquipmentSlot.VALUES) {
+                ItemStack stack = entity.getItemBySlot(slot);
                 if (stack.is(item.asItem())) return stack;
+            }
         }
         return ItemStack.EMPTY;
     }
@@ -270,7 +275,7 @@ public interface EnigmaticHandler {
     }
 
     static boolean isAffectedBySoulLoss(@NotNull Player player, boolean hadRing) {
-        boolean keepInventory = player.level().getGameRules().get(GameRules.KEEP_INVENTORY);
+        boolean keepInventory = player.level() instanceof ServerLevel serverLevel && serverLevel.getGameRules().get(GameRules.KEEP_INVENTORY);
         return switch (CursedRing.soulCrystalsMode.get()) {
             case ALWAYS_LOSS -> true;
             case NEED_CURSE_RING -> hadRing && !keepInventory;
@@ -488,7 +493,8 @@ public interface EnigmaticHandler {
     }
 
     static boolean hasNoArmor(LivingEntity entity) {
-        for (ItemStack armor : entity.getArmorSlots()) {
+        for (EquipmentSlot slot : EquipmentSlotGroup.ARMOR.slots()) {
+            ItemStack armor = entity.getItemBySlot(slot);
             if (!armor.isEmpty() && !armor.is(EnigmaticTags.Items.ARMOR_CHECK_EXCLUSION)) return false;
         }
         return true;
@@ -500,7 +506,7 @@ public interface EnigmaticHandler {
         else {
             List<ItemStack> allInventories = new ArrayList<>();
             allInventories.addAll(player.getInventory().getNonEquipmentItems());
-            allInventories.addAll(player.getInventory().offhand);
+            allInventories.add(player.getOffhandItem());
             for (ItemStack invStack : allInventories) {
                 if (canMergeStacks(invStack, stack, player.getInventory().getMaxStackSize()))
                     return false;

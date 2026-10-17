@@ -13,6 +13,6 @@ public class ELEnumExtensions {
     @OnlyIn(Dist.CLIENT)
     public static final EnumProxy<HumanoidModel.ArmPose> SPELLSTONE_SWORD = new EnumProxy<>(
             HumanoidModel.ArmPose.class, true,
-            (IArmPoseTransformer) (model, entity, arm) -> SpellstoneSword.ClientExtension.animate(model.rightArm, model.leftArm, entity, HumanoidArm.RIGHT.equals(arm))
+            (IArmPoseTransformer) (model, state, arm) -> SpellstoneSword.ClientExtension.animate(model.rightArm, model.leftArm, state, HumanoidArm.RIGHT.equals(arm))
     );
 }

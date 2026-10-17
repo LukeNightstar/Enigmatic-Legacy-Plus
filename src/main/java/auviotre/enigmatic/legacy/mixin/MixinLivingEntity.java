@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.mixin;
 
+import net.minecraft.world.entity.EquipmentSlot;
 import auviotre.enigmatic.legacy.api.item.ISpellstone;
 import auviotre.enigmatic.legacy.contents.item.charms.ScorchedCharm;
 import auviotre.enigmatic.legacy.contents.item.rings.RedemptionRing;
@@ -67,7 +68,7 @@ public abstract class MixinLivingEntity extends Entity implements ILivingEntityE
     public abstract void setHealth(float health);
 
     @Shadow
-    public abstract boolean removeEffectsCuredBy(EffectCure cure);
+    public abstract boolean removeAllEffects();
 
     @Shadow
     public abstract float getMaxHealth();
@@ -166,9 +167,9 @@ public abstract class MixinLivingEntity extends Entity implements ILivingEntityE
         }
         ItemStack curio = EnigmaticHandler.getCurio(this.self(), EnigmaticItems.FORGER_CRYSTAL);
         if (!curio.isEmpty() && RedemptionRing.Helper.canUseRelic(this.self())) {
-            Iterable<ItemStack> slots = this.self().getAllSlots();
             ItemStack unbreakable = null;
-            for (ItemStack slot : slots) {
+            for (EquipmentSlot equipmentSlot : EquipmentSlot.VALUES) {
+                ItemStack slot = this.self().getItemBySlot(equipmentSlot);
                 if (slot.has(DataComponents.UNBREAKABLE)) {
                     unbreakable = slot;
                     break;

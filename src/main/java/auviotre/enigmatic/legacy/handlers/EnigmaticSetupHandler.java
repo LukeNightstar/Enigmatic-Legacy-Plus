@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.handlers;
 
+import net.neoforged.neoforge.common.crafting.DataComponentIngredient;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.contents.capability.AntiqueBagCapability;
 import auviotre.enigmatic.legacy.contents.command.CurseTimeCommand;
@@ -24,11 +25,9 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
-import net.neoforged.neoforge.client.event.RegisterRecipeBookCategoriesEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.brewing.RegisterBrewingRecipesEvent;
 import net.neoforged.neoforge.event.level.ModifyCustomSpawnersEvent;
-import net.neoforged.neoforge.event.village.WandererTradesEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -42,18 +41,7 @@ public class EnigmaticSetupHandler {
         event.registerEntity(EnigmaticCapability.ANTIQUE_BAG_INVENTORY, EntityType.PLAYER, (entity, context) -> new AntiqueBagCapability(entity));
     }
 
-    @SubscribeEvent
-    private static void onWandererTradesEvent(@NotNull WandererTradesEvent event) {
-        List<VillagerTrades.ItemListing> genericTrades = event.getGenericTrades();
-        List<VillagerTrades.ItemListing> rareTrades = event.getRareTrades();
-        rareTrades.add((trader, rand) -> new MerchantOffer(new ItemCost(EnigmaticItems.EARTH_HEART_FRAGMENT, 2), Optional.of(new ItemCost(Items.EMERALD, 20)), EnigmaticItems.EARTH_HEART.toStack(), 1, 5, 0.2F));
-        genericTrades.add((trader, rand) -> new MerchantOffer(new ItemCost(Items.EMERALD, 4), EnigmaticItems.EARTH_HEART_FRAGMENT.toStack(), 2, 5, 0.25F));
-    }
-
-    @SubscribeEvent
-    private static void onRecipeCategoriesRegistry(@NotNull RegisterRecipeBookCategoriesEvent event) {
-        // To Be Done.
-    }
+    // 26.1.2 port: wandering trader trades are data driven now, see data/enigmaticlegacyplus/villager_trade
 
     @SubscribeEvent
     private static void onCustomSpawnersRegistry(@NotNull ModifyCustomSpawnersEvent event) {
@@ -71,7 +59,7 @@ public class EnigmaticSetupHandler {
         PotionBrewing.Builder builder = event.getBuilder();
         ItemStack awkward = Items.POTION.getDefaultInstance();
         awkward.set(DataComponents.POTION_CONTENTS, new PotionContents(Potions.AWKWARD));
-        builder.addRecipe(Ingredient.of(awkward), Ingredient.of(Items.ENDER_EYE), EnigmaticItems.RECALL_POTION.toStack());
+        builder.addRecipe(DataComponentIngredient.of(false, awkward), Ingredient.of(Items.ENDER_EYE), EnigmaticItems.RECALL_POTION.toStack());
         builder.addRecipe(Ingredient.of(EnigmaticItems.RECALL_POTION), Ingredient.of(Items.FERMENTED_SPIDER_EYE), EnigmaticItems.WORMHOLE_POTION.toStack());
         builder.addStartMix(Items.QUARTZ, EnigmaticPotions.HASTE);
         builder.addMix(Potions.FIRE_RESISTANCE, Items.BLAZE_ROD, EnigmaticPotions.MOLTEN_HEART);

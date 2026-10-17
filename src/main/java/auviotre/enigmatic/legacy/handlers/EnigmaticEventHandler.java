@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.handlers;
 
+import net.minecraft.tags.ItemTags;
 import auviotre.enigmatic.legacy.handlers.EnigmaticHandler;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.api.event.LivingCurseBoostEvent;
@@ -40,7 +41,6 @@ import net.minecraft.world.entity.projectile.hurtingprojectile.SmallFireball;
 import net.minecraft.world.item.BowItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -101,7 +101,7 @@ public class EnigmaticEventHandler {
                         skeleton.getPersistentData().put("BackupItem", EnigmaticHandler.saveStack(skeleton.registryAccess(), copy));
                     }
                 } else {
-                    if (mainHandItem.getItem() instanceof SwordItem) {
+                    if (mainHandItem.is(ItemTags.SWORDS)) {
                         ItemStack copy = skeleton.getMainHandItem().copy();
                         if (backup.isEmpty())
                             skeleton.setItemSlot(EquipmentSlot.MAINHAND, Items.BOW.getDefaultInstance());
@@ -192,7 +192,7 @@ public class EnigmaticEventHandler {
         }
         if (entity instanceof Creeper creeper && entity.getRandom().nextInt(100) <= 5) {
             if (!creeper.isPowered()) {
-                LightningBolt lightningbolt = EntityType.LIGHTNING_BOLT.create(creeper.level());
+                LightningBolt lightningbolt = EntityType.LIGHTNING_BOLT.create(creeper.level(), EntitySpawnReason.TRIGGERED);
                 if (lightningbolt != null) {
                     lightningbolt.snapTo(Vec3.atBottomCenterOf(creeper.blockPosition()));
                     lightningbolt.setSilent(creeper.getRandom().nextBoolean());
@@ -300,7 +300,7 @@ public class EnigmaticEventHandler {
             boolean flag = attacker.fallDistance > 0.0F && !attacker.onGround() && !attacker.onClimbable() && !attacker.isInWater() && !attacker.hasEffect(MobEffects.BLINDNESS) && !attacker.isPassenger();
             if (flag) {
                 if (!victim.level().isClientSide()) {
-                    ((ServerLevel) victim.level()).getChunkSource().broadcastAndSend(attacker, new ClientboundAnimatePacket(victim, 4));
+                    ((ServerLevel) victim.level()).getChunkSource().sendToTrackingPlayersAndSelf(attacker, new ClientboundAnimatePacket(victim, 4));
                 }
                 attacker.level().playSound(null, attacker.getX(), attacker.getY(), attacker.getZ(), SoundEvents.PLAYER_ATTACK_CRIT, attacker.getSoundSource(), 1.0F, 1.0F);
                 event.setAmount(event.getAmount() + 0.5F * event.getOriginalAmount());

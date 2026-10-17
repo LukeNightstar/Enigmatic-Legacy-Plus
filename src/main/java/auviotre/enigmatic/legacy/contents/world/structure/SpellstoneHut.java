@@ -67,7 +67,7 @@ public class SpellstoneHut extends Structure {
         }
 
         public Piece(StructurePieceSerializationContext context, CompoundTag tag) {
-            super(EnigmaticStructureTypes.SPELLSTONE_HUT_PIECE.get(), tag, context.structureTemplateManager(), (location) -> makeSettings(Rotation.valueOf(tag.getString("Rot"))));
+            super(EnigmaticStructureTypes.SPELLSTONE_HUT_PIECE.get(), tag, context.structureTemplateManager(), (location) -> makeSettings(Rotation.valueOf(tag.getStringOr("Rot", Rotation.NONE.name()))));
         }
 
         private static StructurePlaceSettings makeSettings(Rotation rotation) {

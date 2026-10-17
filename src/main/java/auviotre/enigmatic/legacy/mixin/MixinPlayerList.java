@@ -20,10 +20,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class MixinPlayerList {
     @Inject(method = "respawn", at = @At("RETURN"))
     private void respawn(ServerPlayer player, boolean keepInventory, Entity.RemovalReason reason, CallbackInfoReturnable<ServerPlayer> info) {
-        TeleportTransition dimensiontransition = player.findRespawnPositionAndUseSpawnBlock(true, TeleportTransition.DO_NOTHING);
+        TeleportTransition dimensiontransition = player.findRespawnPositionAndUseSpawnBlock(false, TeleportTransition.DO_NOTHING);
         ServerLevel level = dimensiontransition.newLevel();
         if (!keepInventory) {
-            BlockPos blockpos = BlockPos.containing(dimensiontransition.pos());
+            BlockPos blockpos = BlockPos.containing(dimensiontransition.position());
             BlockState blockstate = level.getBlockState(blockpos);
             if (blockstate.is(EnigmaticBlocks.DIMENSIONAL_ANCHOR.get())) {
                 info.getReturnValue().connection.send(new ClientboundSoundPacket(SoundEvents.RESPAWN_ANCHOR_DEPLETE, SoundSource.BLOCKS, blockpos.getX(), blockpos.getY(), blockpos.getZ(), 1.0F, 1.0F, level.getRandom().nextLong()));

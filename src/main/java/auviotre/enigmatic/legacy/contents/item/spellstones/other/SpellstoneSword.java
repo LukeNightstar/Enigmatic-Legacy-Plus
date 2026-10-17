@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.item.spellstones.other;
 
+import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
 import java.util.Optional;
 import net.minecraft.world.item.component.BlocksAttacks;
 import net.minecraft.core.registries.Registries;
@@ -674,11 +675,16 @@ public class SpellstoneSword extends Item {
         return super.useOn(context);
     }
 
+    @Override
     public int getUseDuration(ItemStack stack, LivingEntity entity) {
+        return getUseDuration(stack, entity.getOffhandItem());
+    }
+
+    public static int getUseDuration(ItemStack stack, ItemStack offhand) {
         if (isResonatingWith(stack, EnigmaticItems.ANGEL_BLESSING)) return 36;
         if (isResonatingWith(stack, EnigmaticItems.ILLUSION_LANTERN)) return 80;
         if (isResonatingWith(stack, EnigmaticItems.VOID_PEARL)) return 24;
-        return getResonance(stack).isEmpty() || entity.getOffhandItem().is(EnigmaticItems.SPELLCORE) ? 60 : 32000;
+        return getResonance(stack).isEmpty() || offhand.is(EnigmaticItems.SPELLCORE) ? 60 : 32000;
     }
 
     public ItemUseAnimation getUseAnimation(ItemStack stack) {
@@ -765,11 +771,15 @@ public class SpellstoneSword extends Item {
 
     @OnlyIn(Dist.CLIENT)
     public static class ClientExtension implements IClientItemExtensions {
-        public static void animate(ModelPart rightArm, ModelPart leftArm, @NotNull LivingEntity entity, boolean rightHanded) {
+        // 26.1.2 port: arm poses only get a render state, so the use duration is derived from the held stacks.
+        public static void animate(ModelPart rightArm, ModelPart leftArm, @NotNull HumanoidRenderState state, boolean rightHanded) {
             ModelPart right = rightHanded ? rightArm : leftArm;
             ModelPart left = rightHanded ? leftArm : rightArm;
-            float duration = (float) entity.getUseItem().getUseDuration(entity);
-            float tick = Mth.clamp((float) entity.getTicksUsingItem(), 0.0F, duration);
+            HumanoidArm useArm = state.useItemHand == InteractionHand.MAIN_HAND ? state.mainArm : state.mainArm.getOpposite();
+            ItemStack using = state.getUseItemStackForArm(useArm);
+            ItemStack offhand = state.getUseItemStackForArm(state.mainArm.getOpposite());
+            float duration = Math.max(1.0F, getUseDuration(using, offhand));
+            float tick = Mth.clamp(state.ticksUsingItem, 0.0F, duration);
             float partial = tick / duration;
             right.yRot = rightHanded ? -0.8F : 0.8F;
             right.xRot = Mth.lerp(partial, -0.98F, -1.28F);

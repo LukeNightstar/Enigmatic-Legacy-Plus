@@ -1,5 +1,8 @@
 package auviotre.enigmatic.legacy.mixin.entity;
 
+import java.util.Objects;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.level.storage.ValueInput;
 import auviotre.enigmatic.legacy.api.entity.AbyssalHeartBearer;
 import auviotre.enigmatic.legacy.client.Quote;
 import auviotre.enigmatic.legacy.contents.entity.misc.PermanentItemEntity;
@@ -71,28 +74,15 @@ public abstract class MixinEnderDragon extends Mob implements Enemy, AbyssalHear
     }
 
     @Inject(method = "addAdditionalSaveData", at = @At("RETURN"))
-    public void addSaveData(CompoundTag compoundTag, CallbackInfo info) {
-        CompoundTag attacker = new CompoundTag();
-        int i = 0;
+    public void addSaveData(ValueOutput output, CallbackInfo info) {
         if (this.attackers != null) {
-            for (UUID uuid : this.attackers) {
-                if (uuid != null) attacker.store(String.valueOf(i++), UUIDUtil.CODEC, uuid);
-            }
+            output.store("AttackerList", UUIDUtil.CODEC.listOf(), this.attackers.stream().filter(Objects::nonNull).toList());
         }
-        compoundTag.put("Attackers", attacker);
     }
 
     @Inject(method = "readAdditionalSaveData", at = @At("RETURN"))
-    public void readData(CompoundTag compoundTag, CallbackInfo info) {
-        Set<UUID> set = new HashSet<>();
-        CompoundTag attacker = compoundTag.getCompoundOrEmpty("Attackers");
-        for (String key : attacker.getAllKeys()) {
-            if (attacker.read(key, UUIDUtil.CODEC).isPresent()) {
-                UUID tagUUID = attacker.read(key, UUIDUtil.CODEC).orElse(null);
-                set.add(tagUUID);
-            }
-        }
-        this.attackers = set;
+    public void readData(ValueInput input, CallbackInfo info) {
+        this.attackers = new HashSet<>(input.read("AttackerList", UUIDUtil.CODEC.listOf()).orElse(List.of()));
     }
 
     public void addAttacker(UUID uuid) {

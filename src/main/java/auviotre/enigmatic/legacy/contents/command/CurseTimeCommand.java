@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.command;
 
+import net.minecraft.server.permissions.Permissions;
 import auviotre.enigmatic.legacy.contents.attachement.EnigmaticData;
 import auviotre.enigmatic.legacy.handlers.EnigmaticHandler;
 import auviotre.enigmatic.legacy.registries.EnigmaticAttachments;
@@ -17,7 +18,7 @@ public class CurseTimeCommand {
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("cursetime")
-                .requires(source -> source.hasPermission(4))
+                .requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_OWNER))
                 .then(Commands.literal("get")
                         .executes(context -> getTime(context.getSource(), context.getSource().getPlayerOrException(), false))
                         .then(Commands.argument("player", EntityArgument.player())

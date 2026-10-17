@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.mixin.entity;
 
+import net.minecraft.server.level.ServerLevel;
 import auviotre.enigmatic.legacy.handlers.EnigmaticHandler;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -21,9 +22,9 @@ public abstract class MixinHusk extends Zombie {
     }
 
     @Inject(method = "doHurtTarget", at = @At("RETURN"))
-    public void doHurtTargetMix(Entity entity, CallbackInfoReturnable<Boolean> cir) {
+    public void doHurtTargetMix(ServerLevel level, Entity entity, CallbackInfoReturnable<Boolean> cir) {
         if (cir.getReturnValue() && EnigmaticHandler.isCurseBoosted(this) && this.getWeaponItem().isEmpty() && entity instanceof LivingEntity living) {
-            float effectiveDifficulty = this.level().getCurrentDifficultyAt(this.blockPosition()).getEffectiveDifficulty();
+            float effectiveDifficulty = level.getCurrentDifficultyAt(this.blockPosition()).getEffectiveDifficulty();
             living.addEffect(new MobEffectInstance(MobEffects.NAUSEA, 100 * (int) effectiveDifficulty), this);
         }
     }

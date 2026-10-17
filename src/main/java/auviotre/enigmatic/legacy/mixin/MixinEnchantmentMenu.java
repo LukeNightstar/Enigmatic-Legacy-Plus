@@ -65,8 +65,8 @@ public abstract class MixinEnchantmentMenu extends AbstractContainerMenu {
                 List<EnchantmentInstance> list = this.getEnchantmentList(level.registryAccess(), input, id, this.costs[id]);
                 if (!list.isEmpty()) {
                     RegistryAccess registryAccess = level.registryAccess();
-                    Registry<Enchantment> enchantments = registryAccess.registryOrThrow(Registries.ENCHANTMENT);
-                    ItemStack doubleEnchanted = EnchantmentHelper.enchantItem(player.getRandom(), input.copy(), Math.min(this.costs[id] + 7, 40), enchantments.holders().map(holders -> holders));
+                    Registry<Enchantment> enchantments = registryAccess.lookupOrThrow(Registries.ENCHANTMENT);
+                    ItemStack doubleEnchanted = EnchantmentHelper.enchantItem(player.getRandom(), input.copy(), Math.min(this.costs[id] + 7, 40), enchantments.listElements().map(holder -> holder));
                     player.onEnchantmentPerformed(input, cost);
                     ItemStack output = input.getItem().applyEnchantments(input, list);
 

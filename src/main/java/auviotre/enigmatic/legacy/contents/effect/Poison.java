@@ -27,7 +27,7 @@ public class Poison extends MobEffect {
     public boolean applyEffectTick(LivingEntity entity, int amplifier) {
         if (entity.getHealth() > (1.5F + amplifier * 0.125F)) {
             Registry<DamageType> types = entity.damageSources().damageTypes;
-            Holder.Reference<DamageType> type = types.getHolder(NeoForgeMod.POISON_DAMAGE).orElse(types.getHolderOrThrow(DamageTypes.MAGIC));
+            Holder.Reference<DamageType> type = types.get(NeoForgeMod.POISON_DAMAGE).orElse(types.getOrThrow(DamageTypes.MAGIC));
             entity.hurt(new DamageSource(type), 1.5F + amplifier * 0.125F);
             if (amplifier >= 4) entity.invulnerableTime = 10;
         }

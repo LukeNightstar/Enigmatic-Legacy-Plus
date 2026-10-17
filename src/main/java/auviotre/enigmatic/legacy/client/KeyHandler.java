@@ -14,20 +14,20 @@ public class KeyHandler {
             "key.spellstoneAbility",
             InputConstants.Type.KEYSYM,
             GLFW.GLFW_KEY_K,
-            "key.categories.misc"
+            KeyMapping.Category.MISC
     ));
     @OnlyIn(Dist.CLIENT)
     public static final Lazy<KeyMapping> SCROLL = Lazy.of(() -> new KeyMapping(
             "key.scrollAbility",
             InputConstants.Type.KEYSYM,
             GLFW.GLFW_KEY_J,
-            "key.categories.misc"
+            KeyMapping.Category.MISC
     ));
     @OnlyIn(Dist.CLIENT)
     public static final Lazy<KeyMapping> ENDER_RING = Lazy.of(() -> new KeyMapping(
             "key.enderRing",
             InputConstants.Type.KEYSYM,
             GLFW.GLFW_KEY_I,
-            "key.categories.misc"
+            KeyMapping.Category.MISC
     ));
 }

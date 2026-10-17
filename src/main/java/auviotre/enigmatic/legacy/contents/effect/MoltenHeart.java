@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.effect;
 
+import net.minecraft.server.level.ServerLevel;
 import auviotre.enigmatic.legacy.registries.EnigmaticEffects;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.effect.MobEffect;
@@ -16,9 +17,10 @@ public class MoltenHeart extends MobEffect {
         NeoForge.EVENT_BUS.register(this);
     }
 
-    public boolean applyEffectTick(@NotNull LivingEntity entity, int amplifier) {
+    @Override
+    public boolean applyEffectTick(@NotNull ServerLevel level, @NotNull LivingEntity entity, int amplifier) {
         if (entity.isOnFire()) entity.clearFire();
-        return super.applyEffectTick(entity, amplifier);
+        return super.applyEffectTick(level, entity, amplifier);
     }
 
     @SubscribeEvent

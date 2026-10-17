@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.block;
 
+import net.minecraft.world.level.storage.LevelData;
 import auviotre.enigmatic.legacy.registries.RegistrationContext;
 import auviotre.enigmatic.legacy.contents.block.entity.DimensionalAnchorEntity;
 import com.mojang.serialization.MapCodec;
@@ -124,8 +125,9 @@ public class DimensionalAnchor extends BaseEntityBlock {
         } else {
             if (!level.isClientSide()) {
                 ServerPlayer serverplayer = (ServerPlayer) player;
-                if (serverplayer.getRespawnDimension() != level.dimension() || !pos.equals(serverplayer.getRespawnPosition())) {
-                    serverplayer.setRespawnPosition(level.dimension(), pos, 0.0F, false, true);
+                ServerPlayer.RespawnConfig respawnConfig = new ServerPlayer.RespawnConfig(LevelData.RespawnData.of(level.dimension(), pos, 0.0F, 0.0F), false);
+                if (!respawnConfig.isSamePosition(serverplayer.getRespawnConfig())) {
+                    serverplayer.setRespawnPosition(respawnConfig, true);
                     level.playSound(null, pos, SoundEvents.RESPAWN_ANCHOR_SET_SPAWN, SoundSource.BLOCKS, 1.0F, 1.0F);
                     return InteractionResult.SUCCESS;
                 }

@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.mixin;
 
+import net.minecraft.world.inventory.ItemCombinerMenuSlotDefinition;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.entity.player.Player;
@@ -35,8 +36,8 @@ public abstract class MixinAnvilMenu extends ItemCombinerMenu {
     @Final
     private DataSlot cost;
 
-    public MixinAnvilMenu(@Nullable MenuType<?> type, int containerId, Inventory playerInventory, ContainerLevelAccess access) {
-        super(type, containerId, playerInventory, access);
+    public MixinAnvilMenu(@Nullable MenuType<?> type, int containerId, Inventory playerInventory, ContainerLevelAccess access, ItemCombinerMenuSlotDefinition slotDefinition) {
+        super(type, containerId, playerInventory, access, slotDefinition);
     }
 
     @Inject(method = "createResult", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/inventory/AnvilMenu;broadcastChanges()V"))

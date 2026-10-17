@@ -57,7 +57,7 @@ public abstract class MixinApothMenu extends EnchantmentMenu {
                         if (!list.isEmpty()) {
                             EnchantmentUtils.chargeExperience(player, MiscUtil.getExpCostForSlot(level, id));
                             player.onEnchantmentPerformed(toEnchant, 0);
-                            if (list.getFirst().enchantment.is(Ench.Enchantments.INFUSION)) {
+                            if (list.getFirst().enchantment().is(Ench.Enchantments.INFUSION)) {
                                 InfusionRecipe match = InfusionRecipe.findMatch(world, toEnchant, eterna, quanta, arcana);
                                 if (match == null) return;
 

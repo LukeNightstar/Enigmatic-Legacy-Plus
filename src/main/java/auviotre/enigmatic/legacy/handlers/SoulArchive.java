@@ -71,11 +71,11 @@ public class SoulArchive {
     }
 
     public static DimensionalPosition getRespawnPos(ServerPlayer player) {
-        ResourceKey<Level> respawnDimension = player.getRespawnDimension();
+        ServerPlayer.RespawnConfig respawnConfig = player.getRespawnConfig();
+        ResourceKey<Level> respawnDimension = ServerPlayer.RespawnConfig.getDimensionOrDefault(respawnConfig);
         ServerLevel destLevel = player.level().getServer().getLevel(respawnDimension);
         if (destLevel == null) destLevel = player.level().getServer().overworld();
-        BlockPos respawnPos = player.getRespawnPosition();
-        if (respawnPos == null) respawnPos = destLevel.getSharedSpawnPos();
+        BlockPos respawnPos = respawnConfig != null ? respawnConfig.respawnData().pos() : destLevel.getRespawnData().pos();
         return new SoulArchive.DimensionalPosition(respawnPos.getX() + 0.5, respawnPos.getY() + 1.5, respawnPos.getZ() + 0.5, destLevel);
     }
 
