@@ -32,6 +32,18 @@ repositories {
             includeGroup "maven.modrinth"
         }
     }
+    // SEMI (Seasonal EMI, the EMI continuation for 26.1.2) only publishes its 26.1.2 build as a GitHub release.
+    ivy {
+        name = "SEMI GitHub releases"
+        url = "https://github.com/Pandaismyname1/SEMI/releases/download/"
+        patternLayout {
+            artifact "[revision]/[module]-[revision]+[classifier].[ext]"
+        }
+        metadataSources { artifact() }
+        content {
+            includeGroup "semi"
+        }
+    }
 }
 
 base {
@@ -97,7 +109,10 @@ dependencies {
     // info
     compileOnly "mezz.jei:jei-${minecraft_version}-common-api:${jei_version}"
     compileOnly "mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}"
-    runtimeOnly "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
+    compileOnly "semi:semi:${semi_version}:neoforge"
+    // Dev runs use SEMI as the recipe viewer; swap for the JEI line to test the JEI plugin instead.
+    runtimeOnly "semi:semi:${semi_version}:neoforge"
+    // runtimeOnly "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
     // depend
     compileOnly "top.theillusivec4.curios:curios-neoforge:${curios_version}:api"
     runtimeOnly "top.theillusivec4.curios:curios-neoforge:${curios_version}"

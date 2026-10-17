@@ -1218,6 +1218,8 @@
   "gui.enigmaticlegacy.jei.spellstone_crafting": "Создание камней стихий",
   "gui.enigmaticlegacy.jei.spellstone_crafting.all_different": "Одинаковые материалы не допускаются.",
   "gui.enigmaticlegacy.jei.tainting": "Осквернение",
+  "emi.category.enigmaticlegacyplus.spellstone_crafting": "Создание камней стихий",
+  "emi.category.enigmaticlegacyplus.tainting": "Осквернение",
 
   "toast.enigmaticlegacy.slot_unlock.title": "%1$s разблокирован!",
   "toast.enigmaticlegacy.slot_unlock.description": "Экипируйте их в инвентаре Curios.",

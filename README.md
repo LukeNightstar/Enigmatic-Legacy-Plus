@@ -23,6 +23,10 @@ This repository **modifies** Auviotre's Enigmatic Legacy Plus (1.21.1-1.1.2). Th
 
 - Porting the mod from Minecraft 1.21.1 / NeoForge 21.1 to **Minecraft 26.1.2 / NeoForge 26.1.2**.
 - Updating dependencies to their 26.1.2 versions (Curios, Patchouli, JEI and compat mods).
+- Adding a native EMI plugin (`compat/emi`) for [SEMI](https://github.com/Pandaismyname1/SEMI), the EMI continuation
+  that exists for 26.1.2: Spellstone Crafting and Tainting categories, the Annihilating Sword recipe and recipe filling
+  for the Spellstone Table. SEMI should also be installed on the server, since 26.1.2 clients only receive the recipes
+  a server sends them.
 - Replacing the **Caelus API** dependency, which is not available for 26.1.2: curio elytra glide through the vanilla
   `GLIDER` component plus a small mixin, and the cape is hidden through a NeoForge render state modifier.
 - Any code, asset or data changes required by the above. Notable ones:

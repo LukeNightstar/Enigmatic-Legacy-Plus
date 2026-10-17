@@ -1306,6 +1306,8 @@
   "gui.enigmaticlegacy.jei.spellstone_crafting": "术石合成",
   "gui.enigmaticlegacy.jei.spellstone_crafting.all_different": "不可出现相同材料",
   "gui.enigmaticlegacy.jei.tainting": "污染",
+  "emi.category.enigmaticlegacyplus.spellstone_crafting": "术石合成",
+  "emi.category.enigmaticlegacyplus.tainting": "污染",
 
   "toast.enigmaticlegacy.slot_unlock.title": "%1$s栏位解锁了！",
   "toast.enigmaticlegacy.slot_unlock.description": "可装备到饰品栏内",
