@@ -3,13 +3,14 @@ package auviotre.enigmatic.legacy.client.renderer;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.contents.entity.projectile.UltimateWitherSkull;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.model.object.skull.SkullModel;
 import net.minecraft.client.model.geom.ModelLayers;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.model.object.skull.SkullModel;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.entity.state.WitherSkullRenderState;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
@@ -18,7 +19,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
-public class UltimateWitherSkullRenderer extends EntityRenderer<UltimateWitherSkull> {
+public class UltimateWitherSkullRenderer extends EntityRenderer<UltimateWitherSkull, WitherSkullRenderState> {
     private static final Identifier TEXTURE = EnigmaticLegacy.location("textures/models/misc/ultimate_wither_armor.png");
     private static final Identifier WITHER_INVULNERABLE_LOCATION = Identifier.withDefaultNamespace("textures/entity/wither/wither_invulnerable.png");
     private static final Identifier WITHER_LOCATION = Identifier.withDefaultNamespace("textures/entity/wither/wither.png");
@@ -33,33 +34,37 @@ public class UltimateWitherSkullRenderer extends EntityRenderer<UltimateWitherSk
         return 15;
     }
 
-    public void render(UltimateWitherSkull entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
+    public void submit(WitherSkullRenderState state, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera) {
         poseStack.pushPose();
-        float inflate = entity.isDangerous() ? 1.4F : 1.0F;
+        float inflate = state.isDangerous ? 1.4F : 1.0F;
         poseStack.scale(-inflate, -inflate, inflate);
-        float f = Mth.rotLerp(partialTicks, entity.yRotO, entity.getYRot());
-        float f1 = Mth.lerp(partialTicks, entity.xRotO, entity.getXRot());
-        VertexConsumer vertexconsumer = buffer.getBuffer(this.model.renderType(this.getTextureLocation(entity)));
-        this.model.setupAnim(0.0F, f, f1);
-        this.model.renderToBuffer(poseStack, vertexconsumer, packedLight, OverlayTexture.NO_OVERLAY);
+        collector.submitModel(this.model, state.modelState, poseStack, state.isDangerous ? WITHER_INVULNERABLE_LOCATION : WITHER_LOCATION,
+                state.lightCoords, OverlayTexture.NO_OVERLAY, state.outlineColor, null);
         poseStack.popPose();
-        if (entity.isDangerous()) {
-            float fullTicks = entity.tickCount + partialTicks;
-            this.renderShield(poseStack, packedLight, -fullTicks, inflate + 0.1F, buffer);
-            this.renderShield(poseStack, packedLight, fullTicks, inflate + 0.2F, buffer);
+        if (state.isDangerous) {
+            this.submitShield(state, poseStack, collector, -state.ageInTicks, inflate + 0.1F);
+            this.submitShield(state, poseStack, collector, state.ageInTicks, inflate + 0.2F);
         }
-        super.render(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
+        super.submit(state, poseStack, collector, camera);
     }
 
-    private void renderShield(PoseStack poseStack, int packedLight, float fullTicks, float scale, MultiBufferSource buffer) {
+    private void submitShield(WitherSkullRenderState state, PoseStack poseStack, SubmitNodeCollector collector, float fullTicks, float scale) {
         poseStack.pushPose();
         poseStack.scale(-scale, -scale, scale);
-        VertexConsumer vertexconsumer = buffer.getBuffer(RenderType.energySwirl(TEXTURE, Mth.cos(fullTicks * 0.02F) * 2.0F, fullTicks * 0.02F));
-        this.model.renderToBuffer(poseStack, vertexconsumer, packedLight, OverlayTexture.NO_OVERLAY);
+        collector.order(1).submitModel(this.model, state.modelState, poseStack, RenderTypes.energySwirl(TEXTURE, Mth.cos(fullTicks * 0.02F) * 2.0F % 1.0F, fullTicks * 0.02F % 1.0F),
+                state.lightCoords, OverlayTexture.NO_OVERLAY, -1, null, state.outlineColor, null);
         poseStack.popPose();
     }
 
-    public Identifier getTextureLocation(UltimateWitherSkull entity) {
-        return entity.isDangerous() ? UltimateWitherSkullRenderer.WITHER_INVULNERABLE_LOCATION : UltimateWitherSkullRenderer.WITHER_LOCATION;
+    public WitherSkullRenderState createRenderState() {
+        return new WitherSkullRenderState();
+    }
+
+    public void extractRenderState(UltimateWitherSkull entity, WitherSkullRenderState state, float partialTicks) {
+        super.extractRenderState(entity, state, partialTicks);
+        state.isDangerous = entity.isDangerous();
+        state.modelState.animationPos = 0.0F;
+        state.modelState.yRot = entity.getYRot(partialTicks);
+        state.modelState.xRot = entity.getXRot(partialTicks);
     }
 }

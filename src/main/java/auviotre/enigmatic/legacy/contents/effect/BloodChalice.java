@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.effect;
 
+import net.minecraft.server.level.ServerLevel;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.registries.EnigmaticEffects;
 import net.minecraft.resources.Identifier;
@@ -21,7 +22,8 @@ public class BloodChalice extends MobEffect {
         return true;
     }
 
-    public boolean applyEffectTick(LivingEntity entity, int amplifier) {
+    @Override
+    public boolean applyEffectTick(ServerLevel level, LivingEntity entity, int amplifier) {
         if (!entity.level().isClientSide()) {
             AttributeInstance attribute = entity.getAttributes().getInstance(Attributes.ATTACK_DAMAGE);
             MobEffectInstance effect = entity.getEffect(EnigmaticEffects.BLOOD_CHALICE);

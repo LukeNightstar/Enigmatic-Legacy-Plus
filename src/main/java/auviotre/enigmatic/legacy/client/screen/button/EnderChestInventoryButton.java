@@ -14,8 +14,6 @@ import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
-import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
-import net.minecraft.client.gui.screens.recipebook.RecipeUpdateListener;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.item.ItemStack;
@@ -35,7 +33,6 @@ public class EnderChestInventoryButton extends ImageButton {
             EnigmaticLegacy.location("button/ender_chest_button_highlighted")
     );
     protected final AbstractContainerScreen<?> parentGui;
-    protected boolean isRecipeBookVisible = false;
 
     public EnderChestInventoryButton(AbstractContainerScreen<?> container, int x, int y, int width, int height, Button.OnPress onPress) {
         super(x, y, width, height, SPRITES, onPress);
@@ -49,10 +46,6 @@ public class EnderChestInventoryButton extends ImageButton {
             if (player != null) {
                 ItemStack stack = player.containerMenu.getCarried();
                 player.containerMenu.setCarried(ItemStack.EMPTY);
-                if (gui instanceof InventoryScreen inventory) {
-                    RecipeBookComponent recipeBookGui = inventory.getRecipeBookComponent();
-                    if (recipeBookGui.isVisible()) recipeBookGui.toggleVisibility();
-                }
                 ClientPacketDistributor.sendToServer(new EnderRingKeyPacket(stack));
             }
         });
@@ -65,15 +58,14 @@ public class EnderChestInventoryButton extends ImageButton {
         return enderButton;
     }
 
-    public void renderWidget(@Nonnull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
+    @Override
+    public void extractContents(@Nonnull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
         this.active = true;
+        // 26.1.2 port: the recipe book component is private now; following the screen's left edge
+        // every frame keeps the button in place when the recipe book shifts the inventory.
         if (this.parentGui instanceof InventoryScreen || this.parentGui instanceof ICuriosScreen) {
-            boolean lastVisible = this.isRecipeBookVisible;
-            this.isRecipeBookVisible = ((RecipeUpdateListener) this.parentGui).getRecipeBookComponent().isVisible();
-            if (lastVisible != this.isRecipeBookVisible) {
-                Tuple<Integer, Integer> offsets = this.getOffsets(false);
-                this.setPosition(this.parentGui.getGuiLeft() + offsets.getA(), this.parentGui.getGuiTop() + offsets.getB());
-            }
+            Tuple<Integer, Integer> offsets = this.getOffsets(false);
+            this.setPosition(this.parentGui.getGuiLeft() + offsets.getA(), this.parentGui.getGuiTop() + offsets.getB());
         } else if (this.parentGui instanceof CreativeModeInventoryScreen creative) {
             if (!creative.isInventoryOpen()) {
                 this.active = false;
@@ -82,7 +74,7 @@ public class EnderChestInventoryButton extends ImageButton {
         }
         LocalPlayer player = Minecraft.getInstance().player;
         if (EnigmaticHandler.isTheCursedOne(player) && CursedRing.enableEnderRing.get() || EnigmaticHandler.hasCurio(player, EnigmaticItems.ENDER_RING)) {
-            super.renderWidget(graphics, mouseX, mouseY, partialTicks);
+            super.extractContents(graphics, mouseX, mouseY, partialTicks);
         } else this.active = false;
     }
 

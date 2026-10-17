@@ -15,7 +15,6 @@ import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
-import net.minecraft.client.gui.screens.recipebook.RecipeUpdateListener;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Tuple;
@@ -37,7 +36,6 @@ public class MagnetRingInventoryButton extends ImageButton {
             EnigmaticLegacy.location("button/magnet_button_off_highlighted")
     );
     protected final AbstractContainerScreen<?> parentGui;
-    protected boolean isRecipeBookVisible = false;
 
     public MagnetRingInventoryButton(AbstractContainerScreen<?> container, int x, int y, int width, int height, OnPress onPress) {
         super(x, y, width, height, SPRITES, onPress);
@@ -60,15 +58,14 @@ public class MagnetRingInventoryButton extends ImageButton {
         return magnetButton;
     }
 
-    public void renderWidget(@Nonnull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
+    @Override
+    public void extractContents(@Nonnull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
         this.active = true;
+        // 26.1.2 port: the recipe book component is private now; following the screen's left edge
+        // every frame keeps the button in place when the recipe book shifts the inventory.
         if (this.parentGui instanceof InventoryScreen || this.parentGui instanceof ICuriosScreen) {
-            boolean lastVisible = this.isRecipeBookVisible;
-            this.isRecipeBookVisible = ((RecipeUpdateListener) this.parentGui).getRecipeBookComponent().isVisible();
-            if (lastVisible != this.isRecipeBookVisible) {
-                Tuple<Integer, Integer> offsets = this.getOffsets(false);
-                this.setPosition(this.parentGui.getGuiLeft() + offsets.getA(), this.parentGui.getGuiTop() + offsets.getB());
-            }
+            Tuple<Integer, Integer> offsets = this.getOffsets(false);
+            this.setPosition(this.parentGui.getGuiLeft() + offsets.getA(), this.parentGui.getGuiTop() + offsets.getB());
         } else if (this.parentGui instanceof CreativeModeInventoryScreen creative) {
             if (!creative.isInventoryOpen()) {
                 this.active = false;

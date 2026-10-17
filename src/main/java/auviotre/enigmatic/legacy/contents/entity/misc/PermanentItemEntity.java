@@ -194,11 +194,13 @@ public class PermanentItemEntity extends Entity {
         return Short.MAX_VALUE;
     }
 
-    public Entity changeDimension(TeleportTransition transition) {
+    @Override
+    public @Nullable Entity teleport(TeleportTransition transition) {
         return null;
     }
 
-    public boolean canChangeDimensions(Level oldLevel, Level newLevel) {
+    @Override
+    public boolean canTeleport(Level oldLevel, Level newLevel) {
         return false;
     }
 
@@ -329,7 +331,8 @@ public class PermanentItemEntity extends Entity {
         return true;
     }
 
-    public InteractionResult interact(Player player, InteractionHand hand) {
+    @Override
+    public InteractionResult interact(Player player, InteractionHand hand, Vec3 location) {
         if (this.pickupDelay > 0) return InteractionResult.PASS;
         if (!player.getItemInHand(InteractionHand.MAIN_HAND).isEmpty()) return InteractionResult.PASS;
         if (player.isSpectator()) return InteractionResult.SUCCESS;

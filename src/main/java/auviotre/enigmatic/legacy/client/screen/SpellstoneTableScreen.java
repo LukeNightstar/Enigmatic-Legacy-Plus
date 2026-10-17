@@ -3,7 +3,6 @@ package auviotre.enigmatic.legacy.client.screen;
 import net.minecraft.client.renderer.RenderPipelines;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.contents.gui.SpellstoneTableMenu;
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
@@ -18,20 +17,16 @@ public class SpellstoneTableScreen extends AbstractContainerScreen<SpellstoneTab
         super(menu, inventory, title);
     }
 
+    @Override
     protected void init() {
         super.init();
         this.titleLabelX += 7;
         this.titleLabelY -= 1;
     }
 
-    public void render(GuiGraphicsExtractor graphics, int x, int y, float partialTick) {
-        super.render(graphics, x, y, partialTick);
-        this.renderTooltip(graphics, x, y);
-    }
-
-    protected void renderBg(@NotNull GuiGraphicsExtractor graphics, float partialTicks, int x, int y) {
-        RenderSystem.clearColor(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.setShaderTexture(0, TEXTURE);
+    @Override
+    public void extractBackground(@NotNull GuiGraphicsExtractor graphics, int x, int y, float partialTicks) {
+        super.extractBackground(graphics, x, y, partialTicks);
         int i = (this.width - this.imageWidth) / 2;
         int j = (this.height - this.imageHeight) / 2;
         graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, i, j, (float) 0, (float) 0, this.imageWidth, this.imageHeight, 256, 256);

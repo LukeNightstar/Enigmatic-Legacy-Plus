@@ -115,7 +115,7 @@ public class Quote {
     private CompoundTag getHeardContainer(ServerPlayer player) {
         CompoundTag data = EnigmaticHandler.getPersistedData(player);
 
-        if (!data.contains(HEARD_TAG, Tag.TAG_COMPOUND)) {
+        if (!(data.get(HEARD_TAG) instanceof CompoundTag)) {
             data.put(HEARD_TAG, new CompoundTag());
         }
 

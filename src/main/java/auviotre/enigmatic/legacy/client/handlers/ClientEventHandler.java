@@ -1,5 +1,10 @@
 package auviotre.enigmatic.legacy.client.handlers;
 
+import net.minecraft.world.entity.LivingEntity;
+import auviotre.enigmatic.legacy.contents.item.materials.AbyssalHeart;
+import java.util.Optional;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
+import auviotre.enigmatic.legacy.client.renderer.EnigmaticRenderData;
 import net.minecraft.util.ARGB;
 import net.minecraft.client.renderer.RenderPipelines;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
@@ -9,7 +14,6 @@ import auviotre.enigmatic.legacy.contents.attachement.EnigmaticData;
 import auviotre.enigmatic.legacy.contents.item.etherium.EtheriumArmor;
 import auviotre.enigmatic.legacy.contents.item.etherium.EtheriumProperties;
 import auviotre.enigmatic.legacy.contents.item.food.ForbiddenFruit;
-import auviotre.enigmatic.legacy.contents.item.generic.BaseElytraItem;
 import auviotre.enigmatic.legacy.contents.item.rings.RedemptionRing;
 import auviotre.enigmatic.legacy.contents.item.spellstones.OceanStone;
 import auviotre.enigmatic.legacy.contents.item.spellstones.other.Spelltuner;
@@ -22,14 +26,12 @@ import auviotre.enigmatic.legacy.registries.EnigmaticAttachments;
 import auviotre.enigmatic.legacy.registries.EnigmaticComponents;
 import auviotre.enigmatic.legacy.registries.EnigmaticEffects;
 import auviotre.enigmatic.legacy.registries.EnigmaticItems;
-import com.illusivesoulworks.caelus.api.RenderCapeEvent;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.fog.FogRenderer;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.contents.TranslatableContents;
@@ -69,33 +71,28 @@ public class ClientEventHandler {
     public static float violenceLastTimer = 0;
     private static boolean spaceDown = false;
 
+    // 26.1.2 port: tooltip colors are sprites now (textures/gui/sprites/tooltip/<style>_background/_frame).
+    private static final Identifier BLESSED_TOOLTIP = EnigmaticLegacy.location("blessed");
+    private static final Identifier ELDRITCH_TOOLTIP = EnigmaticLegacy.location("eldritch");
+    private static final Identifier CURSED_TOOLTIP = EnigmaticLegacy.location("cursed");
+
     @SubscribeEvent
-    private static void onTooltipRendering(RenderTooltipEvent.@NotNull Color event) {
+    private static void onTooltipRendering(RenderTooltipEvent.@NotNull Texture event) {
         ItemStack stack = event.getItemStack();
         if (!stack.isEmpty()) {
             if (EnigmaticHandler.isCursedItem(stack)) {
                 if (EnigmaticHandler.isTheBlessedOne(Minecraft.getInstance().player) && EnigmaticHandler.isBlessedItem(stack)) {
-                    event.setBackground(0xF01a0a07);
-                    event.setBorderStart(0xF0FFA400);
-                    event.setBorderEnd(0x80D07540);
+                    event.setTexture(BLESSED_TOOLTIP);
                 } else if (EnigmaticHandler.isEldritchItem(stack)) {
-                    event.setBackground(0xF0201020);
-                    event.setBorderStart(0xF08F609A);
-                    event.setBorderEnd(0x805A3A7A);
+                    event.setTexture(ELDRITCH_TOOLTIP);
                 } else {
-                    event.setBackground(0xF0201010);
-                    event.setBorderStart(0xF0A01000);
-                    event.setBorderEnd(0x70901000);
+                    event.setTexture(CURSED_TOOLTIP);
                 }
             }
             if (stack.is(EnigmaticItems.CURSED_RING)) {
-                event.setBackground(0xF0201010);
-                event.setBorderStart(0xF0A01000);
-                event.setBorderEnd(0x70901000);
+                event.setTexture(CURSED_TOOLTIP);
             } else if (stack.is(EnigmaticItems.REDEMPTION_RING)) {
-                event.setBackground(0xF01a0a07);
-                event.setBorderStart(0xF0FFA400);
-                event.setBorderEnd(0x80D07540);
+                event.setTexture(BLESSED_TOOLTIP);
             }
         }
     }
@@ -173,6 +170,20 @@ public class ClientEventHandler {
         }
     }
 
+    // 26.1.2 port: replaces the darken post-shader (MixinGameRenderer), whose per-frame uniforms
+    // no longer fit the data-driven post effect pipeline. Same timer, drawn as a dark screen overlay.
+    @SubscribeEvent
+    private static void renderDarkenOverlay(RenderGuiEvent.@NotNull Pre event) {
+        Minecraft minecraft = Minecraft.getInstance();
+        if (minecraft.player == null || minecraft.level == null || !(minecraft.getCameraEntity() instanceof LivingEntity)) return;
+        if (AbyssalHeart.specialVisualEffects == null || !AbyssalHeart.specialVisualEffects.get()) return;
+        float partialTick = event.getPartialTick().getGameTimeDeltaPartialTick(true);
+        float mix = Math.clamp(Mth.lerp(partialTick, darkenLastTick, darkenTick) / 800.0F, 0.0F, 1.0F);
+        if (mix <= 0.0F) return;
+        GuiGraphicsExtractor graphics = event.getGuiGraphics();
+        graphics.fill(0, 0, graphics.guiWidth(), graphics.guiHeight(), ARGB.color((int) (Mth.sqrt(mix) * 0.55F * 255.0F), 10, 6, 12));
+    }
+
     @SubscribeEvent
     private static void onFogRender(ViewportEvent.RenderFog event) {
         LocalPlayer player = Minecraft.getInstance().player;
@@ -181,20 +192,19 @@ public class ClientEventHandler {
             if (player.hasEffect(EnigmaticEffects.MOLTEN_HEART)) {
                 event.setNearPlaneDistance(0.0F);
                 event.setFarPlaneDistance(6.0F);
-                event.setCanceled(true);
             } else if (EnigmaticHandler.hasCurio(player, EnigmaticItems.BLAZING_CORE)) {
                 event.setNearPlaneDistance(0.0F);
                 event.setFarPlaneDistance(10.0F);
-                event.setCanceled(true);
             }
         }
         ItemStack curio = EnigmaticHandler.getCurio(player, EnigmaticItems.VIOLENCE_SCROLL);
         if (!curio.isEmpty() && event.getCamera().getFluidInCamera() == FogType.NONE) {
             float timer = 1.0F - (float) Math.clamp(Mth.lerp(event.getPartialTick(), violenceLastTimer, violenceTimer) / 800.0F, 0.0F, 1.0F);
             float f = Math.max(event.getFarPlaneDistance() * (float) Math.pow(timer, 6.0F), 24.0F);
-            event.setNearPlaneDistance(event.getMode() == FogRenderer.FogMode.FOG_SKY ? 0.0F : f * 0.6F);
+            event.setNearPlaneDistance(f * 0.6F);
             event.setFarPlaneDistance(f);
-            event.setCanceled(true);
+            event.getFogData().skyEnd = Math.min(event.getFogData().skyEnd, f);
+            event.getFogData().cloudEnd = Math.min(event.getFogData().cloudEnd, f);
         }
     }
 
@@ -212,17 +222,45 @@ public class ClientEventHandler {
     }
 
     @SubscribeEvent
-    private static void renderNameplate(RenderNameTagEvent event) {
+    private static void renderNameplate(RenderNameTagEvent.CanRender event) {
         if (event.getEntity() == Minecraft.getInstance().player) {
             ItemStack insignia = EnigmaticHandler.getCurio(Minecraft.getInstance().player, EnigmaticItems.INSIGNIA);
             if (!insignia.isEmpty() && insignia.getOrDefault(EnigmaticComponents.BOOLEAN, false))
                 event.setCanRender(TriState.TRUE);
         }
+        modifyInsigniaNameTag(event);
+    }
+
+    // 26.1.2 port: replaces MixinEntityRenderer#renderNameTag. A player's Insignia name replaces the name tag;
+    // viewers who can see true names get the real name as an extra line below it.
+    private static void modifyInsigniaNameTag(RenderNameTagEvent.CanRender event) {
+        event.getEntityRenderState().setRenderData(EnigmaticRenderData.TRUE_NAME, null);
+        if (!(event.getEntity() instanceof Player player)) return;
+        ItemStack insignia = EnigmaticHandler.getCurio(player, EnigmaticItems.INSIGNIA);
+        if (insignia.isEmpty()) return;
+        Optional<Component> customName = EnigmaticItems.INSIGNIA.get().getCustomName(insignia);
+        if (customName.isEmpty()) return;
+        LocalPlayer viewer = Minecraft.getInstance().player;
+        boolean seesTrueName = player != viewer && EnigmaticItems.INSIGNIA.get().canSeeTrueName(viewer);
+        if (Minecraft.getInstance().font.width(customName.get()) > 0) {
+            event.setContent(customName.get());
+            if (seesTrueName)
+                event.getEntityRenderState().setRenderData(EnigmaticRenderData.TRUE_NAME, Component.literal("(" + player.getDisplayName().getString() + ")"));
+        } else if (seesTrueName) {
+            event.setContent(player.getDisplayName());
+        } else {
+            event.setCanRender(TriState.FALSE);
+        }
     }
 
     @SubscribeEvent
-    private static void renderCape(@NotNull RenderCapeEvent event) {
-        if (!BaseElytraItem.getElytra(event.getEntity()).isEmpty()) event.setCanceled(true);
+    private static void submitNameplate(RenderNameTagEvent.DoRender event) {
+        EntityRenderState state = event.getEntityRenderState();
+        Component trueName = state.getRenderData(EnigmaticRenderData.TRUE_NAME);
+        if (trueName != null && event.getContent() == state.nameTag) {
+            event.getSubmitNodeCollector().submitNameTag(event.getPoseStack(), state.nameTagAttachment, 10, trueName,
+                    !state.isDiscrete, state.lightCoords, state.distanceToCameraSq, event.getCameraRenderState());
+        }
     }
 
     @SubscribeEvent
@@ -279,7 +317,7 @@ public class ClientEventHandler {
                 guiGraphics.text(font, title, x, y - 1, ARGB.opaque(boundaryColor));
                 guiGraphics.text(font, title, x, y, 0xFFFFE64E);
             }
-        } else if (event.getName().equals(VanillaGuiLayers.EXPERIENCE_BAR) && player != null && spellstone.is(EnigmaticItems.BLAZING_CORE)) {
+        } else if (event.getName().equals(VanillaGuiLayers.CONTEXTUAL_INFO_BAR) && player != null && spellstone.is(EnigmaticItems.BLAZING_CORE)) {
             if (minecraft.gameMode != null && minecraft.gameMode.hasExperience()) {
                 EnigmaticData data = player.getData(EnigmaticAttachments.ENIGMATIC_DATA);
                 int timer = data.getFireImmunityTimer();
@@ -296,6 +334,10 @@ public class ClientEventHandler {
                 guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, LAVA_BAR_BACKGROUND_SPRITE, 182, 5, 0, 0, x, y, 182, 5);
                 guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, LAVA_BAR_PROGRESS_SPRITE, 182, 5, 0, 0, x, y, k, 5);
             }
+        } else if (event.getName().equals(VanillaGuiLayers.CONTEXTUAL_INFO_BAR_BACKGROUND) && player != null && spellstone.is(EnigmaticItems.BLAZING_CORE)) {
+            EnigmaticData data = player.getData(EnigmaticAttachments.ENIGMATIC_DATA);
+            if (minecraft.gameMode != null && minecraft.gameMode.hasExperience() && (data.getFireImmunityTimer() != 0 || data.getFireImmunityTimerLast() != 0))
+                event.setCanceled(true);
         } else if (event.getName().equals(VanillaGuiLayers.FOOD_LEVEL) && minecraft.gameMode != null && minecraft.gameMode.canHurtPlayer()) {
             if (ForbiddenFruit.isForbiddenCursed(player)) {
                 event.setCanceled(true);

@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.compat.jei;
 
+import auviotre.enigmatic.legacy.client.ClientRecipes;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.client.screen.SpellstoneTableScreen;
 import auviotre.enigmatic.legacy.compat.jei.category.SpellstoneCraftingCategory;
@@ -22,13 +23,11 @@ import mezz.jei.api.recipe.vanilla.IJeiBrewingRecipe;
 import mezz.jei.api.recipe.vanilla.IVanillaRecipeFactory;
 import mezz.jei.api.registration.*;
 import net.minecraft.client.Minecraft;
-import net.minecraft.core.NonNullList;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
-import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import org.jetbrains.annotations.NotNull;
@@ -57,15 +56,15 @@ public class JEIHandler implements IModPlugin {
     }
 
     public void registerRecipeCatalysts(@NotNull IRecipeCatalystRegistration registration) {
-        registration.addRecipeCatalyst(EnigmaticBlocks.SPELLSTONE_TABLE.toStack(), EnigmaticRecipeTypes.SPELLSTONE_CRAFTING);
+        registration.addCraftingStation(EnigmaticRecipeTypes.SPELLSTONE_CRAFTING.get(), EnigmaticBlocks.SPELLSTONE_TABLE.toStack());
     }
 
     public void registerGuiHandlers(@NotNull IGuiHandlerRegistration registration) {
-        registration.addRecipeClickArea(SpellstoneTableScreen.class, 85, 53, 6, 6, EnigmaticRecipeTypes.SPELLSTONE_CRAFTING);
+        registration.addRecipeClickArea(SpellstoneTableScreen.class, 85, 53, 6, 6, EnigmaticRecipeTypes.SPELLSTONE_CRAFTING.get());
     }
 
     public void registerRecipeTransferHandlers(@NotNull IRecipeTransferRegistration registration) {
-        registration.addRecipeTransferHandler(SpellstoneTableMenu.class, EnigmaticMenus.SPELLSTONE_TABLE_MENU.get(), EnigmaticRecipeTypes.SPELLSTONE_CRAFTING, 0, 10, 11, 36);
+        registration.addRecipeTransferHandler(SpellstoneTableMenu.class, EnigmaticMenus.SPELLSTONE_TABLE_MENU.get(), EnigmaticRecipeTypes.SPELLSTONE_CRAFTING.get(), 0, 10, 11, 36);
     }
 
     public void registerVanillaCategoryExtensions(@NotNull IVanillaCategoryExtensionRegistration registration) {
@@ -81,14 +80,14 @@ public class JEIHandler implements IModPlugin {
 
     public void registerRecipes(@NotNull IRecipeRegistration registration) {
         IVanillaRecipeFactory factory = registration.getVanillaRecipeFactory();
-        RecipeManager manager = getLevel().getRecipeManager();
-        List<RecipeHolder<SpellstoneTableRecipe>> holders = manager.getAllRecipesFor(EnigmaticRecipes.SPELLSTONE_CRAFTING.get());
+        // 26.1.2 port: clients only know recipes the server syncs (see EnigmaticEventHandler#onDatapackSync).
+        List<RecipeHolder<SpellstoneTableRecipe>> holders = ClientRecipes.byType(EnigmaticRecipes.SPELLSTONE_CRAFTING.get());
         RecipeHolder<SpellstoneTableRecipe> fragmentation = new RecipeHolder<>(
-                EnigmaticLegacy.location("spellstone_fragmentation"),
-                new SpellstoneTableRecipe(EnigmaticItems.SPELLSTONE_DEBRIS.toStack(4), 0, NonNullList.create(), false)
+                SpellstoneCraftingCategory.FRAGMENTATION,
+                new SpellstoneTableRecipe(EnigmaticItems.SPELLSTONE_DEBRIS.toStack(4), 0, List.of(), false)
         );
-        registration.addRecipes(EnigmaticRecipeTypes.SPELLSTONE_CRAFTING, holders);
-        registration.addRecipes(EnigmaticRecipeTypes.SPELLSTONE_CRAFTING, List.of(fragmentation));
+        registration.addRecipes(EnigmaticRecipeTypes.SPELLSTONE_CRAFTING.get(), holders);
+        registration.addRecipes(EnigmaticRecipeTypes.SPELLSTONE_CRAFTING.get(), List.of(fragmentation));
 
 //        registration.addRecipes(RecipeTypes.CRAFTING, List.of(new RecipeHolder<>(
 //                EnigmaticLegacy.location("annihilating_sword"), new AnnihilatingRecipe(CraftingBookCategory.MISC)))
@@ -171,7 +170,7 @@ public class JEIHandler implements IModPlugin {
             damagedFully.setDamageValue(damagedFully.getMaxDamage());
             IJeiAnvilRecipe repairWithMaterial = factory.createAnvilRecipe(
                     List.of(damagedFully),
-                    List.of(repairIngredient.getItems()),
+                    repairIngredient.items().map(ItemStack::new).toList(),
                     damagedThreeQuartersSingletonList,
                     EnigmaticLegacy.location("materials_repair." + name)
             );

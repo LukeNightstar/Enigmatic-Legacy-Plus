@@ -4,56 +4,66 @@ import auviotre.enigmatic.legacy.contents.block.DimensionalAnchor;
 import auviotre.enigmatic.legacy.contents.block.entity.DimensionalAnchorEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
+import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.core.Direction;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import org.joml.Matrix4f;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.EnumSet;
+import java.util.Set;
 
 @OnlyIn(Dist.CLIENT)
-public class DimensionalAnchorRender implements BlockEntityRenderer<DimensionalAnchorEntity> {
+public class DimensionalAnchorRender implements BlockEntityRenderer<DimensionalAnchorEntity, DimensionalAnchorRender.State> {
     public DimensionalAnchorRender(BlockEntityRendererProvider.Context context) {
     }
 
-    public void render(DimensionalAnchorEntity entity, float partialTick, PoseStack poseStack, MultiBufferSource buffer, int packedLight, int packedOverlay) {
+    public State createRenderState() {
+        return new State();
+    }
+
+    public void extractRenderState(DimensionalAnchorEntity entity, State state, float partialTicks, Vec3 cameraPosition, ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress) {
+        BlockEntityRenderer.super.extractRenderState(entity, state, partialTicks, cameraPosition, breakProgress);
+        state.facesToShow.clear();
         if (entity.getBlockState().getValue(DimensionalAnchor.CHARGE) > 0) {
-            Matrix4f matrix4f = poseStack.last().pose();
-            this.renderCube(entity, matrix4f, buffer.getBuffer(this.renderType()));
+            for (Direction direction : Direction.values()) {
+                if (entity.shouldRenderFace(direction)) state.facesToShow.add(direction);
+            }
         }
     }
 
-    private void renderCube(DimensionalAnchorEntity entity, Matrix4f pose, VertexConsumer consumer) {
-        float f = this.getOffsetDown();
-        float f1 = this.getOffsetUp();
-        this.renderFace(entity, pose, consumer, 0.0F, 1.0F, 0.0F, 1.0F, 1.0F, 1.0F, 1.0F, 1.0F, Direction.SOUTH);
-        this.renderFace(entity, pose, consumer, 0.0F, 1.0F, 1.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, Direction.NORTH);
-        this.renderFace(entity, pose, consumer, 1.0F, 1.0F, 1.0F, 0.0F, 0.0F, 1.0F, 1.0F, 0.0F, Direction.EAST);
-        this.renderFace(entity, pose, consumer, 0.0F, 0.0F, 0.0F, 1.0F, 0.0F, 1.0F, 1.0F, 0.0F, Direction.WEST);
-        this.renderFace(entity, pose, consumer, 0.0F, 1.0F, f, f, 0.0F, 0.0F, 1.0F, 1.0F, Direction.DOWN);
-        this.renderFace(entity, pose, consumer, 0.1F, 0.9F, f1, f1, 0.9F, 0.9F, 0.1F, 0.1F, Direction.UP);
+    public void submit(State state, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera) {
+        if (state.facesToShow.isEmpty()) return;
+        collector.submitCustomGeometry(poseStack, RenderTypes.endPortal(), (pose, consumer) -> {
+            float down = 0.375F;
+            float up = 1.0F - (1F / 16F);
+            renderFace(state, pose, consumer, 0.0F, 1.0F, 0.0F, 1.0F, 1.0F, 1.0F, 1.0F, 1.0F, Direction.SOUTH);
+            renderFace(state, pose, consumer, 0.0F, 1.0F, 1.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, Direction.NORTH);
+            renderFace(state, pose, consumer, 1.0F, 1.0F, 1.0F, 0.0F, 0.0F, 1.0F, 1.0F, 0.0F, Direction.EAST);
+            renderFace(state, pose, consumer, 0.0F, 0.0F, 0.0F, 1.0F, 0.0F, 1.0F, 1.0F, 0.0F, Direction.WEST);
+            renderFace(state, pose, consumer, 0.0F, 1.0F, down, down, 0.0F, 0.0F, 1.0F, 1.0F, Direction.DOWN);
+            renderFace(state, pose, consumer, 0.1F, 0.9F, up, up, 0.9F, 0.9F, 0.1F, 0.1F, Direction.UP);
+        });
     }
 
-    private void renderFace(DimensionalAnchorEntity entity, Matrix4f pPose, VertexConsumer consumer, float pX0, float pX1, float pY0, float pY1, float pZ0, float pZ1, float pZ2, float pZ3, Direction pDirection) {
-        if (entity.shouldRenderFace(pDirection)) {
-            consumer.addVertex(pPose, pX0, pY0, pZ0);
-            consumer.addVertex(pPose, pX1, pY0, pZ1);
-            consumer.addVertex(pPose, pX1, pY1, pZ2);
-            consumer.addVertex(pPose, pX0, pY1, pZ3);
+    private static void renderFace(State state, PoseStack.Pose pose, VertexConsumer consumer, float x0, float x1, float y0, float y1, float z0, float z1, float z2, float z3, Direction direction) {
+        if (state.facesToShow.contains(direction)) {
+            consumer.addVertex(pose, x0, y0, z0);
+            consumer.addVertex(pose, x1, y0, z1);
+            consumer.addVertex(pose, x1, y1, z2);
+            consumer.addVertex(pose, x0, y1, z3);
         }
     }
 
-    protected float getOffsetUp() {
-        return 1.0F - (1F / 16F);
-    }
-
-    protected float getOffsetDown() {
-        return 0.375F;
-    }
-
-    protected RenderType renderType() {
-        return RenderType.endPortal();
+    @OnlyIn(Dist.CLIENT)
+    public static class State extends BlockEntityRenderState {
+        public final Set<Direction> facesToShow = EnumSet.noneOf(Direction.class);
     }
 }

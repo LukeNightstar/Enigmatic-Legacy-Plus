@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.block;
 
+import net.minecraft.world.level.redstone.Orientation;
 import auviotre.enigmatic.legacy.registries.RegistrationContext;
 import auviotre.enigmatic.legacy.registries.EnigmaticItems;
 import auviotre.enigmatic.legacy.registries.EnigmaticSounds;
@@ -70,7 +71,8 @@ public class AstralGlassPane extends IronBarsBlock {
         };
     }
 
-    protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block neighborBlock, BlockPos neighborPos, boolean movedByPiston) {
+    @Override
+    protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block neighborBlock, @Nullable Orientation orientation, boolean movedByPiston) {
         if (!level.isClientSide() && level.hasNeighborSignal(pos))
             level.setBlock(pos, state.setValue(STYLE, level.getBestNeighborSignal(pos) / 4 % 4), 3);
     }

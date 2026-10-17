@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.item.legacy;
 
+import auviotre.enigmatic.legacy.contents.item.generic.BaseDrinkableItem;
 import auviotre.enigmatic.legacy.api.item.IItemHelper;
 import auviotre.enigmatic.legacy.contents.item.food.ForbiddenFruit;
 import auviotre.enigmatic.legacy.contents.item.generic.BaseItem;
@@ -81,12 +82,9 @@ public class UnholyGrail extends BaseItem {
         return InteractionResult.CONSUME;
     }
 
-    public SoundEvent getDrinkingSound() {
-        return SoundEvents.HONEY_DRINK.value();
-    }
-
-    public SoundEvent getEatingSound() {
-        return SoundEvents.HONEY_DRINK.value();
+    @Override
+    public void onUseTick(Level level, LivingEntity entity, ItemStack stack, int remainingTicks) {
+        BaseDrinkableItem.playDrinkSound(entity, this.getUseDuration(stack, entity), remainingTicks, SoundEvents.HONEY_DRINK.value());
     }
 
     public int getUseDuration(ItemStack stack, LivingEntity entity) {

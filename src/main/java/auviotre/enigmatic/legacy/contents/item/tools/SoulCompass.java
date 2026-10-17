@@ -1,5 +1,7 @@
 package auviotre.enigmatic.legacy.contents.item.tools;
 
+import net.minecraft.world.entity.ItemOwner;
+import auviotre.enigmatic.legacy.client.item.LegacyItemProperty;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.api.item.IItemHelper;
 import auviotre.enigmatic.legacy.contents.entity.misc.PermanentItemEntity;
@@ -9,8 +11,6 @@ import auviotre.enigmatic.legacy.handlers.SoulArchive;
 import auviotre.enigmatic.legacy.registries.EnigmaticItems;
 import com.google.common.base.Objects;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.item.ClampedItemPropertyFunction;
-import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
@@ -69,12 +69,12 @@ public class SoulCompass extends BaseCursedItem {
     public void registerVariants() {
         this.wobble = new CompassWobble(0.1);
         this.wobbleRandom = new CompassWobble(0.6);
-        ItemProperties.register(this, Identifier.withDefaultNamespace("angle"), new ClampedItemPropertyFunction() {
+        LegacyItemProperty.register(this, Identifier.withDefaultNamespace("angle"), new LegacyItemProperty.Function() {
             private final CompassWobble wobble = SoulCompass.this.wobble;
             private final CompassWobble wobbleRandom = SoulCompass.this.wobbleRandom;
 
-            public float unclampedCall(ItemStack stack, @Nullable ClientLevel level, @Nullable LivingEntity living, int seed) {
-                Entity entity = living != null ? living : stack.getEntityRepresentation();
+            public float get(ItemStack stack, @Nullable ClientLevel level, @Nullable LivingEntity living, @Nullable ItemOwner owner, int seed) {
+                Entity entity = living != null ? living : owner instanceof Entity ownerEntity ? ownerEntity : null;
                 if (entity == null) return 0.0F;
                 if (level == null && entity.level() instanceof ClientLevel) {
                     level = (ClientLevel) entity.level();

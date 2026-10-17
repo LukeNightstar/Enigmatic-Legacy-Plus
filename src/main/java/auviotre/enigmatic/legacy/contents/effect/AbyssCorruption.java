@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.effect;
 
+import net.minecraft.server.level.ServerLevel;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.handlers.EnigmaticHandler;
 import auviotre.enigmatic.legacy.registries.EnigmaticDamageTypes;
@@ -29,7 +30,8 @@ public class AbyssCorruption extends MobEffect {
         NeoForge.EVENT_BUS.register(this);
     }
 
-    public boolean applyEffectTick(LivingEntity entity, int amplifier) {
+    @Override
+    public boolean applyEffectTick(ServerLevel level, LivingEntity entity, int amplifier) {
         entity.hurt(EnigmaticDamageTypes.source(entity.level(), EnigmaticDamageTypes.ABYSS), 2.0F * (float) Math.pow(2, (double) amplifier / 2));
 //        entity.invulnerableTime = 1;
         return true;

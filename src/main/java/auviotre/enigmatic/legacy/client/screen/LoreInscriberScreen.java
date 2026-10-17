@@ -1,11 +1,10 @@
 package auviotre.enigmatic.legacy.client.screen;
 
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.contents.gui.LoreInscriberMenu;
 import auviotre.enigmatic.legacy.packets.server.LoreInscriberRenamePacket;
-import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -39,30 +38,26 @@ public class LoreInscriberScreen extends AbstractContainerScreen<LoreInscriberMe
         this.name.setBordered(false);
         this.name.setMaxLength(128);
         this.name.setResponder(this::onNameChanged);
-        this.addWidget(this.name);
+        this.addRenderableWidget(this.name);
         this.setInitialFocus(this.name);
     }
 
+    @Override
     protected void init() {
         super.init();
         this.subInit();
         this.menu.addSlotListener(this);
     }
 
+    @Override
     public void removed() {
         super.removed();
         this.menu.removeSlotListener(this);
     }
 
-    public void render(GuiGraphicsExtractor graphics, int x, int y, float partialTick) {
-        super.render(graphics, x, y, partialTick);
-        this.renderNameField(graphics, x, y, partialTick);
-        this.renderTooltip(graphics, x, y);
-    }
-
-    protected void renderBg(GuiGraphicsExtractor graphics, float partialTicks, int x, int y) {
-        RenderSystem.clearColor(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.setShaderTexture(0, TEXTURE);
+    @Override
+    public void extractBackground(GuiGraphicsExtractor graphics, int x, int y, float partialTicks) {
+        super.extractBackground(graphics, x, y, partialTicks);
         int i = (this.width - this.imageWidth) / 2;
         int j = (this.height - this.imageHeight) / 2;
         graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, i, j, (float) 0, (float) 0, this.imageWidth, this.imageHeight, 256, 256);
@@ -72,23 +67,22 @@ public class LoreInscriberScreen extends AbstractContainerScreen<LoreInscriberMe
         }
     }
 
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (keyCode == 256 && this.minecraft.player != null) this.minecraft.player.closeContainer();
-        return this.name.keyPressed(keyCode, scanCode, modifiers) || this.name.canConsumeInput() || super.keyPressed(keyCode, scanCode, modifiers);
+    @Override
+    public boolean keyPressed(KeyEvent event) {
+        if (event.isEscape() && this.minecraft.player != null) this.minecraft.player.closeContainer();
+        return this.name.keyPressed(event) || this.name.canConsumeInput() || super.keyPressed(event);
     }
 
-    public void resize(Minecraft minecraft, int width, int height) {
+    @Override
+    public void resize(int width, int height) {
         String s = this.name.getValue();
-        this.init(minecraft, width, height);
+        this.init(width, height);
         this.name.setValue(s);
     }
 
-    protected void renderLabels(GuiGraphicsExtractor graphics, int x, int y) {
+    @Override
+    protected void extractLabels(GuiGraphicsExtractor graphics, int x, int y) {
         graphics.text(this.font, this.title, 52, 13, 0xFF404040);
-    }
-
-    public void renderNameField(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
-        this.name.render(graphics, mouseX, mouseY, partialTicks);
     }
 
     private void onNameChanged(String input) {

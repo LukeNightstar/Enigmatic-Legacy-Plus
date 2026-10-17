@@ -8,18 +8,17 @@ import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
-import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.util.Unit;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
-public class EngineHookModel extends Model {
+public class EngineHookModel extends Model<Unit> {
     public static final ModelLayerLocation LAYER = new ModelLayerLocation(EnigmaticLegacy.location("engine_hook"), "main");
-    private final ModelPart main;
 
     public EngineHookModel(ModelPart root) {
-        super(RenderType::entitySolid);
-        this.main = root;
+        super(root, RenderTypes::entitySolid);
     }
 
     public static LayerDefinition createLayer() {
@@ -35,10 +34,5 @@ public class EngineHookModel extends Model {
                 .texOffs(0, 0).addBox(0.0F, -2.0F, -4.0F, 4.0F, 1.0F, 4.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(0.0F, 2.0F, 0.0F, 0.0F, -0.7854F * 3.0F, 0.0F));
 
         return LayerDefinition.create(meshdefinition, 16, 16);
-    }
-
-    @Override
-    public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, int color) {
-        main.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
     }
 }

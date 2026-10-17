@@ -94,8 +94,9 @@ public class TheJudgement extends Item {
         return super.use(level, player, hand);
     }
 
-    public boolean canAttackBlock(BlockState state, Level level, BlockPos pos, Player player) {
-        return !player.isCreative();
+    @Override
+    public boolean canDestroyBlock(ItemStack stack, BlockState state, Level level, BlockPos pos, LivingEntity user) {
+        return !(user instanceof Player player && player.isCreative());
     }
 
     public boolean isFoil(ItemStack stack) {

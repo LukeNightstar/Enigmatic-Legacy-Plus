@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.item.spellstones.other;
 
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
 import java.util.Optional;
@@ -342,14 +343,17 @@ public class SpellstoneSword extends Item {
         }
     }
 
-    public String getDescriptionId(ItemStack stack) {
+    // 26.1.2 port: per-stack description ids are gone; the resonance specific name is returned directly.
+    @Override
+    public Component getName(ItemStack stack) {
         ItemStack resonance = getResonance(stack);
-        if (resonance.isEmpty()) return super.getDescriptionId();
-        return super.getDescriptionId() + "." + IItemHelper.getLocation(resonance.getItem()).getPath();
+        if (resonance.isEmpty()) return super.getName(stack);
+        return Component.translatable(this.getDescriptionId() + "." + IItemHelper.getLocation(resonance.getItem()).getPath());
     }
 
-    public boolean canAttackBlock(BlockState state, Level level, BlockPos pos, Player player) {
-        return !player.isCreative();
+    @Override
+    public boolean canDestroyBlock(ItemStack stack, BlockState state, Level level, BlockPos pos, LivingEntity user) {
+        return !(user instanceof Player player && player.isCreative());
     }
 
     @Override

@@ -1,5 +1,7 @@
 package auviotre.enigmatic.legacy.compat.jei.extension;
 
+import java.util.Optional;
+import net.minecraft.world.item.crafting.display.SlotDisplay;
 import auviotre.enigmatic.legacy.api.item.ITaintable;
 import auviotre.enigmatic.legacy.contents.crafting.CursedShapedRecipe;
 import auviotre.enigmatic.legacy.registries.EnigmaticComponents;
@@ -19,22 +21,35 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CursedRecipeExtension implements ICraftingCategoryExtension<CursedShapedRecipe> {
+    @Override
+    public List<SlotDisplay> getIngredients(RecipeHolder<CursedShapedRecipe> recipeHolder) {
+        return recipeHolder.value().pattern.ingredients().stream().map(ingredient -> ingredient.map(Ingredient::display).orElse(SlotDisplay.Empty.INSTANCE)).toList();
+    }
+
+    @Override
+    public int getWidth(RecipeHolder<CursedShapedRecipe> recipeHolder) {
+        return recipeHolder.value().getWidth();
+    }
+
+    @Override
+    public int getHeight(RecipeHolder<CursedShapedRecipe> recipeHolder) {
+        return recipeHolder.value().getHeight();
+    }
+
+    @Override
     public void setRecipe(@NotNull RecipeHolder<CursedShapedRecipe> recipeHolder, IRecipeLayoutBuilder builder, ICraftingGridHelper craftingGridHelper, IFocusGroup focuses) {
         CursedShapedRecipe recipe = recipeHolder.value();
         List<List<ItemStack>> inputs = new ArrayList<>();
-        for (Ingredient ingredient : recipe.pattern.ingredients()) {
+        for (Optional<Ingredient> ingredient : recipe.pattern.ingredients()) {
             List<ItemStack> list = new ArrayList<>();
-            for (ItemStack stack : ingredient.getItems()) {
+            for (ItemStack stack : ingredient.map(value -> value.items().map(ItemStack::new).toList()).orElse(List.of())) {
                 if (stack.getItem() instanceof ITaintable) stack.set(EnigmaticComponents.TAINTABLE, true);
                 list.add(stack);
             }
             inputs.add(list);
         }
         craftingGridHelper.createAndSetInputs(builder, inputs, recipe.getWidth(), recipe.getHeight());
-        ClientLevel level = Minecraft.getInstance().level;
-        if (level == null) throw new NullPointerException("level must not be null.");
-        RegistryAccess registryAccess = level.registryAccess();
-        ItemStack result = recipe.getResultItem(registryAccess);
+        ItemStack result = recipe.getResultItem();
         if (result.getItem() instanceof ITaintable) result.set(EnigmaticComponents.TAINTABLE, true);
         craftingGridHelper.createAndSetOutputs(builder, List.of(result));
     }

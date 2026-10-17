@@ -43,11 +43,6 @@
   },
   "client": [
     "MixinWorldListEntry",
-    "accessor.EffectInstanceAccessor",
-    "accessor.PostChainAccessor",
-    "client.MixinEntityRenderer",
-    "client.MixinGameRenderer",
-    "client.MixinItemRenderer",
     "compat.MixinApothScreen",
     "compat.MixinGuiBookLanding"
   ]

@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.client.particles;
 
+import net.minecraft.util.RandomSource;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleProvider;
@@ -42,7 +43,8 @@ public class StarDustParticle extends SimpleAnimatedParticle {
             this.sprites = spriteSet;
         }
 
-        public Particle createParticle(SimpleParticleType type, ClientLevel level, double posX, double posY, double posZ, double speedX, double speedY, double speedZ) {
+        @Override
+        public Particle createParticle(SimpleParticleType type, ClientLevel level, double posX, double posY, double posZ, double speedX, double speedY, double speedZ, RandomSource random) {
             return new StarDustParticle(level, 12841470, posX, posY, posZ, speedX, speedY, speedZ, this.sprites);
         }
     }

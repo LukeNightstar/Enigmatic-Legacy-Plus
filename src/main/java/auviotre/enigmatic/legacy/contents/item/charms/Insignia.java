@@ -121,49 +121,4 @@ public class Insignia extends BaseCurioItem {
         CuriosApi.addSlotModifier(attributes, "charm", IItemHelper.getLocation(this), 1.0, AttributeModifier.Operation.ADD_VALUE);
         return attributes;
     }
-
-    @OnlyIn(Dist.CLIENT)
-    public static void renderInsigniaNameplate(Entity entity, Component name, PoseStack stack, MultiBufferSource buffer, int packedLight, EntityRenderDispatcher dispatcher, float partialTick, Font font) {
-        double d0 = dispatcher.distanceToSqr(entity);
-        if (ClientHooks.isNameplateInRenderDistance(entity, d0)) {
-            Vec3 vec3 = entity.getAttachments().getNullable(EntityAttachment.NAME_TAG, 0, entity.getViewYRot(partialTick));
-            if (vec3 == null) return;
-            boolean render = font.width(name) > 0;
-            boolean override = false;
-            if (!render && entity != Minecraft.getInstance().player && EnigmaticItems.INSIGNIA.get().canSeeTrueName(Minecraft.getInstance().player)) {
-                name = entity.getDisplayName();
-                render = override = true;
-            }
-            boolean flag = !entity.isDiscrete();
-            float f = entity.getBbHeight() + 0.5F;
-            int i = 0;
-            stack.pushPose();
-            stack.translate(vec3.x, vec3.y + 0.5F, vec3.z);
-            stack.mulPose(dispatcher.cameraOrientation());
-            stack.scale(0.025F, -0.025F, 0.025F);
-            Matrix4f matrix4f = stack.last().pose();
-            float f1 = Minecraft.getInstance().options.getBackgroundOpacity(0.25F);
-            int j = (int) (f1 * 255.0F) << 24;
-            float f2 = (float) (-font.width(name) / 2);
-            if (render) {
-                font.drawInBatch(name, f2, i, 0x20ffffff, false, matrix4f, buffer, flag ? Font.DisplayMode.SEE_THROUGH : Font.DisplayMode.NORMAL, j, packedLight);
-                if (flag) {
-                    font.drawInBatch(name, f2, i, 0xffffffff, false, matrix4f, buffer, Font.DisplayMode.NORMAL, 0, packedLight);
-                }
-            }
-            if (!override && entity != Minecraft.getInstance().player && EnigmaticItems.INSIGNIA.get().canSeeTrueName(Minecraft.getInstance().player)) {
-                stack.pushPose();
-                name = Component.literal("(" + entity.getDisplayName().getString() + ")");
-                f2 = (float) (-font.width(name) / 2);
-                float scale = 0.4F;
-                int offset = (int) (-10 * (1.0F / scale));
-                stack.scale(scale, scale, scale);
-                matrix4f = stack.last().pose();
-                font.drawInBatch(name, f2, i - offset, 0x20ffffff, false, matrix4f, buffer, flag ? Font.DisplayMode.SEE_THROUGH : Font.DisplayMode.NORMAL, j, packedLight);
-                if (flag) font.drawInBatch(name, f2, i - offset, 0xffffffff, false, matrix4f, buffer, Font.DisplayMode.NORMAL, 0, packedLight);
-                stack.popPose();
-            }
-            stack.popPose();
-        }
-    }
 }

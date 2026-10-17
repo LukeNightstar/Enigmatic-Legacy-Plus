@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.item.generic;
 
+import net.minecraft.util.Mth;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.component.Consumable;
 import net.minecraft.world.food.FoodProperties;
@@ -61,8 +62,20 @@ public class BaseDrinkableItem extends BaseItem {
         return ItemUseAnimation.DRINK;
     }
 
-    public SoundEvent getEatingSound() {
+    // 26.1.2 port: Item#getEatingSound is gone and these items have no CONSUMABLE component,
+    // so the drinking sound is played here the way Consumable does it.
+    @Override
+    public void onUseTick(Level level, LivingEntity entity, ItemStack stack, int remainingTicks) {
+        playDrinkSound(entity, this.getUseDuration(stack, entity), remainingTicks, this.getDrinkSound());
+    }
+
+    public SoundEvent getDrinkSound() {
         return SoundEvents.GENERIC_DRINK.value();
+    }
+
+    public static void playDrinkSound(LivingEntity entity, int duration, int remainingTicks, SoundEvent sound) {
+        if (duration - remainingTicks > (int) (duration * 0.21875F) && remainingTicks % 4 == 0)
+            entity.playSound(sound, 0.5F, Mth.randomBetween(entity.getRandom(), 0.9F, 1.0F));
     }
 
     public boolean canDrink(Level level, Player player, ItemStack stack) {

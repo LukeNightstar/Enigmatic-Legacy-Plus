@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.compat.jei.category;
 
+import mezz.jei.api.recipe.types.IRecipeType;
 import net.minecraft.client.renderer.RenderPipelines;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.api.item.ITaintable;
@@ -12,7 +13,6 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
@@ -35,7 +35,8 @@ public class TaintingCategory implements IRecipeCategory<TaintingCategory.Recipe
         return new Recipe(input, condition);
     }
 
-    public RecipeType<Recipe> getRecipeType() {
+    @Override
+    public IRecipeType<Recipe> getRecipeType() {
         return EnigmaticRecipeTypes.TAINTING;
     }
 
@@ -64,7 +65,7 @@ public class TaintingCategory implements IRecipeCategory<TaintingCategory.Recipe
         ItemStack output = recipe.input().copy();
         if (output.getItem() instanceof ITaintable) output.set(EnigmaticComponents.TAINTABLE.get(), true);
         builder.addOutputSlot(79, 13).addItemStack(output).setStandardSlotBackground();
-        builder.addSlot(RecipeIngredientRole.CATALYST, 46, 23).addIngredients(recipe.condition());
+        builder.addSlot(RecipeIngredientRole.CRAFTING_STATION, 46, 23).addIngredients(recipe.condition());
     }
 
     public record Recipe(ItemStack input, Ingredient condition) {

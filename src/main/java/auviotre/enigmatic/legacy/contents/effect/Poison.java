@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.effect;
 
+import net.minecraft.server.level.ServerLevel;
 import auviotre.enigmatic.legacy.registries.EnigmaticEffects;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
@@ -24,7 +25,8 @@ public class Poison extends MobEffect {
         NeoForge.EVENT_BUS.register(this);
     }
 
-    public boolean applyEffectTick(LivingEntity entity, int amplifier) {
+    @Override
+    public boolean applyEffectTick(ServerLevel level, LivingEntity entity, int amplifier) {
         if (entity.getHealth() > (1.5F + amplifier * 0.125F)) {
             Registry<DamageType> types = entity.damageSources().damageTypes;
             Holder.Reference<DamageType> type = types.get(NeoForgeMod.POISON_DAMAGE).orElse(types.getOrThrow(DamageTypes.MAGIC));

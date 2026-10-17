@@ -8,7 +8,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.LevelLoadingScreen;
-import net.minecraft.client.gui.screens.ReceivingLevelScreen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.network.chat.Component;
@@ -56,13 +55,13 @@ public class QuoteHandler {
         Minecraft mc = Minecraft.getInstance();
 
         if (mc.player == null || mc.level == null) return;
-        if (mc.screen instanceof LevelLoadingScreen || mc.screen instanceof ReceivingLevelScreen) return;
+        if (mc.screen instanceof LevelLoadingScreen) return;
 
         this.delayTicks--;
 
         if (this.delayTicks == 0) {
             SimpleSoundInstance instance = new SimpleSoundInstance(
-                    this.currentQuote.getSound().getLocation(),
+                    this.currentQuote.getSound().location(),
                     SoundSource.VOICE, 0.7F, 1, RANDOM, false, 0, SoundInstance.Attenuation.NONE, 0, 0, 0, true
             );
 

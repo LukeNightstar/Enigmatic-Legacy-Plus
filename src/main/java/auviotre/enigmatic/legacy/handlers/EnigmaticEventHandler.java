@@ -1,5 +1,7 @@
 package auviotre.enigmatic.legacy.handlers;
 
+import auviotre.enigmatic.legacy.registries.EnigmaticRecipes;
+import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.event.entity.living.LivingShieldBlockEvent;
 import net.minecraft.tags.ItemTags;
 import auviotre.enigmatic.legacy.handlers.EnigmaticHandler;
@@ -73,6 +75,12 @@ import net.minecraft.world.entity.monster.illager.Vindicator;
 @Mod(value = EnigmaticLegacy.MODID)
 @EventBusSubscriber(modid = EnigmaticLegacy.MODID)
 public class EnigmaticEventHandler {
+    // 26.1.2 port: clients only receive recipes a mod asks for; JEI's spellstone table category needs these.
+    @SubscribeEvent
+    private static void onDatapackSync(@NotNull OnDatapackSyncEvent event) {
+        event.sendRecipes(EnigmaticRecipes.SPELLSTONE_CRAFTING.get());
+    }
+
     @SubscribeEvent
     private static void onShieldBlock(@NotNull LivingShieldBlockEvent event) {
         LivingEntity blocker = event.getEntity();

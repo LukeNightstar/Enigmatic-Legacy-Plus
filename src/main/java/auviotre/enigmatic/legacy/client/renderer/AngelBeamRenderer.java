@@ -5,18 +5,23 @@ import auviotre.enigmatic.legacy.contents.entity.projectile.AngelBeam;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
-public class AngelBeamRenderer extends EntityRenderer<AngelBeam> {
+@OnlyIn(Dist.CLIENT)
+public class AngelBeamRenderer extends EntityRenderer<AngelBeam, AngelBeamRenderer.State> {
     private static final Identifier TEXTURE = EnigmaticLegacy.location("textures/entity/projectiles/angel_beam.png");
 
     public AngelBeamRenderer(EntityRendererProvider.Context context) {
@@ -36,14 +41,22 @@ public class AngelBeamRenderer extends EntityRenderer<AngelBeam> {
         return 15;
     }
 
-    public boolean shouldRender(AngelBeam livingEntity, Frustum camera, double camX, double camY, double camZ) {
+    public boolean shouldRender(AngelBeam entity, Frustum camera, double camX, double camY, double camZ) {
         return true;
     }
 
-    public void render(AngelBeam beam, float entityYaw, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight) {
-        Vec3 beginning = new Vec3(beam.getBeginning());
-        Vec3 position = beam.getEyePosition(partialTick);
-        Vec3 delta = beginning.subtract(position);
+    public State createRenderState() {
+        return new State();
+    }
+
+    public void extractRenderState(AngelBeam beam, State state, float partialTick) {
+        super.extractRenderState(beam, state, partialTick);
+        state.delta = new Vec3(beam.getBeginning()).subtract(beam.getEyePosition(partialTick));
+        state.flicker = beam.tickCount % 4 < 2;
+    }
+
+    public void submit(State state, PoseStack poseStack, SubmitNodeCollector collector, CameraRenderState camera) {
+        Vec3 delta = state.delta;
         float len = (float) delta.length();
         delta = delta.normalize();
         float phi = (float) Math.acos(delta.y);
@@ -51,10 +64,9 @@ public class AngelBeamRenderer extends EntityRenderer<AngelBeam> {
         poseStack.pushPose();
         poseStack.mulPose(Axis.YP.rotationDegrees((float) Math.toDegrees(Math.PI / 2 - theta)));
         poseStack.mulPose(Axis.XP.rotationDegrees((float) Math.toDegrees(phi)));
-
-        float timer = (beam.tickCount + partialTick) * 8.0F;
+        float timer = state.ageInTicks * 8.0F;
         float f7 = timer * 0.05F * -1.5F;
-        float f8 = (float) Math.pow((48.0F - beam.tickCount - partialTick) / 48.0F, 0.6);
+        float f8 = (float) Math.pow((48.0F - state.ageInTicks) / 48.0F, 0.6);
         int alpha = Math.clamp((int) (f8 * 256), 0, 255);
         float f11 = Mth.cos(f7 + (float) (Math.PI * 3.0 / 4.0)) * 0.282F;
         float f12 = Mth.sin(f7 + (float) (Math.PI * 3.0 / 4.0)) * 0.282F;
@@ -74,35 +86,37 @@ public class AngelBeamRenderer extends EntityRenderer<AngelBeam> {
         float f26 = Mth.sin(f7 + (float) (Math.PI * 3.0 / 2.0)) * 0.2F;
         float v1 = 0.0F;
         float v2 = 1.0F;
-        VertexConsumer consumer = bufferSource.getBuffer(RenderType.entityTranslucentCull(TEXTURE));
-        PoseStack.Pose pose = poseStack.last();
-        vertex(consumer, pose, f19, len, f20, alpha, 0.4999F, v2);
-        vertex(consumer, pose, f19, 0.0F, f20, alpha, 0.4999F, v1);
-        vertex(consumer, pose, f21, 0.0F, f22, alpha, 0.0F, v1);
-        vertex(consumer, pose, f21, len, f22, alpha, 0.0F, v2);
-        vertex(consumer, pose, f19, len, f20, alpha, 0.4999F, v2);
-        vertex(consumer, pose, f21, len, f22, alpha, 0.0F, v2);
-        vertex(consumer, pose, f21, 0.0F, f22, alpha, 0.0F, v1);
-        vertex(consumer, pose, f19, 0.0F, f20, alpha, 0.4999F, v1);
-        vertex(consumer, pose, f23, len, f24, alpha, 0.4999F, v2);
-        vertex(consumer, pose, f23, 0.0F, f24, alpha, 0.4999F, v1);
-        vertex(consumer, pose, f25, 0.0F, f26, alpha, 0.0F, v1);
-        vertex(consumer, pose, f25, len, f26, alpha, 0.0F, v2);
-        vertex(consumer, pose, f23, len, f24, alpha, 0.4999F, v2);
-        vertex(consumer, pose, f25, len, f26, alpha, 0.0F, v2);
-        vertex(consumer, pose, f25, 0.0F, f26, alpha, 0.0F, v1);
-        vertex(consumer, pose, f23, 0.0F, f24, alpha, 0.4999F, v1);
+        float yOffset = state.flicker ? 0.5F : 0.0F;
+        collector.submitCustomGeometry(poseStack, RenderTypes.entityTranslucent(TEXTURE), (pose, consumer) -> {
+            vertex(consumer, pose, f19, len, f20, alpha, 0.4999F, v2);
+            vertex(consumer, pose, f19, 0.0F, f20, alpha, 0.4999F, v1);
+            vertex(consumer, pose, f21, 0.0F, f22, alpha, 0.0F, v1);
+            vertex(consumer, pose, f21, len, f22, alpha, 0.0F, v2);
+            vertex(consumer, pose, f19, len, f20, alpha, 0.4999F, v2);
+            vertex(consumer, pose, f21, len, f22, alpha, 0.0F, v2);
+            vertex(consumer, pose, f21, 0.0F, f22, alpha, 0.0F, v1);
+            vertex(consumer, pose, f19, 0.0F, f20, alpha, 0.4999F, v1);
+            vertex(consumer, pose, f23, len, f24, alpha, 0.4999F, v2);
+            vertex(consumer, pose, f23, 0.0F, f24, alpha, 0.4999F, v1);
+            vertex(consumer, pose, f25, 0.0F, f26, alpha, 0.0F, v1);
+            vertex(consumer, pose, f25, len, f26, alpha, 0.0F, v2);
+            vertex(consumer, pose, f23, len, f24, alpha, 0.4999F, v2);
+            vertex(consumer, pose, f25, len, f26, alpha, 0.0F, v2);
+            vertex(consumer, pose, f25, 0.0F, f26, alpha, 0.0F, v1);
+            vertex(consumer, pose, f23, 0.0F, f24, alpha, 0.4999F, v1);
 
-        float yOffset = 0.0F;
-        if (beam.tickCount % 4 < 2) yOffset = 0.5F;
-        vertex(consumer, pose, f11, len, f12, alpha, 0.5F, yOffset + 0.5F);
-        vertex(consumer, pose, f13, len, f14, alpha, 1.0F, yOffset + 0.5F);
-        vertex(consumer, pose, f17, len, f18, alpha, 1.0F, yOffset);
-        vertex(consumer, pose, f15, len, f16, alpha, 0.5F, yOffset);
+            vertex(consumer, pose, f11, len, f12, alpha, 0.5F, yOffset + 0.5F);
+            vertex(consumer, pose, f13, len, f14, alpha, 1.0F, yOffset + 0.5F);
+            vertex(consumer, pose, f17, len, f18, alpha, 1.0F, yOffset);
+            vertex(consumer, pose, f15, len, f16, alpha, 0.5F, yOffset);
+        });
         poseStack.popPose();
+        super.submit(state, poseStack, collector, camera);
     }
 
-    public Identifier getTextureLocation(AngelBeam angelBeam) {
-        return TEXTURE;
+    @OnlyIn(Dist.CLIENT)
+    public static class State extends EntityRenderState {
+        public Vec3 delta = Vec3.ZERO;
+        public boolean flicker;
     }
 }

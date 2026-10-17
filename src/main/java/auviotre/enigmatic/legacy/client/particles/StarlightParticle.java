@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.client.particles;
 
+import net.minecraft.util.RandomSource;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.*;
 import net.minecraft.core.particles.SimpleParticleType;
@@ -21,11 +22,9 @@ public class StarlightParticle extends SimpleAnimatedParticle {
         this.setFadeColor(0x22FFFFFF);
     }
 
-    public ParticleRenderType getRenderType() {
-        return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
-    }
 
-    public int getLightColor(float partialTick) {
+    @Override
+    public int getLightCoords(float partialTick) {
         return 15728880;
     }
 
@@ -42,7 +41,8 @@ public class StarlightParticle extends SimpleAnimatedParticle {
             this.sprite = spriteSet;
         }
 
-        public Particle createParticle(SimpleParticleType type, ClientLevel level, double posX, double posY, double posZ, double speedX, double speedY, double speedZ) {
+        @Override
+        public Particle createParticle(SimpleParticleType type, ClientLevel level, double posX, double posY, double posZ, double speedX, double speedY, double speedZ, RandomSource random) {
             return new StarlightParticle(level, posX, posY, posZ, speedX, speedY, speedZ, this.sprite);
         }
     }

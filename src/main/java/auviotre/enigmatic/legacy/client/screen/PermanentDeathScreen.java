@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.client.screen;
 
+import net.minecraft.client.gui.TextAlignment;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
@@ -24,10 +25,12 @@ public class PermanentDeathScreen extends Screen {
         this.reason = reason;
     }
 
+    @Override
     public boolean shouldCloseOnEsc() {
         return false;
     }
 
+    @Override
     protected void init() {
         this.clearWidgets();
         this.message = MultiLineLabel.create(this.font, this.reason.withStyle(ChatFormatting.WHITE), this.width - 50);
@@ -39,9 +42,10 @@ public class PermanentDeathScreen extends Screen {
                 .build());
     }
 
-    public void render(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
-        super.render(guiGraphics, mouseX, mouseY, partialTick);
+    @Override
+    public void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
+        super.extractRenderState(guiGraphics, mouseX, mouseY, partialTick);
         guiGraphics.centeredText(this.font, this.title, this.width / 2, this.height / 2 - this.textHeight / 2 - 9 * 2, 0xFFAAAAAA);
-        this.message.renderCentered(guiGraphics, this.width / 2, this.height / 2 - this.textHeight / 2);
+        this.message.visitLines(TextAlignment.CENTER, this.width / 2, this.height / 2 - this.textHeight / 2, 9, guiGraphics.textRenderer());
     }
 }

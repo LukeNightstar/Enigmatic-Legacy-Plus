@@ -1,5 +1,13 @@
 package auviotre.enigmatic.legacy.client.handlers;
 
+import net.minecraft.client.renderer.entity.ArmorStandRenderer;
+import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.client.renderer.entity.player.AvatarRenderer;
+import net.minecraft.world.entity.player.PlayerModelType;
+import net.neoforged.neoforge.client.renderstate.RegisterRenderStateModifiersEvent;
+import auviotre.enigmatic.legacy.client.renderer.EnigmaticRenderData;
+import auviotre.enigmatic.legacy.client.item.SpelltunerTint;
+import auviotre.enigmatic.legacy.client.item.LegacyItemProperty;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.api.item.IItemHelper;
 import auviotre.enigmatic.legacy.client.KeyHandler;
@@ -22,7 +30,6 @@ import auviotre.enigmatic.legacy.contents.item.charms.HellBladeCharm;
 import auviotre.enigmatic.legacy.contents.item.generic.BaseItem;
 import auviotre.enigmatic.legacy.contents.item.spellstones.IllusionLantern;
 import auviotre.enigmatic.legacy.contents.item.spellstones.other.SpellstoneSword;
-import auviotre.enigmatic.legacy.contents.item.spellstones.other.Spelltuner;
 import auviotre.enigmatic.legacy.contents.item.tools.AnnihilatingSword;
 import auviotre.enigmatic.legacy.contents.item.tools.TotemOfMalice;
 import auviotre.enigmatic.legacy.registries.*;
@@ -30,12 +37,9 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
-import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.particle.EndRodParticle;
 import net.minecraft.client.particle.SpellParticle;
-import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
-import net.minecraft.world.entity.player.PlayerSkin;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.ItemLike;
 import net.neoforged.api.distmarker.Dist;
@@ -76,8 +80,18 @@ public class ClientSetupHandler {
     }
 
     @SubscribeEvent
-    private static void registerItemColor(RegisterColorHandlersEvent.@NotNull Item event) {
-        event.register((stack, index) -> index > 0 ? -1 : Spelltuner.getColor(stack), EnigmaticItems.SPELLTUNER);
+    private static void registerItemTints(RegisterColorHandlersEvent.@NotNull ItemTintSources event) {
+        event.register(SpelltunerTint.TYPE, SpelltunerTint.MAP_CODEC);
+    }
+
+    @SubscribeEvent
+    private static void registerItemModelProperties(@NotNull RegisterRangeSelectItemModelPropertyEvent event) {
+        event.register(LegacyItemProperty.TYPE, LegacyItemProperty.MAP_CODEC);
+    }
+
+    @SubscribeEvent
+    private static void registerRenderStateModifiers(@NotNull RegisterRenderStateModifiersEvent event) {
+        EnigmaticRenderData.register(event);
     }
 
     @SubscribeEvent
@@ -114,7 +128,7 @@ public class ClientSetupHandler {
         event.registerEntityRenderer(EnigmaticEntities.ABYSS_PROJECTILE.get(), ThrownItemRenderer::new);
         event.registerEntityRenderer(EnigmaticEntities.ENGINE_HOOK.get(), EngineHookRenderer::new);
         event.registerEntityRenderer(EnigmaticEntities.ANGEL_BEAM.get(), AngelBeamRenderer::new);
-        event.registerEntityRenderer(EnigmaticEntities.PIGLIN_WANDERER.get(), context -> new PiglinWandererRender(context, ModelLayers.PIGLIN_BRUTE, ModelLayers.PIGLIN_BRUTE_INNER_ARMOR, ModelLayers.PIGLIN_BRUTE_OUTER_ARMOR));
+        event.registerEntityRenderer(EnigmaticEntities.PIGLIN_WANDERER.get(), PiglinWandererRender::new);
         event.registerBlockEntityRenderer(EnigmaticBlockEntities.DIMENSIONAL_ANCHOR_ENTITY.get(), DimensionalAnchorRender::new);
         event.registerBlockEntityRenderer(EnigmaticBlockEntities.SPELLSTONE_TABLE_ENTITY.get(), SpellstoneTableRender::new);
     }
@@ -140,20 +154,14 @@ public class ClientSetupHandler {
     }
 
     @SubscribeEvent
-    @SuppressWarnings({"rawtypes", "unchecked"})
     private static void addLayers(EntityRenderersEvent.AddLayers event) {
-        addPlayerLayer(event, PlayerSkin.Model.WIDE);
-        addPlayerLayer(event, PlayerSkin.Model.SLIM);
-        if (event.getRenderer(EntityType.ARMOR_STAND) instanceof LivingEntityRenderer renderer) {
+        for (PlayerModelType skin : event.getSkins()) {
+            AvatarRenderer<AbstractClientPlayer> renderer = event.getPlayerRenderer(skin);
+            if (renderer == null) continue;
             renderer.addLayer(new EnigmaticElytraLayer<>(renderer, event.getEntityModels()));
+            renderer.addLayer(new EtheriumShieldLayer(renderer, event.getEntityModels(), skin == PlayerModelType.SLIM));
         }
-    }
-
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    private static void addPlayerLayer(EntityRenderersEvent.AddLayers event, PlayerSkin.Model skin) {
-        if (event.getSkin(skin) instanceof LivingEntityRenderer renderer) {
-            renderer.addLayer(new EnigmaticElytraLayer<>(renderer, event.getEntityModels()));
-            renderer.addLayer(new EtheriumShieldLayer(renderer, event.getEntityModels()));
-        }
+        ArmorStandRenderer armorStand = event.getRenderer(EntityType.ARMOR_STAND);
+        if (armorStand != null) armorStand.addLayer(new EnigmaticElytraLayer<>(armorStand, event.getEntityModels()));
     }
 }

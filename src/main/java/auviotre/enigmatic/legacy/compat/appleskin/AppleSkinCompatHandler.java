@@ -3,8 +3,6 @@ package auviotre.enigmatic.legacy.compat.appleskin;
 import net.minecraft.client.renderer.RenderPipelines;
 import auviotre.enigmatic.legacy.client.handlers.ClientEventHandler;
 import auviotre.enigmatic.legacy.contents.item.food.ForbiddenFruit;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.neoforged.api.distmarker.Dist;
@@ -25,15 +23,13 @@ public class AppleSkinCompatHandler {
         GuiGraphicsExtractor graphics = event.guiGraphics;
         int x = event.x;
         int y = event.y;
-        RenderSystem.enableDepthTest();
         graphics.blitSprite(RenderPipelines.GUI_TEXTURED, ClientEventHandler.FORBIDDEN_FOOD_FULL_SPRITE, x, y, 9, 9);
         graphics.blit(RenderPipelines.GUI_TEXTURED, TextureHelper.MOD_ICONS, x, y + 10, 21.0F, 34.0F, 7, 7, 256, 256);
-        PoseStack poseStack = graphics.pose();
-        poseStack.pushPose();
-        poseStack.translate(x + 7, y + 10, 0.0F);
-        poseStack.scale(0.75F, 0.75F, 0.75F);
+        graphics.pose().pushMatrix();
+        graphics.pose().translate(x + 7, y + 10);
+        graphics.pose().scale(0.75F, 0.75F);
         graphics.text(Minecraft.getInstance().font, "x0", 2, 1, -5592406);
-        poseStack.popPose();
+        graphics.pose().popMatrix();
     }
 
     @OnlyIn(Dist.CLIENT)

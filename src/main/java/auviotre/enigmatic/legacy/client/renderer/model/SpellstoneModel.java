@@ -8,18 +8,17 @@ import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
-import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.util.Unit;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
-public class SpellstoneModel extends Model {
+public class SpellstoneModel extends Model<Unit> {
     public static final ModelLayerLocation LAYER = new ModelLayerLocation(EnigmaticLegacy.location("spellstone"), "main");
-    private final ModelPart main;
 
     public SpellstoneModel(ModelPart root) {
-        super(RenderType::entitySolid);
-        this.main = root.getChild("main");
+        super(root, RenderTypes::entitySolid);
     }
 
     public static LayerDefinition createLayer() {
@@ -31,13 +30,5 @@ public class SpellstoneModel extends Model {
                 , PartPose.ZERO);
 
         return LayerDefinition.create(meshdefinition, 32, 32);
-    }
-
-    public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, int color) {
-        this.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
-    }
-
-    public void render(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay, int color) {
-        this.main.render(poseStack, buffer, packedLight, packedOverlay, color);
     }
 }

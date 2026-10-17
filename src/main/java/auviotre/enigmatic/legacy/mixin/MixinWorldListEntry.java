@@ -23,7 +23,8 @@ public class MixinWorldListEntry {
     @Unique
     private Component EL$cachedInfo;
 
-    @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/storage/LevelSummary;getInfo()Lnet/minecraft/network/chat/Component;"))
+    // 26.1.2 port: the info line is built in the constructor now (and reused for narration).
+    @Redirect(method = {"<init>", "getNarration"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/storage/LevelSummary;getInfo()Lnet/minecraft/network/chat/Component;"))
     private Component getAltInfo(LevelSummary summary) {
         if (this.EL$cachedInfo == null) {
             this.EL$cachedInfo = EnigmaticHandler.getModdedInfo(summary);

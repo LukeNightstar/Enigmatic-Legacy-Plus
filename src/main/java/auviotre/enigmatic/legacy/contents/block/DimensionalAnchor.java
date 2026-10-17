@@ -159,7 +159,8 @@ public class DimensionalAnchor extends BaseEntityBlock {
         return true;
     }
 
-    protected int getAnalogOutputSignal(BlockState blockState, Level level, BlockPos pos) {
+    @Override
+    protected int getAnalogOutputSignal(BlockState blockState, Level level, BlockPos pos, Direction direction) {
         return getScaledChargeLevel(blockState, 15);
     }
 

@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.client.particles;
 
+import net.minecraft.util.RandomSource;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.*;
 import net.minecraft.core.particles.SimpleParticleType;
@@ -21,9 +22,6 @@ public class IchorParticle extends SimpleAnimatedParticle {
         this.setFadeColor(0x888840);
     }
 
-    public ParticleRenderType getRenderType() {
-        return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
-    }
 
     public void move(double dx, double dy, double dz) {
         this.setBoundingBox(this.getBoundingBox().move(dx, dy, dz));
@@ -38,7 +36,8 @@ public class IchorParticle extends SimpleAnimatedParticle {
             this.sprite = spriteSet;
         }
 
-        public Particle createParticle(SimpleParticleType type, ClientLevel level, double posX, double posY, double posZ, double speedX, double speedY, double speedZ) {
+        @Override
+        public Particle createParticle(SimpleParticleType type, ClientLevel level, double posX, double posY, double posZ, double speedX, double speedY, double speedZ, RandomSource random) {
             return new IchorParticle(level, posX, posY, posZ, speedX, speedY, speedZ, this.sprite);
         }
     }
