@@ -165,15 +165,6 @@ public class EldritchAmulet extends BaseCurioItem {
             float timer = stack.getOrDefault(EnigmaticComponents.ELDRITCH_TIMER, 0.0F);
             if (timer < 1.0F) stack.set(EnigmaticComponents.ELDRITCH_TIMER, Math.min(1.0F, timer + 0.3F));
         }
-        if (entity.tickCount % 5 == 0 && !entity.level().isClientSide()) {
-            List<LivingEntity> entities = EnigmaticHandler.getObservedEntities(entity, entity.level(), 2.1F, 64, false);
-            for (LivingEntity target : entities) {
-                if (EnigmaticHandler.hasCurio(target, this)) continue;
-                target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 10, 1));
-                target.addEffect(new MobEffectInstance(MobEffects.DIG_SLOWDOWN, 10, 1));
-                target.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 10, 1));
-            }
-        }
         entity.getAttributes().addTransientAttributeModifiers(getModifiers());
     }
 
@@ -214,6 +205,19 @@ public class EldritchAmulet extends BaseCurioItem {
             if (source.getEntity() instanceof LivingEntity attacker && EnigmaticHandler.isAbyssBoosted(attacker) && EnigmaticHandler.hasCurio(attacker, EnigmaticItems.ELDRITCH_AMULET)) {
                 if (event.getEntity().getHealth() < attacker.getHealth()) {
                     event.setNewDamage(event.getNewDamage() * 1.8F);
+                }
+            }
+        }
+
+        // Fork change: creatures struck by the wearer are slowed and weakened (instead of creatures under the wearer's gaze).
+        @SubscribeEvent
+        private static void onDamagePost(LivingDamageEvent.@NotNull Post event) {
+            if (event.getSource().getDirectEntity() instanceof LivingEntity attacker && !attacker.level().isClientSide()) {
+                LivingEntity target = event.getEntity();
+                if (EnigmaticHandler.hasCurio(attacker, EnigmaticItems.ELDRITCH_AMULET) && !EnigmaticHandler.hasCurio(target, EnigmaticItems.ELDRITCH_AMULET)) {
+                    target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 60, 1));
+                    target.addEffect(new MobEffectInstance(MobEffects.DIG_SLOWDOWN, 60, 1));
+                    target.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 60, 1));
                 }
             }
         }

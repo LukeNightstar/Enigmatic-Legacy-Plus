@@ -1132,7 +1132,7 @@
   "tooltip.enigmaticlegacy.eldritchAmulet1": "§5При ношении ваш инвентарь сохраняется",
   "tooltip.enigmaticlegacy.eldritchAmulet2": "§5после смерти. §6Опыт§5 и §6осколки души§5 всё равно",
   "tooltip.enigmaticlegacy.eldritchAmulet3": "§5будут потеряны.",
-  "tooltip.enigmaticlegacy.eldritchAmulet4": "§5Существа под вашим взглядом §dзамедлится",
+  "tooltip.enigmaticlegacy.eldritchAmulet4": "§5Атакованные вами существа §dзамедлятся",
   "tooltip.enigmaticlegacy.eldritchAmulet5": "§5и §dослабеют§5.",
   "tooltip.enigmaticlegacy.eldritchAmuletStat1": "§6+%1$s §dк урону",
   "tooltip.enigmaticlegacy.eldritchAmuletStat2": "§6+%1$s§d вампиризма",

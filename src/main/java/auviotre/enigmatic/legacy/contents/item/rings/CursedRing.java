@@ -239,7 +239,8 @@ public class CursedRing extends CursedCurioItem {
                 }
             }
         }
-        if (forTheWorthyMode.get()) {
+        // Fork change: endermen listed in neutralWhiteList are not pulled towards the bearer either.
+        if (forTheWorthyMode.get() && !neutralWhiteList.get().contains("minecraft:enderman")) {
             List<EnderMan> endermen = player.level().getEntitiesOfClass(EnderMan.class, player.getBoundingBox().inflate(Math.max(32, angerRange / 2)));
             for (EnderMan enderman : endermen) {
                 if (player.getRandom().nextDouble() <= (0.0025)) {
@@ -473,12 +474,13 @@ public class CursedRing extends CursedCurioItem {
                 }
             }
 
-            if (event.getEntity() instanceof LivingEntity entity && entity.isAlive()) {
-                EnigmaticData data = entity.getData(EnigmaticAttachments.ENIGMATIC_DATA);
-                if (EnigmaticHandler.isTheCursedOne(entity)) data.incrementTimeWithCurses();
+            // Fork change: only players track curse time, so other mobs do not get an EnigmaticData attachment every tick.
+            if (event.getEntity() instanceof Player player && player.isAlive()) {
+                EnigmaticData data = player.getData(EnigmaticAttachments.ENIGMATIC_DATA);
+                if (EnigmaticHandler.isTheCursedOne(player)) data.incrementTimeWithCurses();
                 else data.incrementTimeWithoutCurses();
-                if (entity instanceof ServerPlayer player)
-                    PacketDistributor.sendToPlayer(player, new EnigmaticDataSyncPacket(data.save(player.registryAccess())));
+                if (player instanceof ServerPlayer serverPlayer)
+                    PacketDistributor.sendToPlayer(serverPlayer, new EnigmaticDataSyncPacket(data.save(serverPlayer.registryAccess())));
             }
         }
 

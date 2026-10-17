@@ -1196,7 +1196,7 @@
   "tooltip.enigmaticlegacy.eldritchAmulet1": "§5When worn, your inventory persists with you",
   "tooltip.enigmaticlegacy.eldritchAmulet2": "§5after death. §6Experience§5 and §6Soul Crystals§5 will",
   "tooltip.enigmaticlegacy.eldritchAmulet3": "§5still be lost.",
-  "tooltip.enigmaticlegacy.eldritchAmulet4": "§5Creatures beneath your gaze will be§d slowed",
+  "tooltip.enigmaticlegacy.eldritchAmulet4": "§5Creatures you strike will be§d slowed",
   "tooltip.enigmaticlegacy.eldritchAmulet5": "§ddown§5 and§d weakened§5.",
   "tooltip.enigmaticlegacy.eldritchAmuletStat1": "§6+%1$s §dAttack Damage",
   "tooltip.enigmaticlegacy.eldritchAmuletStat2": "§6+%1$s§d Lifesteal",
