@@ -33,6 +33,11 @@ This repository **modifies** Auviotre's Enigmatic Legacy Plus (1.21.1-1.1.2). Th
   - Cursed/blessed/eldritch tooltip colors are tooltip sprites generated from the vanilla tooltip shapes.
   - The Infernal Shield's instant block and axe immunity are expressed through the `BLOCKS_ATTACKS` component.
   - Spellstone table recipes are synced to clients so JEI can show them.
+  - The Antique Bag inventory uses NeoForge's transfer API (`ItemStacksResourceHandler`) instead of the removed-soon
+    `ItemStackHandler`; bags saved in the old format are still read. Curios, JEI and screen calls deprecated for
+    removal are replaced with their current equivalents.
+  - The Annihilating Sword keeps an empty `ATTRIBUTE_MODIFIERS` component (its stats are computed per stack), so mods
+    that read that component from every item, such as Better Combat, do not crash.
 - The data generators (`auviotre.enigmatic.legacy.data`) are not ported and are excluded from the build; the
   generated data that was already committed is used as is.
 
