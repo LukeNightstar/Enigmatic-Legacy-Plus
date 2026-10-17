@@ -30,6 +30,8 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.level.storage.ValueInput;
 
 public class UltimateWitherSkull extends AbstractHurtingProjectile {
     private static final EntityDataAccessor<Boolean> DATA_DANGEROUS = SynchedEntityData.defineId(UltimateWitherSkull.class, EntityDataSerializers.BOOLEAN);
@@ -141,7 +143,8 @@ public class UltimateWitherSkull extends AbstractHurtingProjectile {
         return false;
     }
 
-    public boolean hurt(DamageSource source, float amount) {
+    @Override
+    public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
         return false;
     }
 
@@ -162,15 +165,17 @@ public class UltimateWitherSkull extends AbstractHurtingProjectile {
         return false;
     }
 
-    public void addAdditionalSaveData(CompoundTag compound) {
+    @Override
+    public void addAdditionalSaveData(ValueOutput compound) {
         super.addAdditionalSaveData(compound);
         compound.putBoolean("dangerous", this.isDangerous());
         compound.putInt("boundTargetID", this.entityData.get(UltimateWitherSkull.DATA_TARGET_ID));
     }
 
-    public void readAdditionalSaveData(CompoundTag compound) {
+    @Override
+    public void readAdditionalSaveData(ValueInput compound) {
         super.readAdditionalSaveData(compound);
         this.setDangerous(compound.getBooleanOr("dangerous", false));
-        this.entityData.set(UltimateWitherSkull.DATA_TARGET_ID, compound.getInt("boundTargetID"));
+        this.entityData.set(UltimateWitherSkull.DATA_TARGET_ID, compound.getIntOr("boundTargetID", -1));
     }
 }

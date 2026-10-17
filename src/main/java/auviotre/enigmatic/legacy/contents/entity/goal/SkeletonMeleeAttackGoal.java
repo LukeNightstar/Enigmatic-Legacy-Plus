@@ -27,7 +27,7 @@ public class SkeletonMeleeAttackGoal extends Goal {
         if (target != null) {
             if (this.mob.isWithinMeleeAttackRange(target) && this.mob.getSensing().hasLineOfSight(target)) {
                 this.mob.swing(InteractionHand.MAIN_HAND);
-                this.mob.doHurtTarget(target);
+                this.mob.doHurtTarget(getServerLevel(this.mob), target);
                 this.mob.push(target);
                 target.push(this.mob);
                 target.knockback(this.mob.getAttributeValue(Attributes.ATTACK_KNOCKBACK) + 0.5, Mth.sin(this.mob.getYRot() * 0.017453292F), -Mth.cos(this.mob.getYRot() * 0.017453292F));

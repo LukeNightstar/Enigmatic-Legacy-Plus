@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.UUID;
 
 import net.minecraft.core.UUIDUtil;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.level.storage.ValueInput;
 public class SoulFlameBall extends Projectile {
     @Nullable
     private UUID targetUUID;
@@ -156,12 +158,14 @@ public class SoulFlameBall extends Projectile {
         }
     }
 
-    public void addAdditionalSaveData(CompoundTag tag) {
+    @Override
+    public void addAdditionalSaveData(ValueOutput tag) {
         super.addAdditionalSaveData(tag);
         if (this.targetUUID != null) tag.store("TargetUUID", UUIDUtil.CODEC, this.targetUUID);
     }
 
-    public void readAdditionalSaveData(CompoundTag tag) {
+    @Override
+    public void readAdditionalSaveData(ValueInput tag) {
         super.readAdditionalSaveData(tag);
         if (tag.read("TargetUUID", UUIDUtil.CODEC).isPresent()) {
             this.targetUUID = tag.read("TargetUUID", UUIDUtil.CODEC).orElse(null);

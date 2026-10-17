@@ -1,5 +1,13 @@
 package auviotre.enigmatic.legacy.contents.entity.misc;
 
+import java.util.Optional;
+import java.util.Objects;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.HashMap;
+import com.mojang.serialization.Codec;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import auviotre.enigmatic.legacy.handlers.EnigmaticHandler;
 
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
@@ -44,7 +52,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
-import org.spongepowered.include.com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMap;
 
 import javax.annotation.Nullable;
 import java.util.HashSet;
@@ -75,7 +83,7 @@ public class PermanentItemEntity extends Entity {
 
     public PermanentItemEntity(Level world, double x, double y, double z) {
         this(EnigmaticEntities.PERMANENT_ITEM_ENTITY.get(), world);
-        y = y <= world.getMinBuildHeight() ? world.getMinBuildHeight() + 8 : y;
+        y = y <= world.getMinY() ? world.getMinY() + 8 : y;
 
         this.setPos(x, y, z);
         this.setYRot(this.random.nextFloat() * 360.0F);
@@ -194,12 +202,13 @@ public class PermanentItemEntity extends Entity {
         return false;
     }
 
-    public boolean hurt(DamageSource source, float amount) {
-        if (this.level().isClientSide() || !this.isAlive()) return false;
+    @Override
+    public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
+        if (!this.isAlive()) return false;
 
         if (source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
             EnigmaticLegacy.LOGGER.warn("Attacked permanent item entity with absolute DamageSource: {}", source);
-            this.kill();
+            this.kill(level);
             return true;
         }
         return false;
@@ -213,75 +222,45 @@ public class PermanentItemEntity extends Entity {
         super.remove(reason);
     }
 
-    public void addAdditionalSaveData(CompoundTag compound) {
-        compound.putShort("Health", (short) this.health);
-        compound.putShort("Age", (short) this.age);
-        compound.putShort("PickupDelay", (short) this.pickupDelay);
-        if (this.getThrowerId() != null) compound.store("Thrower", UUIDUtil.CODEC, this.getThrowerId());
-        if (this.getOwnerId() != null) compound.store("Owner", UUIDUtil.CODEC, this.getOwnerId());
-        if (!this.getItem().isEmpty()) compound.put("Item", EnigmaticHandler.saveStack(this.registryAccess(), this.getItem()));
-        if (this.position != null) {
-            compound.putDouble("BoundX", this.position.x);
-            compound.putDouble("BoundY", this.position.y);
-            compound.putDouble("BoundZ", this.position.z);
-        }
-        CompoundTag mapTag = new CompoundTag();
-        if (restoreMap != null) {
-            for (String key : restoreMap.keySet()) {
-                ItemStack item = restoreMap.get(key);
-                if (!item.isEmpty()) mapTag.put(key, EnigmaticHandler.saveStack(this.registryAccess(), item));
-            }
-        }
-        compound.put("restoreMap", mapTag);
+    private static final Codec<Map<String, ItemStack>> RESTORE_MAP_CODEC = Codec.unboundedMap(Codec.STRING, ItemStack.CODEC);
 
-        CompoundTag acceptorTag = new CompoundTag();
-        int i = 0;
-        if (acceptors != null) {
-            for (UUID uuid : acceptors) {
-                if (uuid != null) acceptorTag.store(String.valueOf(i++), UUIDUtil.CODEC, uuid);
-            }
+    @Override
+    protected void addAdditionalSaveData(ValueOutput output) {
+        output.putShort("Health", (short) this.health);
+        output.putShort("Age", (short) this.age);
+        output.putShort("PickupDelay", (short) this.pickupDelay);
+        output.storeNullable("Thrower", UUIDUtil.CODEC, this.getThrowerId());
+        output.storeNullable("Owner", UUIDUtil.CODEC, this.getOwnerId());
+        if (!this.getItem().isEmpty()) output.store("Item", ItemStack.CODEC, this.getItem());
+        if (this.position != null) {
+            output.putDouble("BoundX", this.position.x);
+            output.putDouble("BoundY", this.position.y);
+            output.putDouble("BoundZ", this.position.z);
         }
-        compound.put("acceptorSet", acceptorTag);
+        Map<String, ItemStack> restore = new HashMap<>();
+        if (restoreMap != null) restoreMap.forEach((key, item) -> {
+            if (!item.isEmpty()) restore.put(key, item);
+        });
+        output.store("restoreMap", RESTORE_MAP_CODEC, restore);
+        List<UUID> acceptorList = new ArrayList<>();
+        if (acceptors != null) acceptors.stream().filter(Objects::nonNull).forEach(acceptorList::add);
+        output.store("acceptorSet", UUIDUtil.CODEC.listOf(), acceptorList);
     }
 
-    public void readAdditionalSaveData(CompoundTag compound) {
-        this.health = compound.getShortOr("Health", (short) 0);
-        this.age = compound.getShortOr("Age", (short) 0);
-        if (compound.contains("PickupDelay")) this.pickupDelay = compound.getShortOr("PickupDelay", (short) 0);
-
-        if (compound.contains("Owner")) this.owner = compound.read("Owner", UUIDUtil.CODEC).orElse(null);
-
-        if (compound.contains("Thrower")) this.thrower = compound.read("Thrower", UUIDUtil.CODEC).orElse(null);
-
-        if (compound.contains("BoundX") && compound.contains("BoundY") && compound.contains("BoundZ")) {
-            double x = compound.getDoubleOr("BoundX", 0.0D);
-            double y = compound.getDoubleOr("BoundY", 0.0D);
-            double z = compound.getDoubleOr("BoundZ", 0.0D);
-            this.position = new Vec3(x, y, z);
-        }
-
-        ImmutableMap.Builder<String, ItemStack> builder = ImmutableMap.builder();
-        CompoundTag mapTag = compound.getCompoundOrEmpty("restoreMap");
-        for (String key : mapTag.getAllKeys()) {
-            ItemStack stack = EnigmaticHandler.parseStack(this.registryAccess(), mapTag.getCompoundOrEmpty(key));
-            if (!stack.isEmpty()) builder.put(key, stack);
-        }
-        this.restoreMap = builder.build();
-
-        Set<UUID> set = new HashSet<>();
-        CompoundTag acceptorTag = compound.getCompoundOrEmpty("acceptorSet");
-        for (String key : acceptorTag.getAllKeys()) {
-            if (acceptorTag.read(key, UUIDUtil.CODEC).isPresent()) {
-                UUID tagUUID = acceptorTag.read(key, UUIDUtil.CODEC).orElse(null);
-                set.add(tagUUID);
-            }
-        }
-        this.acceptors = set;
-
-        if (compound.contains("Item", 10)) {
-            CompoundTag compoundtag = compound.getCompoundOrEmpty("Item");
-            this.setItem(EnigmaticHandler.parseStack(this.registryAccess(), compoundtag));
-        } else this.discard();
+    @Override
+    protected void readAdditionalSaveData(ValueInput input) {
+        this.health = input.getShortOr("Health", (short) 0);
+        this.age = input.getShortOr("Age", (short) 0);
+        this.pickupDelay = input.getShortOr("PickupDelay", (short) this.pickupDelay);
+        this.owner = input.read("Owner", UUIDUtil.CODEC).orElse(null);
+        this.thrower = input.read("Thrower", UUIDUtil.CODEC).orElse(null);
+        Optional<Double> x = input.read("BoundX", Codec.DOUBLE);
+        Optional<Double> y = input.read("BoundY", Codec.DOUBLE);
+        Optional<Double> z = input.read("BoundZ", Codec.DOUBLE);
+        if (x.isPresent() && y.isPresent() && z.isPresent()) this.position = new Vec3(x.get(), y.get(), z.get());
+        this.restoreMap = ImmutableMap.copyOf(input.read("restoreMap", RESTORE_MAP_CODEC).orElse(Map.of()));
+        this.acceptors = new HashSet<>(input.read("acceptorSet", UUIDUtil.CODEC.listOf()).orElse(List.of()));
+        this.setItem(input.read("Item", ItemStack.CODEC).orElse(ItemStack.EMPTY));
         if (this.getItem().isEmpty()) this.discard();
     }
 
@@ -307,7 +286,7 @@ public class PermanentItemEntity extends Entity {
                 if (acceptors != null && acceptors.contains(player.getUUID())) {
                     if (player.getInventory().add(copy)) {
                         acceptors.remove(player.getUUID());
-                        level.sendParticles((ServerPlayer) player, PowerParticleOption.create(ParticleTypes.DRAGON_BREATH, 1.0F), false, this.getX(), this.getY(0.5), this.getZ(), 48, 0, 0, 0, 0.03);
+                        level.sendParticles((ServerPlayer) player, PowerParticleOption.create(ParticleTypes.DRAGON_BREATH, 1.0F), false, false, this.getX(), this.getY(0.5), this.getZ(), 48, 0, 0, 0, 0.03);
                         EnigmaticLegacy.LOGGER.info("Player {} picking up (share: {}): {}", player.getGameProfile().name(), stack, this);
                         player.awardStat(Stats.ITEM_PICKED_UP.get(item), count);
                         if (acceptors.isEmpty()) this.discard();

@@ -1,5 +1,10 @@
 package auviotre.enigmatic.legacy.contents.entity.misc;
 
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.EntityReference;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import auviotre.enigmatic.legacy.registries.EnigmaticEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -20,7 +25,12 @@ import java.util.UUID;
 
 import net.minecraft.core.UUIDUtil;
 public class ExplorerMarker extends Entity implements OwnableEntity {
-    protected static final EntityDataAccessor<Optional<UUID>> DATA_OWNER_UUID = SynchedEntityData.defineId(ExplorerMarker.class, EntityDataSerializers.OPTIONAL_UUID);
+    protected static final EntityDataAccessor<Optional<EntityReference<LivingEntity>>> DATA_OWNER_UUID = SynchedEntityData.defineId(ExplorerMarker.class, EntityDataSerializers.OPTIONAL_LIVING_ENTITY_REFERENCE);
+
+    @Override
+    public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
+        return false;
+    }
 
     public ExplorerMarker(EntityType<?> entityType, Level level) {
         super(entityType, level);
@@ -44,24 +54,29 @@ public class ExplorerMarker extends Entity implements OwnableEntity {
         builder.define(DATA_OWNER_UUID, Optional.empty());
     }
 
-    protected void readAdditionalSaveData(CompoundTag compoundTag) {
-        if (compoundTag.read("Owner", UUIDUtil.CODEC).isPresent()) {
-            UUID uuid = compoundTag.read("Owner", UUIDUtil.CODEC).orElse(null);
+    protected void readAdditionalSaveData(ValueInput input) {
+        if (input.read("Owner", UUIDUtil.CODEC).isPresent()) {
+            UUID uuid = input.read("Owner", UUIDUtil.CODEC).orElse(null);
             this.setOwnerUUID(uuid);
         }
     }
 
-    protected void addAdditionalSaveData(CompoundTag compoundTag) {
+    protected void addAdditionalSaveData(ValueOutput output) {
         if (this.getOwnerUUID() != null) {
-            compoundTag.store("Owner", UUIDUtil.CODEC, this.getOwnerUUID());
+            output.store("Owner", UUIDUtil.CODEC, this.getOwnerUUID());
         }
     }
 
-    public @Nullable UUID getOwnerUUID() {
+    @Override
+    public @Nullable EntityReference<LivingEntity> getOwnerReference() {
         return this.entityData.get(DATA_OWNER_UUID).orElse(null);
     }
 
+    public @Nullable UUID getOwnerUUID() {
+        return this.entityData.get(DATA_OWNER_UUID).map(EntityReference::getUUID).orElse(null);
+    }
+
     public void setOwnerUUID(@Nullable UUID uuid) {
-        this.entityData.set(DATA_OWNER_UUID, Optional.ofNullable(uuid));
+        this.entityData.set(DATA_OWNER_UUID, Optional.ofNullable(uuid).map(EntityReference::of));
     }
 }

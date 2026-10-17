@@ -27,12 +27,12 @@ public class DragonBreathArrow extends AbstractArrow {
 
     public DragonBreathArrow(EntityType<? extends AbstractArrow> type, Level world) {
         super(type, world);
-        this.setBaseDamage(this.getBaseDamage() * 1.8);
+        this.setBaseDamage(this.baseDamage * 1.8);
     }
 
     public DragonBreathArrow(double x, double y, double z, Level level, @Nullable ItemStack bow) {
         super(EnigmaticEntities.DRAGON_BREATH_ARROW.get(), x, y, z, level, ItemStack.EMPTY, bow);
-        this.setBaseDamage(this.getBaseDamage() * 1.8);
+        this.setBaseDamage(this.baseDamage * 1.8);
     }
 
     public void tick() {
@@ -65,7 +65,7 @@ public class DragonBreathArrow extends AbstractArrow {
 
     private void summonAreaEffect() {
         float speed = (float) this.getDeltaMovement().length();
-        float dmg = Mth.ceil(Mth.clamp(Math.sqrt(speed) * this.getBaseDamage(), 0.0, 2.147483647E9)) / 4.5F;
+        float dmg = Mth.ceil(Mth.clamp(Math.sqrt(speed) * this.baseDamage, 0.0, 2.147483647E9)) / 4.5F;
         List<LivingEntity> entities = this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(4.0, 2.0, 4.0));
         AreaEffectCloud effectCloud = new AreaEffectCloud(this.level(), this.getX(), this.getY(), this.getZ());
         if (this.getOwner() instanceof LivingEntity owner) effectCloud.setOwner(owner);

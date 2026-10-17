@@ -156,8 +156,9 @@ public class PiglinWanderer extends AbstractPiglin implements SpearAttackMob {
         this.makeSound(SoundEvents.PIGLIN_ANGRY);
     }
 
-    public boolean hurt(DamageSource source, float amount) {
-        boolean flag = super.hurt(source, amount);
+    @Override
+    public boolean hurtServer(ServerLevel serverLevel, DamageSource source, float amount) {
+        boolean flag = super.hurtServer(serverLevel, source, amount);
         if (this.level().isClientSide()) return false;
         if (flag && source.getEntity() instanceof LivingEntity)
             Ai.wasHurtBy(this, (LivingEntity) source.getEntity());

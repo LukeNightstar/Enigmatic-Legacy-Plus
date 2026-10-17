@@ -118,9 +118,9 @@ public class CobwebBall extends Projectile implements ItemSupplier {
 
     public void recreateFromPacket(ClientboundAddEntityPacket entityPacket) {
         super.recreateFromPacket(entityPacket);
-        double xa = entityPacket.getXa();
-        double ya = entityPacket.getYa();
-        double za = entityPacket.getZa();
+        double xa = entityPacket.getMovement().x;
+        double ya = entityPacket.getMovement().y;
+        double za = entityPacket.getMovement().z;
 
         for (int i = 0; i < 7; ++i) {
             double v = 0.4D + 0.1D * i;

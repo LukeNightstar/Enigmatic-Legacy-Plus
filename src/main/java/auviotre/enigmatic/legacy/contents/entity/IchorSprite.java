@@ -167,7 +167,8 @@ public class IchorSprite extends PathfinderMob implements TraceableEntity {
         this.calculateEntityAnimation(false);
     }
 
-    public boolean hurt(DamageSource source, float amount) {
+    @Override
+    public boolean hurtServer(ServerLevel serverLevel, DamageSource source, float amount) {
         if (source.getEntity() == getOwner()) return false;
         if (this.getAttackTimer() >= 60 && source.getEntity() != null) {
             int time = 0;
@@ -184,7 +185,7 @@ public class IchorSprite extends PathfinderMob implements TraceableEntity {
                 }
             }
         }
-        return super.hurt(source, amount * 0.5F);
+        return super.hurtServer(serverLevel, source, amount * 0.5F);
     }
 
     protected void tickDeath() {

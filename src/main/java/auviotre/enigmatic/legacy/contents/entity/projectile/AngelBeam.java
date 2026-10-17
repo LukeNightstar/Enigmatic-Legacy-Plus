@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.entity.projectile;
 
+import org.joml.Vector3fc;
 import auviotre.enigmatic.legacy.registries.EnigmaticEntities;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
@@ -19,7 +20,7 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
 public class AngelBeam extends AbstractHurtingProjectile {
-    private static final EntityDataAccessor<Vector3f> DATA_FROM_POS = SynchedEntityData.defineId(AngelBeam.class, EntityDataSerializers.VECTOR3);
+    private static final EntityDataAccessor<Vector3fc> DATA_FROM_POS = SynchedEntityData.defineId(AngelBeam.class, EntityDataSerializers.VECTOR3);
 
     public AngelBeam(EntityType<? extends AbstractHurtingProjectile> entityType, Level level) {
         super(entityType, level);
@@ -58,7 +59,7 @@ public class AngelBeam extends AbstractHurtingProjectile {
         builder.define(DATA_FROM_POS, new Vector3f(0, 0, 0));
     }
 
-    public Vector3f getBeginning() {
+    public Vector3fc getBeginning() {
         return this.entityData.get(DATA_FROM_POS);
     }
 

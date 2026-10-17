@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.entity.projectile;
 
+import net.minecraft.server.level.ServerLevel;
 import auviotre.enigmatic.legacy.registries.EnigmaticItems;
 import auviotre.enigmatic.legacy.registries.EnigmaticParticles;
 import net.minecraft.core.particles.ParticleTypes;
@@ -61,8 +62,8 @@ public class StarlightMeteor extends ThrowableItemProjectile {
         super.onHitEntity(result);
         Entity entity = result.getEntity();
         if (entity instanceof LivingEntity livingEntity) {
-            if (livingEntity.hurtOrSimulate(livingEntity.damageSources().magic(), 8.0F)) {
-                livingEntity.kill();
+            if (livingEntity.hurtOrSimulate(livingEntity.damageSources().magic(), 8.0F) && livingEntity.level() instanceof ServerLevel serverLevel) {
+                livingEntity.kill(serverLevel);
             }
         }
         this.dropItem();

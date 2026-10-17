@@ -20,7 +20,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import org.spongepowered.include.com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMap;
 import top.theillusivec4.curios.api.CuriosApi;
 
 import java.util.Map;
