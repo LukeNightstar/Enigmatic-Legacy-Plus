@@ -10,10 +10,10 @@ import net.minecraft.stats.Stats;
 import net.minecraft.util.Mth;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.SpawnGroupData;
 import net.minecraft.world.entity.monster.Phantom;
-import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.NaturalSpawner;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.PhantomSpawner;
@@ -65,7 +65,7 @@ public class MixinPhantomSpawner {
                                                     if (phantom != null) {
                                                         phantom.moveTo(blockPos, 0.0F, 0.0F);
                                                         EnigmaticHandler.setCurseBoosted(phantom, true, player);
-                                                        spawnGroupData = phantom.finalizeSpawn(level, difficulty, MobSpawnType.NATURAL, spawnGroupData);
+                                                        spawnGroupData = phantom.finalizeSpawn(level, difficulty, EntitySpawnReason.NATURAL, spawnGroupData);
                                                         level.addFreshEntityWithPassengers(phantom);
                                                     }
                                                 }

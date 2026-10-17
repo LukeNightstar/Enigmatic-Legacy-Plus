@@ -10,12 +10,12 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.SlotAccess;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.inventory.ClickAction;
 import net.minecraft.world.inventory.Slot;
@@ -59,14 +59,14 @@ public class DragonBreathBow extends ProjectileWeaponItem {
         if (stack.isEnchanted()) TooltipHandler.line(list);
     }
 
-    public InteractionResultHolder<ItemStack> use(Level level, @NotNull Player player, InteractionHand hand) {
+    public InteractionResult use(Level level, @NotNull Player player, InteractionHand hand) {
         ItemStack bow = player.getItemInHand(hand);
-        InteractionResultHolder<ItemStack> ret = EventHooks.onArrowNock(bow, level, player, hand, true);
+        InteractionResult ret = EventHooks.onArrowNock(bow, level, player, hand, true);
         if (ret != null) {
             return ret;
         } else {
             player.startUsingItem(hand);
-            return InteractionResultHolder.consume(bow);
+            return InteractionResult.CONSUME;
         }
     }
 
@@ -103,8 +103,8 @@ public class DragonBreathBow extends ProjectileWeaponItem {
         return 72000;
     }
 
-    public UseAnim getUseAnimation(ItemStack stack) {
-        return UseAnim.BOW;
+    public ItemUseAnimation getUseAnimation(ItemStack stack) {
+        return ItemUseAnimation.BOW;
     }
 
     public Predicate<ItemStack> getAllSupportedProjectiles() {

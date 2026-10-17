@@ -17,7 +17,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
@@ -95,9 +95,9 @@ public class CosmicScroll extends BaseCurioItem {
         return super.canEquip(context, stack) && context.entity() instanceof Player;
     }
 
-    public Multimap<Holder<Attribute>, AttributeModifier> getAttributeModifiers(SlotContext context, ResourceLocation id, ItemStack stack) {
+    public Multimap<Holder<Attribute>, AttributeModifier> getAttributeModifiers(SlotContext context, Identifier id, ItemStack stack) {
         Multimap<Holder<Attribute>, AttributeModifier> attributes = HashMultimap.create();
-        ResourceLocation location = IItemHelper.getLocation(this);
+        Identifier location = IItemHelper.getLocation(this);
         attributes.put(Attributes.LUCK, new AttributeModifier(location, 2.0, AttributeModifier.Operation.ADD_VALUE));
         attributes.put(EnigmaticAttributes.ETHERIUM_SHIELD, new AttributeModifier(location, 0.2, AttributeModifier.Operation.ADD_VALUE));
         return attributes;

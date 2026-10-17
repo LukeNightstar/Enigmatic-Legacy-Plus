@@ -13,7 +13,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -47,13 +47,13 @@ public class SacredChalice extends BaseCursedItem {
         TooltipHandler.cursedOnly(list, stack);
     }
 
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+    public InteractionResult use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (!stack.getOrDefault(EnigmaticComponents.BOOLEAN, false) && player.getHealth() < player.getMaxHealth() * 0.5F)
-            return InteractionResultHolder.fail(stack);
+            return InteractionResult.FAIL;
         ItemUtils.startUsingInstantly(level, player, hand);
         player.playSound(EnigmaticSounds.CHARGED_ON.get(), 0.5F, 0.8F + 0.4F * player.getRandom().nextFloat());
-        return InteractionResultHolder.consume(stack);
+        return InteractionResult.CONSUME;
     }
 
     public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entity) {
@@ -86,8 +86,8 @@ public class SacredChalice extends BaseCursedItem {
         return stack;
     }
 
-    public UseAnim getUseAnimation(ItemStack stack) {
-        return stack.getOrDefault(EnigmaticComponents.BOOLEAN, false) ? UseAnim.DRINK : UseAnim.BLOCK;
+    public ItemUseAnimation getUseAnimation(ItemStack stack) {
+        return stack.getOrDefault(EnigmaticComponents.BOOLEAN, false) ? ItemUseAnimation.DRINK : ItemUseAnimation.BLOCK;
     }
 
     public int getUseDuration(ItemStack stack, LivingEntity entity) {

@@ -15,7 +15,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeMap;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -98,7 +98,7 @@ public class SoulCrystal extends BaseItem implements IPermanentCrystal {
         ATTRIBUTE_DISPATCHER.put(player, soulMap);
     }
 
-    public InteractionResultHolder<ItemStack> use(Level level, @NotNull Player player, InteractionHand hand) {
+    public InteractionResult use(Level level, @NotNull Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (retrieveSoulFromCrystal(player)) {
             updatePlayerSoulMap(player);
@@ -107,9 +107,9 @@ public class SoulCrystal extends BaseItem implements IPermanentCrystal {
             }
             player.swing(hand);
             stack.consume(1, player);
-            return InteractionResultHolder.success(stack);
+            return InteractionResult.SUCCESS;
         }
-        return InteractionResultHolder.pass(stack);
+        return InteractionResult.PASS;
     }
 
     public enum LossMode {

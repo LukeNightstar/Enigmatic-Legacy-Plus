@@ -5,7 +5,7 @@ import auviotre.enigmatic.legacy.registries.EnigmaticBlocks;
 import auviotre.enigmatic.legacy.registries.EnigmaticTags;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
-import net.minecraft.data.tags.ItemTagsProvider;
+import net.neoforged.neoforge.common.data.ItemTagsProvider;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;

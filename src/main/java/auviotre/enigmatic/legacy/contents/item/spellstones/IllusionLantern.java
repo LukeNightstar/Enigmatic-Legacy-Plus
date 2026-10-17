@@ -15,7 +15,7 @@ import auviotre.enigmatic.legacy.registries.EnigmaticItems;
 import auviotre.enigmatic.legacy.registries.EnigmaticTags;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -146,7 +146,7 @@ public class IllusionLantern extends SpellstoneItem {
 
     @OnlyIn(Dist.CLIENT)
     public static class Decorator implements IItemDecorator {
-        public boolean render(GuiGraphics graphics, Font font, @NotNull ItemStack stack, int x, int y) {
+        public boolean render(GuiGraphicsExtractor graphics, Font font, @NotNull ItemStack stack, int x, int y) {
             int count = stack.getOrDefault(EnigmaticComponents.ILLUSION_COUNT, 0);
             if (stack.getCount() == 1 && count > 0) {
                 graphics.pose().pushPose();

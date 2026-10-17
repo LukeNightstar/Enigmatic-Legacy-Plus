@@ -12,7 +12,7 @@ import auviotre.enigmatic.legacy.packets.client.SlotUnlockToastPacket;
 import auviotre.enigmatic.legacy.registries.EnigmaticAttachments;
 import net.minecraft.core.Holder;
 import net.minecraft.network.protocol.game.ClientboundAnimatePacket;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -35,7 +35,7 @@ import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.monster.*;
 import net.minecraft.world.entity.monster.breeze.Breeze;
 import net.minecraft.world.entity.monster.piglin.AbstractPiglin;
-import net.minecraft.world.entity.projectile.SmallFireball;
+import net.minecraft.world.entity.projectile.hurtingprojectile.SmallFireball;
 import net.minecraft.world.item.BowItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -45,7 +45,7 @@ import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.common.util.TriState;
+import net.minecraft.util.TriState;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.EntityMobGriefingEvent;
 import net.neoforged.neoforge.event.entity.living.*;
@@ -155,8 +155,8 @@ public class EnigmaticEventHandler {
         LivingEntity entity = event.getEntity();
         LivingEntity worthy = event.getTheWorthyOne();
         if (entity.level().isClientSide()) return;
-        ResourceLocation location = ResourceLocation.fromNamespaceAndPath(EnigmaticLegacy.MODID, "curse_boost");
-        ResourceLocation location_multiplier = ResourceLocation.fromNamespaceAndPath(EnigmaticLegacy.MODID, "curse_boost_extra");
+        Identifier location = Identifier.fromNamespaceAndPath(EnigmaticLegacy.MODID, "curse_boost");
+        Identifier location_multiplier = Identifier.fromNamespaceAndPath(EnigmaticLegacy.MODID, "curse_boost_extra");
         if (entity instanceof Zombie zombie) {
             addModifier(zombie, Attributes.ARMOR, new AttributeModifier(location, 4.0, AttributeModifier.Operation.ADD_VALUE));
         }

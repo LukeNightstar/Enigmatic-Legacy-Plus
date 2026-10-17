@@ -15,7 +15,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -76,7 +76,7 @@ public class RedemptionAmulet extends CursedCurioItem implements IAmulet {
         return tooltips;
     }
 
-    public Multimap<Holder<Attribute>, AttributeModifier> getAttributeModifiers(SlotContext context, ResourceLocation id, ItemStack stack) {
+    public Multimap<Holder<Attribute>, AttributeModifier> getAttributeModifiers(SlotContext context, Identifier id, ItemStack stack) {
         Multimap<Holder<Attribute>, AttributeModifier> attributes = HashMultimap.create();
         attributes.put(Attributes.LUCK, new AttributeModifier(IItemHelper.getLocation(this), 2, AttributeModifier.Operation.ADD_VALUE));
         attributes.put(Attributes.ARMOR_TOUGHNESS, new AttributeModifier(IItemHelper.getLocation(this), 8.0, AttributeModifier.Operation.ADD_VALUE));

@@ -30,7 +30,7 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -44,7 +44,7 @@ import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.animal.IronGolem;
+import net.minecraft.world.entity.animal.golem.IronGolem;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.EnderMan;
@@ -56,7 +56,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.FluidState;
@@ -218,7 +218,7 @@ public class CursedRing extends CursedCurioItem {
             double noCheckDistance = Math.max(angerRange / 3.2, 5.4);
             double angerDistance = Math.max(angerRange * visibility, noCheckDistance);
             if (!player.hasLineOfSight(mob) && player.distanceTo(mob) > angerRange / 2) continue;
-            ResourceLocation key = BuiltInRegistries.ENTITY_TYPE.getKey(mob.getType());
+            Identifier key = BuiltInRegistries.ENTITY_TYPE.getKey(mob.getType());
             if (neutralWhiteList.get().contains(key.toString())) continue;
             if (mob.distanceToSqr(player.getX(), player.getY(), player.getZ()) <= angerDistance * angerDistance) {
                 if (mob instanceof Piglin piglin && !EnigmaticHandler.hasCurio(player, EnigmaticItems.AVARICE_SCROLL)) {

@@ -7,7 +7,7 @@ import auviotre.enigmatic.legacy.registries.EnigmaticComponents;
 import auviotre.enigmatic.legacy.registries.EnigmaticSounds;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
@@ -38,11 +38,11 @@ public class UnwitnessedAmulet extends BaseCurioItem {
         TooltipHandler.line(list, "tooltip.enigmaticlegacy.unwitnessedAmuletUse");
     }
 
-    public InteractionResultHolder<ItemStack> use(Level level, @NotNull Player player, InteractionHand hand) {
+    public InteractionResult use(Level level, @NotNull Player player, InteractionHand hand) {
         ItemStack stack = EnigmaticAmulet.randomColor(player.getRandom());
         stack.set(EnigmaticComponents.AMULET_NAME, player.getGameProfile().getName());
         player.playSound(EnigmaticSounds.CHARGED_ON.get(), 1.0F, 1.0F);
-        return InteractionResultHolder.success(stack);
+        return InteractionResult.SUCCESS;
     }
 
     public boolean canEquip(SlotContext context, ItemStack stack) {

@@ -14,7 +14,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.LivingEntity;
@@ -60,17 +60,17 @@ public class EtheriumSword extends SwordItem {
         if (stack.isEnchanted()) TooltipHandler.line(list);
     }
 
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+    public InteractionResult use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         var holder = EnigmaticHandler.get(level, Registries.ENCHANTMENT, EnigmaticEnchantments.ETHERIC_RESONANCE);
         if (stack.getEnchantmentLevel(holder) > 0) {
             if (hand == InteractionHand.MAIN_HAND) {
                 ItemStack offhandStack = player.getOffhandItem();
-                if (!offhandStack.isEmpty() && offhandStack.getItem().getUseAnimation(offhandStack) != UseAnim.NONE)
-                    return InteractionResultHolder.pass(stack);
+                if (!offhandStack.isEmpty() && offhandStack.getItem().getUseAnimation(offhandStack) != ItemUseAnimation.NONE)
+                    return InteractionResult.PASS;
             }
             player.startUsingItem(hand);
-            return InteractionResultHolder.consume(stack);
+            return InteractionResult.CONSUME;
         }
         return super.use(level, player, hand);
     }
@@ -79,8 +79,8 @@ public class EtheriumSword extends SwordItem {
         return 32000;
     }
 
-    public UseAnim getUseAnimation(ItemStack stack) {
-        return UseAnim.BLOCK;
+    public ItemUseAnimation getUseAnimation(ItemStack stack) {
+        return ItemUseAnimation.BLOCK;
     }
 
     @Mod(value = EnigmaticLegacy.MODID)

@@ -1,6 +1,6 @@
 package auviotre.enigmatic.legacy.mixin.accessor;
 
-import com.mojang.blaze3d.shaders.Uniform;
+import com.mojang.blaze3d.opengl.Uniform;
 import net.minecraft.client.renderer.EffectInstance;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;

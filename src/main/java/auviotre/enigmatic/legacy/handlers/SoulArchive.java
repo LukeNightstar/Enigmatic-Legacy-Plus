@@ -14,7 +14,7 @@ import com.google.gson.reflect.TypeToken;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -175,7 +175,7 @@ public class SoulArchive {
         }
     }
 
-    private record SoulData(ResourceLocation dimension, UUID id, UUID ownerID, BlockPos pos, int type) {
+    private record SoulData(Identifier dimension, UUID id, UUID ownerID, BlockPos pos, int type) {
 
         public boolean equals(Object obj) {
             if (this == obj) return true;

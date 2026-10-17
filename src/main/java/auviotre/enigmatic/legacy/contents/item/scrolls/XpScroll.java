@@ -14,7 +14,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.player.Player;
@@ -119,10 +119,10 @@ public class XpScroll extends BaseCurioItem {
         }
     }
 
-    public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand handIn) {
+    public InteractionResult use(Level world, Player player, InteractionHand handIn) {
         ItemStack stack = player.getItemInHand(handIn);
         XpScroll.trigger(world, stack, player, handIn, true);
-        return InteractionResultHolder.success(stack);
+        return InteractionResult.SUCCESS;
     }
 
     public void curioTick(SlotContext context, ItemStack stack) {

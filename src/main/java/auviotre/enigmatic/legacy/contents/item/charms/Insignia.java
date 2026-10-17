@@ -18,12 +18,11 @@ import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityAttachment;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -82,7 +81,7 @@ public class Insignia extends BaseCurioItem {
         return player != null && player.isCreative() || EnigmaticHandler.hasCurio(player, EnigmaticItems.ENIGMATIC_EYE);
     }
 
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+    public InteractionResult use(Level level, Player player, InteractionHand hand) {
         if (player.isCrouching()) {
             ItemStack stack = player.getItemInHand(hand);
             RandomSource random = player.getRandom();
@@ -94,7 +93,7 @@ public class Insignia extends BaseCurioItem {
                 level.playSound(null, player.blockPosition(), EnigmaticSounds.CHARGED_ON.get(), SoundSource.PLAYERS, 0.8F + random.nextFloat() * 0.2F, 0.8F + random.nextFloat() * 0.2F);
             }
             player.swing(hand);
-            return InteractionResultHolder.success(stack);
+            return InteractionResult.SUCCESS;
         }
         return super.use(level, player, hand);
     }
@@ -108,7 +107,7 @@ public class Insignia extends BaseCurioItem {
         return false;
     }
 
-    public Multimap<Holder<Attribute>, AttributeModifier> getAttributeModifiers(SlotContext context, ResourceLocation id, ItemStack stack) {
+    public Multimap<Holder<Attribute>, AttributeModifier> getAttributeModifiers(SlotContext context, Identifier id, ItemStack stack) {
         Multimap<Holder<Attribute>, AttributeModifier> attributes = HashMultimap.create();
         CuriosApi.addSlotModifier(attributes, "charm", IItemHelper.getLocation(this), 1.0, AttributeModifier.Operation.ADD_VALUE);
         return attributes;

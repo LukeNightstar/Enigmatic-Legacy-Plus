@@ -15,11 +15,11 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -101,7 +101,7 @@ public class NightScroll extends CursedCurioItem {
         return tooltips;
     }
 
-    public Multimap<Holder<Attribute>, AttributeModifier> getAttributeModifiers(SlotContext slotContext, ResourceLocation id, ItemStack stack) {
+    public Multimap<Holder<Attribute>, AttributeModifier> getAttributeModifiers(SlotContext slotContext, Identifier id, ItemStack stack) {
         Multimap<Holder<Attribute>, AttributeModifier> attributes = HashMultimap.create();
         attributes.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(IItemHelper.getLocation(this), damageBoost.get() / 100.0F * getDarkModifier(slotContext.entity()), AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
         return attributes;
@@ -134,7 +134,7 @@ public class NightScroll extends CursedCurioItem {
 
         @SubscribeEvent
         private static void onEntitySpawn(@NotNull FinalizeSpawnEvent event) {
-            if (event.getSpawnType() == MobSpawnType.NATURAL || event.getSpawnType() == MobSpawnType.CHUNK_GENERATION) {
+            if (event.getSpawnType() == EntitySpawnReason.NATURAL || event.getSpawnType() == EntitySpawnReason.CHUNK_GENERATION) {
                 LivingEntity entity = event.getEntity();
                 if (entity instanceof Phantom) {
                     if (BOXES.values().stream().anyMatch(entity.getBoundingBox()::intersects)) {

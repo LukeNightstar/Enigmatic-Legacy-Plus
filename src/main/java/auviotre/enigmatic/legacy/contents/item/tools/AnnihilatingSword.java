@@ -12,7 +12,7 @@ import com.google.common.collect.Multimap;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.Holder;
@@ -29,7 +29,7 @@ import net.minecraft.tags.EnchantmentTags;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
@@ -40,7 +40,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
@@ -239,9 +239,9 @@ public class AnnihilatingSword extends SwordItem {
         }
     }
 
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+    public InteractionResult use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
-        if (!EnigmaticHandler.canUse(player, stack)) return InteractionResultHolder.pass(stack);
+        if (!EnigmaticHandler.canUse(player, stack)) return InteractionResult.PASS;
         if (hand.equals(InteractionHand.OFF_HAND) && player.getMainHandItem().isEmpty()) {
             return ItemUtils.startUsingInstantly(level, player, hand);
         } else if (hand.equals(InteractionHand.MAIN_HAND) && player.getOffhandItem().isEmpty()) {
@@ -249,7 +249,7 @@ public class AnnihilatingSword extends SwordItem {
                 return ItemUtils.startUsingInstantly(level, player, hand);
             }
         }
-        return InteractionResultHolder.pass(stack);
+        return InteractionResult.PASS;
     }
 
     public void releaseUsing(ItemStack stack, Level level, LivingEntity entity, int tick) {
@@ -298,8 +298,8 @@ public class AnnihilatingSword extends SwordItem {
         return 32000;
     }
 
-    public UseAnim getUseAnimation(ItemStack stack) {
-        return UseAnim.BLOCK;
+    public ItemUseAnimation getUseAnimation(ItemStack stack) {
+        return ItemUseAnimation.BLOCK;
     }
 
     public boolean canDisableShield(ItemStack stack, ItemStack shield, LivingEntity entity, LivingEntity attacker) {
@@ -308,7 +308,7 @@ public class AnnihilatingSword extends SwordItem {
 
     @OnlyIn(Dist.CLIENT)
     public static class Decorator implements IItemDecorator {
-        public boolean render(GuiGraphics graphics, Font font, @NotNull ItemStack stack, int x, int y) {
+        public boolean render(GuiGraphicsExtractor graphics, Font font, @NotNull ItemStack stack, int x, int y) {
             int energy = stack.getOrDefault(EnigmaticComponents.ANNI_ENERGY, 0.0F).intValue();
             if (stack.getCount() == 1 && energy > 0) {
                 graphics.pose().pushPose();

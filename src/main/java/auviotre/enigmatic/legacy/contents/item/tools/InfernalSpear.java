@@ -22,7 +22,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
@@ -80,7 +80,7 @@ public class InfernalSpear extends BaseItem {
         } else TooltipHandler.holdShift(list);
     }
 
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+    public InteractionResult use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         MobEffectInstance effect = player.getEffect(EnigmaticEffects.BLAZING_MIGHT);
         if (stack.is(this) && effect != null && effect.getAmplifier() == 9 && level instanceof ServerLevel server) {
@@ -105,7 +105,7 @@ public class InfernalSpear extends BaseItem {
             if (player instanceof ServerPlayer serverPlayer) {
                 EnigmaticTriggers.ENIGMATIC_TRIGGER.get().trigger(serverPlayer, 3);
             }
-            return InteractionResultHolder.consume(stack);
+            return InteractionResult.CONSUME;
         }
         return super.use(level, player, hand);
     }

@@ -25,7 +25,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -43,7 +43,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.portal.DimensionTransition;
+import net.minecraft.world.level.portal.TeleportTransition;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
@@ -138,9 +138,9 @@ public class TheCube extends SpellstoneItem {
         return attributes;
     }
 
-    public Multimap<Holder<Attribute>, AttributeModifier> getAttributeModifiers(SlotContext context, ResourceLocation id, ItemStack stack) {
+    public Multimap<Holder<Attribute>, AttributeModifier> getAttributeModifiers(SlotContext context, Identifier id, ItemStack stack) {
         ImmutableMultimap.Builder<Holder<Attribute>, AttributeModifier> builder = new ImmutableMultimap.Builder<>();
-        ResourceLocation location = IItemHelper.getLocation(this);
+        Identifier location = IItemHelper.getLocation(this);
         builder.put(NeoForgeMod.SWIM_SPEED, new AttributeModifier(location, 0.5, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
         builder.put(Attributes.MINING_EFFICIENCY, new AttributeModifier(location, 0.6, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
         builder.put(Attributes.ATTACK_SPEED, new AttributeModifier(location, 0.4, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
@@ -222,7 +222,7 @@ public class TheCube extends SpellstoneItem {
         if (destLevel == null) destLevel = player.server.overworld();
         Vec3 vec3 = location.pos().getBottomCenter();
         if (!player.level().equals(destLevel))
-            player.changeDimension(new DimensionTransition(destLevel, vec3, player.getDeltaMovement(), player.getYRot(), player.getXRot(), DimensionTransition.DO_NOTHING));
+            player.changeDimension(new TeleportTransition(destLevel, vec3, player.getDeltaMovement(), player.getYRot(), player.getXRot(), TeleportTransition.DO_NOTHING));
         player.teleportTo(vec3.x, vec3.y, vec3.z);
 
         if (player.level() instanceof ServerLevel server) {

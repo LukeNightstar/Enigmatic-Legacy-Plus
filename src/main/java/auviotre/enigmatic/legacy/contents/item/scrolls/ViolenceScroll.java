@@ -16,7 +16,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.ChatFormatting;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.Holder;
@@ -26,7 +26,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -101,7 +101,7 @@ public class ViolenceScroll extends BaseCurioItem {
         if (Screen.hasAltDown()) {
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.violenceScrollList");
             for (String enchantment : AbsorbedEnchants.getEnchantments(stack)) {
-                MutableComponent component = Component.translatable(Util.makeDescriptionId("enchantment", ResourceLocation.parse(enchantment)));
+                MutableComponent component = Component.translatable(Util.makeDescriptionId("enchantment", Identifier.parse(enchantment)));
                 list.add(CommonComponents.space().append(component).withStyle(ChatFormatting.DARK_RED));
             }
         } else if (Screen.hasShiftDown()) {
@@ -208,7 +208,7 @@ public class ViolenceScroll extends BaseCurioItem {
 
     private Multimap<Holder<Attribute>, AttributeModifier> createAttributeMap(LivingEntity entity, ItemStack stack) {
         Multimap<Holder<Attribute>, AttributeModifier> multimap = HashMultimap.create();
-        ResourceLocation location = IItemHelper.getLocation(this);
+        Identifier location = IItemHelper.getLocation(this);
         int count = AbsorbedEnchants.getCount(stack);
         MobEffectInstance effect = entity.getEffect(EnigmaticEffects.VIOLENCE_CURSE);
         if (effect != null) count += (int) ((effect.getAmplifier() + 1) * (1 + count * 0.08));

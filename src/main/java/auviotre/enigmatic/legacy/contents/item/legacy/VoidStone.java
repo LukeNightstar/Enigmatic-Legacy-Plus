@@ -17,7 +17,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.SlotAccess;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -34,7 +34,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.ModConfigSpec;
-import net.neoforged.neoforge.common.util.TriState;
+import net.minecraft.util.TriState;
 import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
 import org.jetbrains.annotations.NotNull;
 
@@ -94,22 +94,22 @@ public class VoidStone extends BaseItem {
         TooltipHandler.line(list, "tooltip.enigmaticlegacy.voidStoneShift");
     }
 
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+    public InteractionResult use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         TempStorage storage = stack.get(EnigmaticComponents.TEMPORARY_STORAGE);
         Boolean flag = stack.getOrDefault(EnigmaticComponents.BOOLEAN, false);
         if (player.isShiftKeyDown()) {
             stack.set(EnigmaticComponents.BOOLEAN, !flag);
-            return InteractionResultHolder.success(stack);
+            return InteractionResult.SUCCESS;
         } else if (storage != null) {
-            if (flag) return InteractionResultHolder.pass(stack);
+            if (flag) return InteractionResult.PASS;
             ItemEntity entity = new ItemEntity(player.level(), player.getX(), player.getY(), player.getZ(), storage.stack());
             entity.setThrower(player);
             entity.setNoPickUpDelay();
             player.level().addFreshEntity(entity);
             removeBlackList(stack, storage.stack());
             stack.remove(EnigmaticComponents.TEMPORARY_STORAGE);
-            return InteractionResultHolder.success(stack);
+            return InteractionResult.SUCCESS;
         }
         return super.use(level, player, hand);
     }

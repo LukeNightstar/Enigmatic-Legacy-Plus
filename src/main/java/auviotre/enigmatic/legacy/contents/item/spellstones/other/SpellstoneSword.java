@@ -22,12 +22,12 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
@@ -47,7 +47,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -187,7 +186,7 @@ public class SpellstoneSword extends Item {
         }
     }
 
-    public static InteractionResultHolder<ItemStack> handleHook(Level level, @NotNull Player player, @NotNull ItemStack stack, InteractionHand hand) {
+    public static InteractionResult handleHook(Level level, @NotNull Player player, @NotNull ItemStack stack, InteractionHand hand) {
         UUID uuid = player.getData(EnigmaticAttachments.ENIGMATIC_DATA).getEngineHook();
         if (uuid == null) {
             if (level instanceof ServerLevel serverlevel) {
@@ -196,20 +195,20 @@ public class SpellstoneSword extends Item {
             }
             stack.hurtAndBreak(1, player, LivingEntity.getSlotForHand(player.getUsedItemHand()));
             player.playSound(SoundEvents.CHAIN_BREAK, 1.0F, 1.0F);
-            return InteractionResultHolder.success(stack);
+            return InteractionResult.SUCCESS;
         } else {
             player.playSound(SoundEvents.CHAIN_BREAK, 1.0F, 0.8F);
             if (level instanceof ServerLevel server && server.getEntity(uuid) instanceof EngineHook hook) {
                 if (hook.getCurrentState() == EngineHook.State.FLYING) {
                     hook.discard();
-                    return InteractionResultHolder.success(stack);
+                    return InteractionResult.SUCCESS;
                 }
                 if (hook.getCurrentState() == EngineHook.State.HOOKED_IN_BLOCK) hook.pullStart();
                 stack.hurtAndBreak(1, player, LivingEntity.getSlotForHand(player.getUsedItemHand()));
                 return ItemUtils.startUsingInstantly(level, player, hand);
             } else player.getData(EnigmaticAttachments.ENIGMATIC_DATA).setEngineHook(null);
         }
-        return InteractionResultHolder.pass(stack);
+        return InteractionResult.PASS;
     }
 
     public static void soulFire(Level level, @NotNull LivingEntity shooter, @NotNull ItemStack stack, InteractionHand hand) {
@@ -350,7 +349,7 @@ public class SpellstoneSword extends Item {
         }
     }
 
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+    public InteractionResult use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (hand == InteractionHand.MAIN_HAND && stack.is(this)) {
             ItemStack itemInHand = player.getItemInHand(InteractionHand.OFF_HAND);
@@ -374,7 +373,7 @@ public class SpellstoneSword extends Item {
                         if (form == 6) shoot(level, player, stack);
                         if (form == 8) soulFire(level, player, stack, hand);
                     } else player.startUsingItem(hand);
-                    return InteractionResultHolder.consume(stack);
+                    return InteractionResult.CONSUME;
                 case 7:
                     return handleHook(level, player, stack, hand);
                 case 9:
@@ -388,7 +387,7 @@ public class SpellstoneSword extends Item {
                                 if (level instanceof ServerLevel server)
                                     server.sendParticles(ParticleTypes.PORTAL, player.getX(), player.getY(), player.getZ(), 32, 0.2, 0.4, 0.2, 0.03);
                                 stack.remove(EnigmaticComponents.DIMENSIONAL_POS);
-                                return InteractionResultHolder.success(stack);
+                                return InteractionResult.SUCCESS;
                             }
                         } else stack.remove(EnigmaticComponents.DIMENSIONAL_POS);
                     }
@@ -396,16 +395,16 @@ public class SpellstoneSword extends Item {
                 case 10:
                     player.startUsingItem(hand);
                     player.getCooldowns().addCooldown(this, 64);
-                    return InteractionResultHolder.consume(stack);
+                    return InteractionResult.CONSUME;
                 default:
                     if (itemInHand.getItem() instanceof SpellstoneItem) {
-                        if (itemInHand.is(EnigmaticItems.ETHERIUM_CORE)) return InteractionResultHolder.fail(stack);
-                        if (itemInHand.is(EnigmaticItems.THE_CUBE)) return InteractionResultHolder.fail(stack);
+                        if (itemInHand.is(EnigmaticItems.ETHERIUM_CORE)) return InteractionResult.FAIL;
+                        if (itemInHand.is(EnigmaticItems.THE_CUBE)) return InteractionResult.FAIL;
                         return ItemUtils.startUsingInstantly(level, player, hand);
                     }
             }
         }
-        return InteractionResultHolder.fail(stack);
+        return InteractionResult.FAIL;
     }
 
     public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity user) {
@@ -644,13 +643,13 @@ public class SpellstoneSword extends Item {
         return getResonance(stack).isEmpty() || entity.getOffhandItem().is(EnigmaticItems.SPELLCORE) ? 60 : 32000;
     }
 
-    public UseAnim getUseAnimation(ItemStack stack) {
-        if (isResonatingWith(stack, EnigmaticItems.BLAZING_CORE)) return UseAnim.BLOCK;
-        if (isResonatingWith(stack, EnigmaticItems.OCEAN_STONE)) return UseAnim.BOW;
-        if (isResonatingWith(stack, EnigmaticItems.LOST_ENGINE)) return UseAnim.BLOCK;
-        if (isResonatingWith(stack, EnigmaticItems.VOID_PEARL)) return UseAnim.BLOCK;
-        if (isResonatingWith(stack, EnigmaticItems.ILLUSION_LANTERN)) return UseAnim.BOW;
-        return UseAnim.CUSTOM;
+    public ItemUseAnimation getUseAnimation(ItemStack stack) {
+        if (isResonatingWith(stack, EnigmaticItems.BLAZING_CORE)) return ItemUseAnimation.BLOCK;
+        if (isResonatingWith(stack, EnigmaticItems.OCEAN_STONE)) return ItemUseAnimation.BOW;
+        if (isResonatingWith(stack, EnigmaticItems.LOST_ENGINE)) return ItemUseAnimation.BLOCK;
+        if (isResonatingWith(stack, EnigmaticItems.VOID_PEARL)) return ItemUseAnimation.BLOCK;
+        if (isResonatingWith(stack, EnigmaticItems.ILLUSION_LANTERN)) return ItemUseAnimation.BOW;
+        return ItemUseAnimation.CUSTOM;
     }
 
     public AABB getSweepHitBox(ItemStack stack, Player player, Entity target) {
@@ -860,7 +859,7 @@ public class SpellstoneSword extends Item {
 
     @OnlyIn(Dist.CLIENT)
     public static class Decorator implements IItemDecorator {
-        public boolean render(GuiGraphics graphics, Font font, @NotNull ItemStack stack, int x, int y) {
+        public boolean render(GuiGraphicsExtractor graphics, Font font, @NotNull ItemStack stack, int x, int y) {
             int energy = stack.getOrDefault(INT, 0);
             if (energy > 0 && getMaxEnergy(stack) > 0) {
                 graphics.pose().pushPose();

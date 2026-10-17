@@ -129,7 +129,7 @@ public class DesolationRing extends BaseCurioItem {
 
         @SubscribeEvent
         private static void onEntitySpawn(@NotNull FinalizeSpawnEvent event) {
-            if (event.getSpawnType() == MobSpawnType.NATURAL || event.getSpawnType() == MobSpawnType.CHUNK_GENERATION) {
+            if (event.getSpawnType() == EntitySpawnReason.NATURAL || event.getSpawnType() == EntitySpawnReason.CHUNK_GENERATION) {
                 LivingEntity entity = event.getEntity();
                 if (entity instanceof NeutralMob) {
                     if (BOXES.values().stream().anyMatch(entity.getBoundingBox()::intersects)) {

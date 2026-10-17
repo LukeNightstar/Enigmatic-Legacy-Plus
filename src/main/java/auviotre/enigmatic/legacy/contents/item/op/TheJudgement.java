@@ -10,7 +10,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.LivingEntity;
@@ -70,7 +70,7 @@ public class TheJudgement extends Item {
         return ItemAbilities.DEFAULT_SWORD_ACTIONS.contains(itemAbility);
     }
 
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+    public InteractionResult use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         boolean prevNoDrops = this.noDrops(stack);
         SoundEvent sound = prevNoDrops ? EnigmaticSounds.CHARGED_OFF.get() : EnigmaticSounds.CHARGED_ON.get();
