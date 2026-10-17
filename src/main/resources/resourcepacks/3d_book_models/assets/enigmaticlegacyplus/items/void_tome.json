@@ -1,0 +1,31 @@
+{
+  "model": {
+    "type": "minecraft:select",
+    "property": "minecraft:display_context",
+    "cases": [
+      {
+        "when": [
+          "gui"
+        ],
+        "model": {
+          "type": "minecraft:model",
+          "model": "enigmaticlegacyplus:item/gui/void_tome"
+        }
+      },
+      {
+        "when": [
+          "fixed",
+          "ground"
+        ],
+        "model": {
+          "type": "minecraft:model",
+          "model": "enigmaticlegacyplus:item/3d/void_tome"
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "enigmaticlegacyplus:item/3d/void_tome"
+    }
+  }
+}

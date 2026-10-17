@@ -1,0 +1,31 @@
+{
+  "model": {
+    "type": "minecraft:select",
+    "property": "minecraft:display_context",
+    "cases": [
+      {
+        "when": [
+          "gui"
+        ],
+        "model": {
+          "type": "minecraft:model",
+          "model": "enigmaticlegacyplus:item/gui/animal_guidebook"
+        }
+      },
+      {
+        "when": [
+          "fixed",
+          "ground"
+        ],
+        "model": {
+          "type": "minecraft:model",
+          "model": "enigmaticlegacyplus:item/3d/animal_guidebook"
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "enigmaticlegacyplus:item/3d/animal_guidebook"
+    }
+  }
+}

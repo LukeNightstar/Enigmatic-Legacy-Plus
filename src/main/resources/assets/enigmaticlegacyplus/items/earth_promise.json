@@ -1,0 +1,21 @@
+{
+  "model": {
+    "type": "minecraft:range_dispatch",
+    "property": "enigmaticlegacyplus:legacy",
+    "item": "enigmaticlegacyplus:earth_promise",
+    "predicate": "minecraft:broken",
+    "entries": [
+      {
+        "threshold": 1.0,
+        "model": {
+          "type": "minecraft:model",
+          "model": "enigmaticlegacyplus:item/earth_promise_broken"
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "enigmaticlegacyplus:item/earth_promise"
+    }
+  }
+}

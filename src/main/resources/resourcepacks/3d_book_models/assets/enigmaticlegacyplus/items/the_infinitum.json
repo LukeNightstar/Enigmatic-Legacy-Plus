@@ -1,0 +1,110 @@
+{
+  "model": {
+    "type": "minecraft:range_dispatch",
+    "property": "enigmaticlegacyplus:legacy",
+    "item": "enigmaticlegacyplus:the_infinitum",
+    "predicate": "enigmaticlegacyplus:eldritch_open",
+    "entries": [
+      {
+        "threshold": 0,
+        "model": {
+          "type": "minecraft:select",
+          "property": "minecraft:display_context",
+          "cases": [
+            {
+              "when": [
+                "gui"
+              ],
+              "model": {
+                "type": "minecraft:model",
+                "model": "enigmaticlegacyplus:item/gui/the_infinitum_0"
+              }
+            },
+            {
+              "when": [
+                "fixed",
+                "ground"
+              ],
+              "model": {
+                "type": "minecraft:model",
+                "model": "enigmaticlegacyplus:item/3d/the_infinitum_2"
+              }
+            }
+          ],
+          "fallback": {
+            "type": "minecraft:model",
+            "model": "enigmaticlegacyplus:item/3d/the_infinitum_0"
+          }
+        }
+      },
+      {
+        "threshold": 0.5,
+        "model": {
+          "type": "minecraft:select",
+          "property": "minecraft:display_context",
+          "cases": [
+            {
+              "when": [
+                "gui"
+              ],
+              "model": {
+                "type": "minecraft:model",
+                "model": "enigmaticlegacyplus:item/gui/the_infinitum_1"
+              }
+            },
+            {
+              "when": [
+                "fixed",
+                "ground"
+              ],
+              "model": {
+                "type": "minecraft:model",
+                "model": "enigmaticlegacyplus:item/3d/the_infinitum_2"
+              }
+            }
+          ],
+          "fallback": {
+            "type": "minecraft:model",
+            "model": "enigmaticlegacyplus:item/3d/the_infinitum_1"
+          }
+        }
+      },
+      {
+        "threshold": 1,
+        "model": {
+          "type": "minecraft:select",
+          "property": "minecraft:display_context",
+          "cases": [
+            {
+              "when": [
+                "gui"
+              ],
+              "model": {
+                "type": "minecraft:model",
+                "model": "enigmaticlegacyplus:item/gui/the_infinitum_2"
+              }
+            },
+            {
+              "when": [
+                "fixed",
+                "ground"
+              ],
+              "model": {
+                "type": "minecraft:model",
+                "model": "enigmaticlegacyplus:item/3d/the_infinitum_2"
+              }
+            }
+          ],
+          "fallback": {
+            "type": "minecraft:model",
+            "model": "enigmaticlegacyplus:item/3d/the_infinitum_2"
+          }
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "enigmaticlegacyplus:item/the_infinitum"
+    }
+  }
+}

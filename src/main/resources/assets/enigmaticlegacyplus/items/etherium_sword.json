@@ -1,0 +1,21 @@
+{
+  "model": {
+    "type": "minecraft:range_dispatch",
+    "property": "enigmaticlegacyplus:legacy",
+    "item": "enigmaticlegacyplus:etherium_sword",
+    "predicate": "minecraft:blocking",
+    "entries": [
+      {
+        "threshold": 1,
+        "model": {
+          "type": "minecraft:model",
+          "model": "enigmaticlegacyplus:item/etherium_sword_blocking"
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "enigmaticlegacyplus:item/etherium_sword"
+    }
+  }
+}

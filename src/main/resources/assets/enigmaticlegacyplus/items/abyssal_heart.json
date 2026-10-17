@@ -1,0 +1,35 @@
+{
+  "model": {
+    "type": "minecraft:range_dispatch",
+    "property": "enigmaticlegacyplus:legacy",
+    "item": "enigmaticlegacyplus:abyssal_heart",
+    "predicate": "enigmaticlegacyplus:eldritch_open",
+    "entries": [
+      {
+        "threshold": 0,
+        "model": {
+          "type": "minecraft:model",
+          "model": "enigmaticlegacyplus:item/abyssal_heart_0"
+        }
+      },
+      {
+        "threshold": 0.5,
+        "model": {
+          "type": "minecraft:model",
+          "model": "enigmaticlegacyplus:item/abyssal_heart_1"
+        }
+      },
+      {
+        "threshold": 1,
+        "model": {
+          "type": "minecraft:model",
+          "model": "enigmaticlegacyplus:item/abyssal_heart_2"
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "enigmaticlegacyplus:item/abyssal_heart"
+    }
+  }
+}

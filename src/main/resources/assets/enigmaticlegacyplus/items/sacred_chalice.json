@@ -1,0 +1,21 @@
+{
+  "model": {
+    "type": "minecraft:range_dispatch",
+    "property": "enigmaticlegacyplus:legacy",
+    "item": "enigmaticlegacyplus:sacred_chalice",
+    "predicate": "minecraft:filled",
+    "entries": [
+      {
+        "threshold": 1,
+        "model": {
+          "type": "minecraft:model",
+          "model": "enigmaticlegacyplus:item/sacred_chalice_filled"
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "enigmaticlegacyplus:item/sacred_chalice"
+    }
+  }
+}

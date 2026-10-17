@@ -3,6 +3,7 @@
     "description": {
       "text": "3D Models for Enigmatic Legacy's Books"
     },
-    "pack_format": 34
+    "min_format": 84,
+    "max_format": 84
   }
 }

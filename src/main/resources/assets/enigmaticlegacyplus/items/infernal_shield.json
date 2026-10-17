@@ -1,0 +1,64 @@
+{
+  "model": {
+    "type": "minecraft:range_dispatch",
+    "property": "enigmaticlegacyplus:legacy",
+    "item": "enigmaticlegacyplus:infernal_shield",
+    "predicate": "minecraft:blocking",
+    "entries": [
+      {
+        "threshold": 0,
+        "model": {
+          "type": "minecraft:select",
+          "property": "minecraft:display_context",
+          "cases": [
+            {
+              "when": [
+                "firstperson_lefthand",
+                "firstperson_righthand",
+                "thirdperson_lefthand",
+                "thirdperson_righthand"
+              ],
+              "model": {
+                "type": "minecraft:model",
+                "model": "enigmaticlegacyplus:item/infernal_shield_idle_in_hand"
+              }
+            }
+          ],
+          "fallback": {
+            "type": "minecraft:model",
+            "model": "enigmaticlegacyplus:item/infernal_shield_in_inventory"
+          }
+        }
+      },
+      {
+        "threshold": 1,
+        "model": {
+          "type": "minecraft:select",
+          "property": "minecraft:display_context",
+          "cases": [
+            {
+              "when": [
+                "firstperson_lefthand",
+                "firstperson_righthand",
+                "thirdperson_lefthand",
+                "thirdperson_righthand"
+              ],
+              "model": {
+                "type": "minecraft:model",
+                "model": "enigmaticlegacyplus:item/infernal_shield_blocking_in_hand"
+              }
+            }
+          ],
+          "fallback": {
+            "type": "minecraft:model",
+            "model": "enigmaticlegacyplus:item/infernal_shield_in_inventory"
+          }
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "enigmaticlegacyplus:item/infernal_shield"
+    }
+  }
+}
