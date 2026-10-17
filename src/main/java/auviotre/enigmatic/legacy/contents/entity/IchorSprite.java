@@ -1,5 +1,7 @@
 package auviotre.enigmatic.legacy.contents.entity;
 
+import java.util.List;
+import net.minecraft.world.entity.ai.ActivityData;
 import auviotre.enigmatic.legacy.handlers.EnigmaticHandler;
 import auviotre.enigmatic.legacy.packets.client.IchorSpriteBeamPacket;
 import auviotre.enigmatic.legacy.registries.*;
@@ -103,16 +105,13 @@ public class IchorSprite extends PathfinderMob implements TraceableEntity {
         FlyingPathNavigation navigation = new FlyingPathNavigation(this, level);
         navigation.setCanOpenDoors(false);
         navigation.setCanFloat(true);
-        navigation.setCanPassDoors(true);
+        navigation.getNodeEvaluator().setCanPassDoors(true);
         return navigation;
     }
 
-    protected Brain.Provider<IchorSprite> brainProvider() {
-        return Brain.provider(MEMORY_TYPES, SENSOR_TYPES);
-    }
-
-    protected Brain<?> makeBrain(Dynamic<?> dynamic) {
-        return Ai.makeBrain(this, this.brainProvider().makeBrain(dynamic));
+    @Override
+    protected Brain<IchorSprite> makeBrain(Brain.Packed packed) {
+        return Brain.provider(MEMORY_TYPES, SENSOR_TYPES, Ai::getActivities).makeBrain(this, packed);
     }
 
     public Brain<IchorSprite> getBrain() {
@@ -149,7 +148,7 @@ public class IchorSprite extends PathfinderMob implements TraceableEntity {
     }
 
     public void travel(Vec3 travelVector) {
-        if (this.isControlledByLocalInstance()) {
+        if (this.isLocalInstanceAuthoritative()) {
             if (this.isInWater()) {
                 this.moveRelative(0.02F, travelVector);
                 this.move(MoverType.SELF, this.getDeltaMovement());
@@ -210,18 +209,20 @@ public class IchorSprite extends PathfinderMob implements TraceableEntity {
     protected void checkFallDamage(double y, boolean onGround, BlockState state, BlockPos pos) {
     }
 
-    protected AABB getAttackBoundingBox() {
-        return super.getAttackBoundingBox().inflate(BEAM_RANGE - 2);
+    @Override
+    protected AABB getAttackBoundingBox(double horizontalExpansion) {
+        return super.getAttackBoundingBox(horizontalExpansion).inflate(BEAM_RANGE - 2);
     }
 
-    protected void customServerAiStep() {
+    @Override
+    protected void customServerAiStep(ServerLevel level) {
         Profiler.get().push("ichorSpriteBrain");
-        this.getBrain().tick((ServerLevel) this.level(), this);
+        this.getBrain().tick(level, this);
         Profiler.get().pop();
         Profiler.get().push("ichorSpriteActivityUpdate");
         Ai.updateActivity(this);
         Profiler.get().pop();
-        super.customServerAiStep();
+        super.customServerAiStep(level);
     }
 
     public void restoreFrom(Entity entity) {
@@ -290,7 +291,7 @@ public class IchorSprite extends PathfinderMob implements TraceableEntity {
         if (this.getMainHandItem().isEmpty() && this.isEffectiveAi() && this.getBrain().isActive(Activity.IDLE) && itemInHand.isEmpty()) {
             this.setItemInHand(InteractionHand.MAIN_HAND, itemInHand.copyWithCount(1));
             itemInHand.consume(1, player);
-            return InteractionResult.sidedSuccess(player.level().isClientSide());
+            return InteractionResult.SUCCESS;
         }
         return super.mobInteract(player, hand);
     }
@@ -442,7 +443,7 @@ public class IchorSprite extends PathfinderMob implements TraceableEntity {
                         }
                         nextTimer = 0;
                         sprite.setAttackTimer(0);
-                        sprite.doHurtTarget(target);
+                        sprite.doHurtTarget(level, target);
                         this.doStop(level, sprite, gameTime);
                     }
                     this.attackTime = nextTimer;
@@ -461,32 +462,26 @@ public class IchorSprite extends PathfinderMob implements TraceableEntity {
     }
 
     protected static class Ai {
-        protected static Brain<?> makeBrain(IchorSprite sprite, Brain<IchorSprite> brain) {
-            initCoreActivity(brain);
-            initIdleActivity(brain);
-            initFightActivity(sprite, brain);
-            brain.setCoreActivities(ImmutableSet.of(Activity.CORE));
-            brain.setDefaultActivity(Activity.IDLE);
-            brain.useDefaultActivity();
-            return brain;
+        protected static List<ActivityData<IchorSprite>> getActivities(IchorSprite sprite) {
+            return List.of(initCoreActivity(), initIdleActivity(), initFightActivity(sprite));
         }
 
-        private static void initCoreActivity(Brain<IchorSprite> brain) {
-            brain.addActivity(Activity.CORE, 0, ImmutableList.of(
-                    new Swim(0.8F),
+        private static ActivityData<IchorSprite> initCoreActivity() {
+            return ActivityData.<IchorSprite>create(Activity.CORE, 0, ImmutableList.<BehaviorControl<? super IchorSprite>>of(
+                    new Swim<>(0.8F),
                     new LookAtTargetSink(45, 90),
                     new MoveToTargetSink(),
                     new HealOwner()
             ));
         }
 
-        private static void initIdleActivity(Brain<IchorSprite> brain) {
-            brain.addActivity(Activity.IDLE, ImmutableList.of(
+        private static ActivityData<IchorSprite> initIdleActivity() {
+            return ActivityData.<IchorSprite>create(Activity.IDLE, ImmutableList.of(
                     Pair.of(0, new FollowOwner(6)),
                     Pair.of(0, new PurifyItem()),
-                    Pair.of(1, StartAttacking.create(Ai::getOwnerTarget)),
-                    Pair.of(2, StartAttacking.create(Ai::findNearestValidAttackTarget)),
-                    Pair.of(3, StartAttacking.create(Ai::getHurtBy)),
+                    Pair.of(1, StartAttacking.<IchorSprite>create((level, sprite) -> getOwnerTarget(sprite))),
+                    Pair.of(2, StartAttacking.<IchorSprite>create(Ai::findNearestValidAttackTarget)),
+                    Pair.of(3, StartAttacking.<IchorSprite>create((level, sprite) -> getHurtBy(sprite))),
                     Pair.of(3, new RunOne<>(ImmutableList.of(
                             Pair.of(RandomStroll.fly(1.0F), 2),
                             Pair.of(SetWalkTargetFromLookTarget.create(1.0F, 3), 2),
@@ -496,9 +491,9 @@ public class IchorSprite extends PathfinderMob implements TraceableEntity {
             ));
         }
 
-        private static void initFightActivity(IchorSprite sprite, Brain<IchorSprite> brain) {
-            brain.addActivityWithConditions(Activity.FIGHT, ImmutableList.of(
-                    Pair.of(0, StopAttackingIfTargetInvalid.create(entity -> !isNearestValidAttackTarget(sprite, entity) && getOwnerTarget(sprite).isEmpty())),
+        private static ActivityData<IchorSprite> initFightActivity(IchorSprite sprite) {
+            return ActivityData.<IchorSprite>create(Activity.FIGHT, ImmutableList.of(
+                    Pair.of(0, StopAttackingIfTargetInvalid.create((level, entity) -> !isNearestValidAttackTarget(level, sprite, entity) && getOwnerTarget(sprite).isEmpty())),
                     Pair.of(1, BackUpIfTooClose.create(BEAM_RANGE, 0.8F)),
                     Pair.of(2, new FollowOwner(9)),
                     Pair.of(2, new BeamAttack()),
@@ -518,8 +513,8 @@ public class IchorSprite extends PathfinderMob implements TraceableEntity {
             ));
         }
 
-        private static boolean isNearestValidAttackTarget(Mob mob, LivingEntity target) {
-            return findNearestValidAttackTarget(mob).filter(entity -> entity == target && entity.isAlive()).isPresent();
+        private static boolean isNearestValidAttackTarget(ServerLevel level, Mob mob, LivingEntity target) {
+            return findNearestValidAttackTarget(level, mob).filter(entity -> entity == target && entity.isAlive()).isPresent();
         }
 
         private static Optional<? extends LivingEntity> getOwnerTarget(Mob mob) {
@@ -536,10 +531,10 @@ public class IchorSprite extends PathfinderMob implements TraceableEntity {
             return Optional.empty();
         }
 
-        private static Optional<? extends LivingEntity> findNearestValidAttackTarget(Mob mob) {
+        private static Optional<? extends LivingEntity> findNearestValidAttackTarget(ServerLevel level, Mob mob) {
             Optional<LivingEntity> owner = mob.getBrain().getMemory(EnigmaticMemories.ICHOR_SPRITE_OWNER.get());
             Optional<LivingEntity> optional = BehaviorUtils.getLivingEntityFromUUIDMemory(mob, MemoryModuleType.ANGRY_AT);
-            if (optional.isPresent() && optional.get() != owner.orElse(null) && Sensor.isEntityAttackableIgnoringLineOfSight(mob, optional.get())) {
+            if (optional.isPresent() && optional.get() != owner.orElse(null) && Sensor.isEntityAttackableIgnoringLineOfSight(level, mob, optional.get())) {
                 return optional;
             } else {
                 Optional<? extends LivingEntity> optional1 = getTargetIfWithinRange(mob);
