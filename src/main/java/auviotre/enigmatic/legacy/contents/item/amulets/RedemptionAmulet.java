@@ -51,7 +51,7 @@ public class RedemptionAmulet extends CursedCurioItem implements IAmulet {
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
         TooltipHandler.line(list);
-        if (Screen.hasShiftDown()) {
+        if (Minecraft.getInstance().hasShiftDown()) {
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.enigmaticAmuletShift1");
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.enigmaticAmuletShift2");
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.enigmaticAmuletShift3");
@@ -100,7 +100,7 @@ public class RedemptionAmulet extends CursedCurioItem implements IAmulet {
             LivingEntity victim = event.getEntity();
             if (EnigmaticHandler.hasCurio(victim, EnigmaticItems.REDEMPTION_AMULET) && RedemptionRing.Helper.canUseRelic(victim)) {
                 DamageSource source = event.getSource();
-                if (source.getEntity() == null || !source.getEntity().getPersistentData().getBoolean("RedemptionMark")) {
+                if (source.getEntity() == null || !source.getEntity().getPersistentData().getBooleanOr("RedemptionMark", false)) {
                     event.setAmount(0.0F);
                     event.setCanceled(true);
                 }

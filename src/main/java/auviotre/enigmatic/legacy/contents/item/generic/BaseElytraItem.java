@@ -37,6 +37,7 @@ import top.theillusivec4.curios.api.type.capability.ICuriosItemHandler;
 
 import java.util.Optional;
 
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 public abstract class BaseElytraItem extends BaseCurioItem implements Equipable {
     protected static final Identifier LOCATION = EnigmaticLegacy.location("elytra");
     protected static final AttributeModifier ELYTRA_MODIFIER = new AttributeModifier(LOCATION, 1.0, AttributeModifier.Operation.ADD_VALUE);
@@ -66,12 +67,12 @@ public abstract class BaseElytraItem extends BaseCurioItem implements Equipable 
     public void handleBoosting(Player player) {
         if (Minecraft.getInstance().player != player) return;
         if (Minecraft.getInstance().options.keyJump.isDown() && flyingBoost(player)) {
-            if (!isBoosting) PacketDistributor.sendToServer(new UpdateElytraBoostPacket(isBoosting = true));
-        } else if (isBoosting) PacketDistributor.sendToServer(new UpdateElytraBoostPacket(isBoosting = false));
+            if (!isBoosting) ClientPacketDistributor.sendToServer(new UpdateElytraBoostPacket(isBoosting = true));
+        } else if (isBoosting) ClientPacketDistributor.sendToServer(new UpdateElytraBoostPacket(isBoosting = false));
     }
 
     public boolean elytraFlightTick(ItemStack stack, @NotNull LivingEntity entity, int flightTicks) {
-        if (!entity.level().isClientSide) {
+        if (!entity.level().isClientSide()) {
             int nextFlightTick = flightTicks + 1;
             if (nextFlightTick % 10 == 0) {
                 if (nextFlightTick % 20 == 0)

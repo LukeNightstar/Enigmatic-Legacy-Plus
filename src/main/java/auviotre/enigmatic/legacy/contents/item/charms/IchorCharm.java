@@ -26,6 +26,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Collection;
 import java.util.List;
 
+import net.minecraft.client.Minecraft;
 public class IchorCharm extends BaseCurioItem {
     public IchorCharm() {
         super(IItemHelper.singleProperties().fireResistant());
@@ -34,7 +35,7 @@ public class IchorCharm extends BaseCurioItem {
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
         TooltipHandler.line(list);
-        if (Screen.hasShiftDown()) {
+        if (Minecraft.getInstance().hasShiftDown()) {
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.ichorCharm1");
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.ichorCharm2");
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.ichorCharm3");

@@ -194,7 +194,7 @@ public class SoulCompass extends BaseCursedItem {
 
         @SubscribeEvent
         private static void onPlayerRespawn(PlayerEvent.@NotNull PlayerRespawnEvent event) {
-            if (!event.getEntity().level().isClientSide) {
+            if (!event.getEntity().level().isClientSide()) {
                 LAST_SOUL_COMPASS_UPDATE.remove(event.getEntity());
             }
         }

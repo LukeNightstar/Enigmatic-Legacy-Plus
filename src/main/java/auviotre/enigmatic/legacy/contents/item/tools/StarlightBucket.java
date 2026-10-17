@@ -141,7 +141,7 @@ public class StarlightBucket extends Item {
                 CriteriaTriggers.CONSUME_ITEM.trigger(player, stack);
                 player.awardStat(Stats.ITEM_USED.get(this));
             }
-            if (!level.isClientSide) entity.removeEffectsCuredBy(EffectCures.MILK);
+            if (!level.isClientSide()) entity.removeEffectsCuredBy(EffectCures.MILK);
         }
         return stack;
     }

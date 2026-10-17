@@ -26,6 +26,7 @@ import top.theillusivec4.curios.api.client.ICuriosScreen;
 
 import javax.annotation.Nonnull;
 
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 @OnlyIn(Dist.CLIENT)
 public class MagnetRingInventoryButton extends ImageButton {
     public static final WidgetSprites SPRITES = new WidgetSprites(
@@ -46,7 +47,7 @@ public class MagnetRingInventoryButton extends ImageButton {
     static MagnetRingInventoryButton getInstance(AbstractContainerScreen<?> gui, boolean isCreative) {
         MagnetRingInventoryButton magnetButton = new MagnetRingInventoryButton(gui, 0, 0, 20, 18, (input) -> {
             if (Minecraft.getInstance().player != null) {
-                PacketDistributor.sendToServer(new ToggleMagnetEffectKeyPacket());
+                ClientPacketDistributor.sendToServer(new ToggleMagnetEffectKeyPacket());
             }
         });
 

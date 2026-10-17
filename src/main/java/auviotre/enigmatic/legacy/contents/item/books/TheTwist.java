@@ -41,6 +41,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
+import net.minecraft.client.Minecraft;
 public class TheTwist extends TheAcknowledgment {
     public static ModConfigSpec.IntValue specialDamageBoost;
     public static ModConfigSpec.IntValue knockbackModifier;
@@ -66,7 +67,7 @@ public class TheTwist extends TheAcknowledgment {
 
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        if (Screen.hasShiftDown()) {
+        if (Minecraft.getInstance().hasShiftDown()) {
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.curseAlteration", ChatFormatting.GOLD, Component.translatable("tooltip.enigmaticlegacy.fourthCurse"));
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.fourthCurseAlteration");
             TooltipHandler.line(list);

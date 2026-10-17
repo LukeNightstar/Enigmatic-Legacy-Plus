@@ -104,7 +104,7 @@ public class ViolenceScroll extends BaseCurioItem {
                 MutableComponent component = Component.translatable(Util.makeDescriptionId("enchantment", Identifier.parse(enchantment)));
                 list.add(CommonComponents.space().append(component).withStyle(ChatFormatting.DARK_RED));
             }
-        } else if (Screen.hasShiftDown()) {
+        } else if (Minecraft.getInstance().hasShiftDown()) {
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.violenceScroll1");
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.violenceScroll2");
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.violenceScroll3");
@@ -232,7 +232,7 @@ public class ViolenceScroll extends BaseCurioItem {
             ItemStack other = slot.getItem();
             if (AbsorbedEnchants.canDisenchant(stack, other)) {
                 slot.set(AbsorbedEnchants.disenchant(stack, other));
-                if (player.level().isClientSide)
+                if (player.level().isClientSide())
                     player.level().playSound(player, player.blockPosition(), SoundEvents.ENCHANTMENT_TABLE_USE, SoundSource.PLAYERS, 0.8F, 1.2F + (float) Math.random() * 0.4F);
                 return true;
             }
@@ -246,7 +246,7 @@ public class ViolenceScroll extends BaseCurioItem {
         if (action != ClickAction.PRIMARY && slot.mayPlace(stack) && slot.mayPickup(player) && !other.isEmpty()) {
             if (AbsorbedEnchants.canDisenchant(stack, other)) {
                 access.set(AbsorbedEnchants.disenchant(stack, other));
-                if (player.level().isClientSide)
+                if (player.level().isClientSide())
                     player.level().playSound(player, player.blockPosition(), SoundEvents.ENCHANTMENT_TABLE_USE, SoundSource.PLAYERS, 0.8F, 1.2F + (float) Math.random() * 0.4F);
                 return true;
             }

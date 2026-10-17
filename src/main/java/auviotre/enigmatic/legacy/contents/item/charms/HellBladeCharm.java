@@ -98,7 +98,7 @@ public class HellBladeCharm extends BaseCurioItem {
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.hellBladeCharmUnequip");
             TooltipHandler.line(list);
         }
-        if (Screen.hasShiftDown()) {
+        if (Minecraft.getInstance().hasShiftDown()) {
             int threshold = EnigmaticHandler.isTheCursedOne(Minecraft.getInstance().player) ? 80 : 64;
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.hellBladeCharm1", ChatFormatting.GOLD, threshold + "%");
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.hellBladeCharm2");
@@ -214,9 +214,9 @@ public class HellBladeCharm extends BaseCurioItem {
             if (event.getNewDamage() > Float.MAX_VALUE / 10) return;
             if (event.getSource().getEntity() instanceof Player player) {
                 CompoundTag data = EnigmaticHandler.getPersistedData(player);
-                if (player.level().dimension().equals(Level.NETHER) && !data.getBoolean("LootedHellBladeCharm")) {
+                if (player.level().dimension().equals(Level.NETHER) && !data.getBooleanOr("LootedHellBladeCharm", false)) {
                     boolean hardcore = player.level().getLevelData().isHardcore();
-                    float point = data.getFloat("HellPoint");
+                    float point = data.getFloatOr("HellPoint", 0.0F);
                     float healthFactor = 1 - player.getHealth() / player.getMaxHealth();
                     healthFactor = healthFactor * healthFactor;
                     if (healthFactor < (hardcore ? 0.16F : 0.2F)) return;

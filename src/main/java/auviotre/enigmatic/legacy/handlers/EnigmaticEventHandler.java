@@ -183,7 +183,7 @@ public class EnigmaticEventHandler {
             if (!creeper.isPowered()) {
                 LightningBolt lightningbolt = EntityType.LIGHTNING_BOLT.create(creeper.level());
                 if (lightningbolt != null) {
-                    lightningbolt.moveTo(Vec3.atBottomCenterOf(creeper.blockPosition()));
+                    lightningbolt.snapTo(Vec3.atBottomCenterOf(creeper.blockPosition()));
                     lightningbolt.setSilent(creeper.getRandom().nextBoolean());
                     lightningbolt.setDamage(0.0F);
                     creeper.level().addFreshEntity(lightningbolt);
@@ -195,7 +195,7 @@ public class EnigmaticEventHandler {
             addModifier(evoker, Attributes.ARMOR_TOUGHNESS, new AttributeModifier(location, 8.0, AttributeModifier.Operation.ADD_VALUE));
         }
         if (entity instanceof Vindicator vindicator) {
-            vindicator.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 60));
+            vindicator.addEffect(new MobEffectInstance(MobEffects.SPEED, 60));
         }
         if (entity instanceof Ravager ravager) {
             addModifier(ravager, Attributes.ARMOR, new AttributeModifier(location_multiplier, 10.0, AttributeModifier.Operation.ADD_VALUE));
@@ -206,7 +206,7 @@ public class EnigmaticEventHandler {
             vex.setDropChance(EquipmentSlot.OFFHAND, 0.0F);
             vex.setItemSlot(EquipmentSlot.CHEST, new ItemStack(Items.CHAINMAIL_CHESTPLATE));
             vex.setDropChance(EquipmentSlot.CHEST, -1.0F);
-            vex.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 120, 1));
+            vex.addEffect(new MobEffectInstance(MobEffects.STRENGTH, 120, 1));
             vex.addEffect(new MobEffectInstance(MobEffects.INVISIBILITY, 40));
         }
         if (entity instanceof Breeze evoker) {
@@ -288,7 +288,7 @@ public class EnigmaticEventHandler {
         if (event.getSource().getDirectEntity() instanceof Monster attacker && attacker.isAlive() && EnigmaticHandler.isCurseBoosted(attacker)) {
             boolean flag = attacker.fallDistance > 0.0F && !attacker.onGround() && !attacker.onClimbable() && !attacker.isInWater() && !attacker.hasEffect(MobEffects.BLINDNESS) && !attacker.isPassenger();
             if (flag) {
-                if (!victim.level().isClientSide) {
+                if (!victim.level().isClientSide()) {
                     ((ServerLevel) victim.level()).getChunkSource().broadcastAndSend(attacker, new ClientboundAnimatePacket(victim, 4));
                 }
                 attacker.level().playSound(null, attacker.getX(), attacker.getY(), attacker.getZ(), SoundEvents.PLAYER_ATTACK_CRIT, attacker.getSoundSource(), 1.0F, 1.0F);

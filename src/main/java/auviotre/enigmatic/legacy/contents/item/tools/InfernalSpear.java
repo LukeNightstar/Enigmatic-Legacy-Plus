@@ -49,6 +49,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
+import net.minecraft.client.Minecraft;
 public class InfernalSpear extends BaseItem {
     public InfernalSpear() {
         super(IItemHelper.singleProperties().fireResistant().durability(Tiers.NETHERITE.getUses())
@@ -72,7 +73,7 @@ public class InfernalSpear extends BaseItem {
 
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        if (Screen.hasShiftDown()) {
+        if (Minecraft.getInstance().hasShiftDown()) {
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.infernalSpear1");
             TooltipHandler.line(list);
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.infernalSpear2");

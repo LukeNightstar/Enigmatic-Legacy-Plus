@@ -54,6 +54,7 @@ import top.theillusivec4.curios.api.SlotContext;
 
 import java.util.List;
 
+import net.minecraft.client.Minecraft;
 public class OceanStone extends SpellstoneItem {
     public static ModConfigSpec.IntValue underwaterCreaturesResistance;
     public static ModConfigSpec.DoubleValue xpCostModifier;
@@ -79,7 +80,7 @@ public class OceanStone extends SpellstoneItem {
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
         TooltipHandler.line(list);
-        if (Screen.hasShiftDown()) {
+        if (Minecraft.getInstance().hasShiftDown()) {
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstoneSkill");
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.oceanStoneSkill");
             TooltipHandler.line(list);

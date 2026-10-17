@@ -65,7 +65,7 @@ public class AngelBeam extends AbstractHurtingProjectile {
     protected void onHitEntity(EntityHitResult result) {
         if (this.getOwner() instanceof LivingEntity owner) {
             Entity entity = result.getEntity();
-            int bless = entity.getPersistentData().getInt("ResonanceAngelBless");
+            int bless = entity.getPersistentData().getIntOr("ResonanceAngelBless", 0);
             entity.getPersistentData().putInt("ResonanceAngelBless", bless | 2);
             entity.hurt(this.damageSources().indirectMagic(this, owner), (float) owner.getAttributeValue(Attributes.ATTACK_DAMAGE));
         }

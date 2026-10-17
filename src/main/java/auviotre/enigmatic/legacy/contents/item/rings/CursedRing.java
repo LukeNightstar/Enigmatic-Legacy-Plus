@@ -155,7 +155,7 @@ public class CursedRing extends CursedCurioItem {
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
         TooltipHandler.line(list);
-        if (Screen.hasShiftDown()) {
+        if (Minecraft.getInstance().hasShiftDown()) {
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedRingCurses");
             int multiplier = painMultiplier.getAsInt();
             if (multiplier == 200) TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedRingCurse1");
@@ -207,7 +207,7 @@ public class CursedRing extends CursedCurioItem {
     public void curioTick(@NotNull SlotContext context, ItemStack stack) {
         LivingEntity entity = context.entity();
         entity.getAttributes().addTransientAttributeModifiers(this.getArmorModifiers(entity));
-        if (entity.level().isClientSide || !(entity instanceof Player player)) return;
+        if (entity.level().isClientSide() || !(entity instanceof Player player)) return;
         if (player.isCreative() || player.isSpectator()) return;
 
         if (EnigmaticHandler.hasItem(player, EnigmaticItems.ODE_TO_LIVING)) return;
@@ -360,7 +360,7 @@ public class CursedRing extends CursedCurioItem {
                         flag = true;
                         LightningBolt lightningbolt = EntityType.LIGHTNING_BOLT.create(player.level());
                         if (lightningbolt != null) {
-                            lightningbolt.moveTo(Vec3.atBottomCenterOf(player.blockPosition()));
+                            lightningbolt.snapTo(Vec3.atBottomCenterOf(player.blockPosition()));
                             lightningbolt.setCause(player instanceof ServerPlayer ? player : null);
                             player.level().addFreshEntity(lightningbolt);
                         }
@@ -379,7 +379,7 @@ public class CursedRing extends CursedCurioItem {
 
                 if (EnigmaticHandler.hasCurio(player, EnigmaticItems.ESCAPE_SCROLL)) {
                     POSSESSIONS.put(player, EnigmaticItems.ESCAPE_SCROLL);
-                    if (!player.level().isClientSide) {
+                    if (!player.level().isClientSide()) {
                         EnigmaticTriggers.ENIGMATIC_TRIGGER.get().trigger(player, 5);
                         ItemStack curio = EnigmaticHandler.getCurio(player, EnigmaticItems.ESCAPE_SCROLL);
                         PermanentItemEntity itemEntity = new PermanentItemEntity(player.level(), player.getX(), player.getY(0.5), player.getZ(), curio.copy());
@@ -532,7 +532,7 @@ public class CursedRing extends CursedCurioItem {
                 event.setDroppedExperience(event.getDroppedExperience() + Mth.floor(event.getOriginalExperience() * modifier));
             }
             if (event.getEntity() instanceof ServerPlayer dropper) {
-                if (POSSESSIONS.containsEntry(dropper, EnigmaticItems.ASCENSION_AMULET) && !event.getEntity().level().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY)) {
+                if (POSSESSIONS.containsEntry(dropper, EnigmaticItems.ASCENSION_AMULET) && !event.getEntity().level().getGameRules().get(GameRules.KEEP_INVENTORY)) {
                     event.setCanceled(true);
                 }
             }
@@ -555,7 +555,7 @@ public class CursedRing extends CursedCurioItem {
                     EnigmaticLegacy.LOGGER.info("Granting starter gear to {}", player.getGameProfile().getName());
                     CompoundTag data = EnigmaticHandler.getPersistedData(player);
 
-                    if (!data.getBoolean("UnwitnessedAmuletGift")) {
+                    if (!data.getBooleanOr("UnwitnessedAmuletGift", false)) {
                         ItemStack stack = EnigmaticItems.UNWITNESSED_AMULET.toStack();
                         if (player.getInventory().getItem(8).isEmpty()) {
                             player.getInventory().setItem(8, stack);
@@ -567,7 +567,7 @@ public class CursedRing extends CursedCurioItem {
                         }
                         data.putBoolean("UnwitnessedAmuletGift", true);
                     }
-                    if (!data.getBoolean("CursedRingGift")) {
+                    if (!data.getBooleanOr("CursedRingGift", false)) {
                         ItemStack stack = EnigmaticItems.CURSED_RING.toStack();
                         if (ultraHardcore.get()) EnigmaticHandler.tryForceEquip(player, stack);
                         else {

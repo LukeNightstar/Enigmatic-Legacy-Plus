@@ -49,6 +49,7 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import javax.annotation.Nullable;
 import java.util.Optional;
 
+import net.minecraft.util.profiling.Profiler;
 public class IchorSprite extends PathfinderMob implements TraceableEntity {
     public static final int BEAM_RANGE = 8;
     protected static final ImmutableList<SensorType<? extends Sensor<? super IchorSprite>>> SENSOR_TYPES = ImmutableList.of(
@@ -121,7 +122,7 @@ public class IchorSprite extends PathfinderMob implements TraceableEntity {
     public void aiStep() {
         if (this.isAlive()) {
             int attackTimer = this.getAttackTimer();
-            if (this.level().isClientSide) {
+            if (this.level().isClientSide()) {
                 this.clientAnimationTime0 = this.clientAnimationTime;
                 if (this.hasActiveAttackTarget()) {
                     if (this.clientAnimationTime < 30) this.clientAnimationTime += this.random.nextInt(3, 6);
@@ -138,7 +139,7 @@ public class IchorSprite extends PathfinderMob implements TraceableEntity {
                 }
             }
             this.setAttackTimer(Math.min(64, attackTimer + 1));
-            if ((this.getOwner() == null || !this.getOwner().isAlive()) && !this.level().isClientSide) {
+            if ((this.getOwner() == null || !this.getOwner().isAlive()) && !this.level().isClientSide()) {
                 if (this.level() instanceof ServerLevel level)
                     level.sendParticles(ParticleTypes.EXPLOSION, this.getX(), this.getY(), this.getZ(), 1, 0, 0, 0, 0);
                 this.discard();
@@ -213,12 +214,12 @@ public class IchorSprite extends PathfinderMob implements TraceableEntity {
     }
 
     protected void customServerAiStep() {
-        this.level().getProfiler().push("ichorSpriteBrain");
+        Profiler.get().push("ichorSpriteBrain");
         this.getBrain().tick((ServerLevel) this.level(), this);
-        this.level().getProfiler().pop();
-        this.level().getProfiler().push("ichorSpriteActivityUpdate");
+        Profiler.get().pop();
+        Profiler.get().push("ichorSpriteActivityUpdate");
         Ai.updateActivity(this);
-        this.level().getProfiler().pop();
+        Profiler.get().pop();
         super.customServerAiStep();
     }
 
@@ -238,7 +239,7 @@ public class IchorSprite extends PathfinderMob implements TraceableEntity {
     @Nullable
     public LivingEntity getActiveAttackTarget() {
         if (!this.hasActiveAttackTarget()) return null;
-        if (this.level().isClientSide) {
+        if (this.level().isClientSide()) {
             if (this.clientSideCachedAttackTarget != null) {
                 return this.clientSideCachedAttackTarget;
             } else {
@@ -398,13 +399,13 @@ public class IchorSprite extends PathfinderMob implements TraceableEntity {
             LivingEntity target = getAttackTarget(sprite);
             if (target != null)
                 sprite.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new EntityTracker(target, true));
-            sprite.hasImpulse = true;
+            sprite.needsSync = true;
         }
 
         protected void stop(ServerLevel level, IchorSprite sprite, long gameTime) {
             sprite.setActiveAttackTarget(0);
             sprite.setTarget(null);
-            sprite.hasImpulse = true;
+            sprite.needsSync = true;
         }
 
         protected void tick(ServerLevel level, IchorSprite sprite, long gameTime) {

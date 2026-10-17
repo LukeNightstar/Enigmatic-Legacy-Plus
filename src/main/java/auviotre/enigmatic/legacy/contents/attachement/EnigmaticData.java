@@ -9,6 +9,7 @@ import org.jetbrains.annotations.UnknownNullability;
 
 import java.util.UUID;
 
+import net.minecraft.core.UUIDUtil;
 public class EnigmaticData implements INBTSerializable<CompoundTag> {
     private @Nullable UUID engineHook;
     private int spellstoneCooldown = 0;
@@ -201,7 +202,7 @@ public class EnigmaticData implements INBTSerializable<CompoundTag> {
     public CompoundTag save(HolderLookup.Provider provider) {
         CompoundTag tag = new CompoundTag();
         if (this.engineHook != null) {
-            tag.putUUID("EngineHook", engineHook);
+            tag.store("EngineHook", UUIDUtil.CODEC, engineHook);
         }
         tag.putBoolean("MagnetRingEffect", this.magnetRingEffect);
         tag.putBoolean("UnlockedNarrator", this.unlockedNarrator);
@@ -225,24 +226,24 @@ public class EnigmaticData implements INBTSerializable<CompoundTag> {
     }
 
     public void load(HolderLookup.Provider provider, @NotNull CompoundTag tag) {
-        if (tag.contains("EngineHook")) this.engineHook = tag.getUUID("EngineHook");
-        this.magnetRingEffect = tag.getBoolean("MagnetRingEffect");
-        this.unlockedNarrator = tag.getBoolean("UnlockedNarrator");
-        this.nebulaPower = tag.getBoolean("NebulaPower");
-        this.isElytraBoosting = tag.getBoolean("ElytraBoosting");
-        this.isForbiddenCursed = tag.getBoolean("isForbiddenCursed");
-        this.isThirstForbiddenCursed = tag.getBoolean("isThirstForbiddenCursed");
-        this.spellstoneCooldown = tag.getInt("SpellstoneCooldown");
-        this.fireImmunityTimer = tag.getInt("FireImmunityTimer");
-        this.fireImmunityTimerLast = tag.getInt("FireImmunityTimerLast");
-        this.inBeaconRange = tag.getInt("InBeaconRangeTick");
-        this.witherKills = tag.getInt("WitherKills");
-        this.etherealShield = tag.getFloat("EtherealShield");
-        this.etheriumShieldTick = tag.getLong("EtheriumShieldTick");
-        this.timeWithCurses = tag.getLong("timeWithCurses");
-        this.timeWithoutCurses = tag.getLong("timeWithoutCurses");
-        this.reviveCooldown = tag.getInt("reviveCooldown");
-        this.annihilatingTick = tag.getInt("annihilatingTick");
+        if (tag.contains("EngineHook")) this.engineHook = tag.read("EngineHook", UUIDUtil.CODEC).orElse(null);
+        this.magnetRingEffect = tag.getBooleanOr("MagnetRingEffect", false);
+        this.unlockedNarrator = tag.getBooleanOr("UnlockedNarrator", false);
+        this.nebulaPower = tag.getBooleanOr("NebulaPower", false);
+        this.isElytraBoosting = tag.getBooleanOr("ElytraBoosting", false);
+        this.isForbiddenCursed = tag.getBooleanOr("isForbiddenCursed", false);
+        this.isThirstForbiddenCursed = tag.getBooleanOr("isThirstForbiddenCursed", false);
+        this.spellstoneCooldown = tag.getIntOr("SpellstoneCooldown", 0);
+        this.fireImmunityTimer = tag.getIntOr("FireImmunityTimer", 0);
+        this.fireImmunityTimerLast = tag.getIntOr("FireImmunityTimerLast", 0);
+        this.inBeaconRange = tag.getIntOr("InBeaconRangeTick", 0);
+        this.witherKills = tag.getIntOr("WitherKills", 0);
+        this.etherealShield = tag.getFloatOr("EtherealShield", 0.0F);
+        this.etheriumShieldTick = tag.getLongOr("EtheriumShieldTick", 0L);
+        this.timeWithCurses = tag.getLongOr("timeWithCurses", 0L);
+        this.timeWithoutCurses = tag.getLongOr("timeWithoutCurses", 0L);
+        this.reviveCooldown = tag.getIntOr("reviveCooldown", 0);
+        this.annihilatingTick = tag.getIntOr("annihilatingTick", 0);
         this.annihilationSweepData = tag.getIntArray("annihilationSweepData");
     }
 

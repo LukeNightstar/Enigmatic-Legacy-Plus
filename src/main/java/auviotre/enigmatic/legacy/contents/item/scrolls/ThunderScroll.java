@@ -47,6 +47,7 @@ import top.theillusivec4.curios.api.SlotContext;
 
 import java.util.List;
 
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 public class ThunderScroll extends CursedCurioItem {
     public static final String TAG_ID = "ElectricPoint";
 
@@ -57,7 +58,7 @@ public class ThunderScroll extends CursedCurioItem {
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
         TooltipHandler.line(list);
-        if (Screen.hasShiftDown()) {
+        if (Minecraft.getInstance().hasShiftDown()) {
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.thunderScroll1");
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.thunderScroll2");
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.thunderScroll3");
@@ -110,12 +111,12 @@ public class ThunderScroll extends CursedCurioItem {
         @SubscribeEvent
         private static void onTick(EntityTickEvent.@NotNull Pre event) {
             if (event.getEntity() instanceof LivingEntity entity) {
-                int electric = entity.getPersistentData().getInt(TAG_ID);
+                int electric = entity.getPersistentData().getIntOr(TAG_ID, 0);
                 if (electric > 0) {
                     if (electric > 1200) {
                         LightningBolt lightningbolt = EntityType.LIGHTNING_BOLT.create(entity.level());
                         if (lightningbolt != null) {
-                            lightningbolt.moveTo(Vec3.atBottomCenterOf(entity.blockPosition()));
+                            lightningbolt.snapTo(Vec3.atBottomCenterOf(entity.blockPosition()));
                             lightningbolt.setSilent(entity.getRandom().nextBoolean());
                             lightningbolt.addTag("HarmlessThunder");
                             lightningbolt.setDamage(lightningbolt.getDamage() * electric / 600.0F);
@@ -133,7 +134,7 @@ public class ThunderScroll extends CursedCurioItem {
             LivingEntity victim = event.getEntity();
             if (source.getEntity() instanceof LivingEntity entity && EnigmaticHandler.hasCurio(entity, EnigmaticItems.THUNDER_SCROLL)) {
                 if (entity.getWeaponItem().canPerformAction(ItemAbilities.SWORD_SWEEP) && source.is(DamageTypeTags.IS_PLAYER_ATTACK)) {
-                    int electric = victim.getPersistentData().getInt(TAG_ID);
+                    int electric = victim.getPersistentData().getIntOr(TAG_ID, 0);
                     victim.getPersistentData().putInt(TAG_ID, electric + 60 + entity.getRandom().nextInt(80) + (int) (event.getNewDamage() * 10));
                 }
             }
@@ -144,13 +145,13 @@ public class ThunderScroll extends CursedCurioItem {
             Player player = event.getEntity();
             boolean flag = player.onGround() && EnigmaticHandler.hasCurio(player, EnigmaticItems.THUNDER_SCROLL);
             if (flag && player.getWeaponItem().canPerformAction(ItemAbilities.SWORD_SWEEP) && !player.getCooldowns().isOnCooldown(EnigmaticItems.THUNDER_SCROLL.get())) {
-                PacketDistributor.sendToServer(new EmptyLeftClickPacket(true));
+                ClientPacketDistributor.sendToServer(new EmptyLeftClickPacket(true));
             }
         }
 
         @SubscribeEvent(priority = EventPriority.HIGHEST)
         private static void onLightningStrike(@NotNull EntityStruckByLightningEvent event) {
-            if (event.getLightning().getTags().contains("HarmlessThunder")) {
+            if (event.getLightning().entityTags().contains("HarmlessThunder")) {
                 if (event.getEntity() instanceof ItemEntity) {
                     event.setCanceled(true);
                 }

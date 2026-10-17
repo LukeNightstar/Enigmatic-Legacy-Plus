@@ -149,7 +149,7 @@ public interface EnigmaticHandler {
             entity.getPersistentData().remove("CurseBoost");
             return false;
         }
-        return entity.getPersistentData().getBoolean("CurseBoost");
+        return entity.getPersistentData().getBooleanOr("CurseBoost", false);
     }
 
     static void setCurseBoosted(LivingEntity entity, boolean boost, LivingEntity player) {
@@ -248,7 +248,7 @@ public interface EnigmaticHandler {
     }
 
     static boolean isAffectedBySoulLoss(@NotNull Player player, boolean hadRing) {
-        boolean keepInventory = player.level().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY);
+        boolean keepInventory = player.level().getGameRules().get(GameRules.KEEP_INVENTORY);
         return switch (CursedRing.soulCrystalsMode.get()) {
             case ALWAYS_LOSS -> true;
             case NEED_CURSE_RING -> hadRing && !keepInventory;
@@ -376,7 +376,7 @@ public interface EnigmaticHandler {
         MutableBoolean equipped = new MutableBoolean(false);
 
         CuriosApi.getCuriosInventory(entity).ifPresent(handler -> {
-            if (!entity.level().isClientSide) {
+            if (!entity.level().isClientSide()) {
                 Map<String, ICurioStacksHandler> curios = handler.getCurios();
 
                 loop:
@@ -505,7 +505,7 @@ public interface EnigmaticHandler {
 
         if (!data.contains(Player.PERSISTED_NBT_TAG))
             data.put(Player.PERSISTED_NBT_TAG, (persistedData = new CompoundTag()));
-        else persistedData = data.getCompound(Player.PERSISTED_NBT_TAG);
+        else persistedData = data.getCompoundOrEmpty(Player.PERSISTED_NBT_TAG);
 
         return persistedData;
     }

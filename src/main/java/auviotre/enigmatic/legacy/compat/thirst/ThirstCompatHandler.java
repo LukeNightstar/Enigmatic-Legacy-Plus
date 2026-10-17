@@ -16,6 +16,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import org.jetbrains.annotations.NotNull;
 
+import net.minecraft.util.profiling.Profiler;
 public class ThirstCompatHandler {
     public static final Identifier FORBIDDEN_DRINK_FULL_SPRITE = EnigmaticLegacy.location("hud/forbidden_drink_full");
     public static final Identifier FORBIDDEN_DRINK_HALF_SPRITE = EnigmaticLegacy.location("hud/forbidden_drink_half");
@@ -30,7 +31,7 @@ public class ThirstCompatHandler {
     public static void renderBar(int width, int height, GuiGraphicsExtractor guiGraphics) {
         Minecraft minecraft = Minecraft.getInstance();
         if (minecraft.player == null) return;
-        minecraft.getProfiler().push("thirst");
+        Profiler.get().push("thirst");
         RenderSystem.enableBlend();
         int left = width / 2 + 91; // + ClientConfig.THIRST_BAR_X_OFFSET.get();
         int top = height - minecraft.gui.rightHeight; // + ClientConfig.THIRST_BAR_Y_OFFSET.get();
@@ -52,7 +53,7 @@ public class ThirstCompatHandler {
             }
         }
         RenderSystem.disableBlend();
-        minecraft.getProfiler().pop();
+        Profiler.get().pop();
     }
 
     @SubscribeEvent

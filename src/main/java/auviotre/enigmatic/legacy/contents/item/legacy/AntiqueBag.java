@@ -93,7 +93,7 @@ public class AntiqueBag extends BaseItem {
 
     public InteractionResult use(Level world, Player player, InteractionHand hand) {
         player.startUsingItem(hand);
-        if (!world.isClientSide) player.openMenu(new AntiqueBagContainerMenu.Provider());
+        if (!world.isClientSide()) player.openMenu(new AntiqueBagContainerMenu.Provider());
         return InteractionResult.SUCCESS;
     }
 

@@ -40,7 +40,7 @@ public class AstralGlassPane extends IronBarsBlock {
 
     private static void spawnParticles(Level level, BlockPos pos) {
         float d0 = 0.5625F;
-        RandomSource random = level.random;
+        RandomSource random = level.getRandom();
         level.playSound(null, pos, EnigmaticSounds.ASTRAL_GLASS_CHANGE.get(), SoundSource.BLOCKS, 0.25F, 1.8F + 0.2F * random.nextFloat());
         for (Direction direction : Direction.values()) {
             BlockPos blockpos = pos.relative(direction);
@@ -70,7 +70,7 @@ public class AstralGlassPane extends IronBarsBlock {
     }
 
     protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block neighborBlock, BlockPos neighborPos, boolean movedByPiston) {
-        if (!level.isClientSide && level.hasNeighborSignal(pos))
+        if (!level.isClientSide() && level.hasNeighborSignal(pos))
             level.setBlock(pos, state.setValue(STYLE, level.getBestNeighborSignal(pos) / 4 % 4), 3);
     }
 
@@ -89,7 +89,7 @@ public class AstralGlassPane extends IronBarsBlock {
         }
         InteractionResult result = stack.getItem() instanceof BlockItem && new BlockPlaceContext(player, hand, stack, hitResult).canPlace() ? InteractionResult.PASS : InteractionResult.SUCCESS;
         if (result == InteractionResult.SUCCESS) {
-            if (level.isClientSide) spawnParticles(level, pos);
+            if (level.isClientSide()) spawnParticles(level, pos);
             else interact(state, level, pos);
         }
         return result;

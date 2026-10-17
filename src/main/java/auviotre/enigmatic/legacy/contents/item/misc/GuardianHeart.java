@@ -44,6 +44,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Predicate;
 
+import net.minecraft.client.Minecraft;
 public class GuardianHeart extends BaseCursedItem {
     public static ModConfigSpec.IntValue cooldown;
     public static ModConfigSpec.DoubleValue effectiveRange;
@@ -89,7 +90,7 @@ public class GuardianHeart extends BaseCursedItem {
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
         TooltipHandler.line(list);
-        if (Screen.hasShiftDown()) {
+        if (Minecraft.getInstance().hasShiftDown()) {
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.guardianHeart1", ChatFormatting.GOLD, String.format("%.0f", effectiveRange.get()));
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.guardianHeart2");
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.guardianHeart3");
@@ -130,8 +131,8 @@ public class GuardianHeart extends BaseCursedItem {
                     if (closestMonster != null) {
                         this.setAttackTarget(theOne, closestMonster);
                         theOne.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 300, 0, false, true));
-                        theOne.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 300, 1, false, true));
-                        theOne.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 300, 1, false, true));
+                        theOne.addEffect(new MobEffectInstance(MobEffects.STRENGTH, 300, 1, false, true));
+                        theOne.addEffect(new MobEffectInstance(MobEffects.RESISTANCE, 300, 1, false, true));
 
                         for (Monster otherMonster : surroundingMobs)
                             this.setAttackTarget(otherMonster, theOne);

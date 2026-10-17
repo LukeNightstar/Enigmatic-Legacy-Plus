@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import net.minecraft.core.UUIDUtil;
 @Mixin(EnderDragon.class)
 public abstract class MixinEnderDragon extends Mob implements Enemy, AbyssalHeartBearer {
     @Shadow
@@ -53,7 +54,7 @@ public abstract class MixinEnderDragon extends Mob implements Enemy, AbyssalHear
                     Player player = level.getPlayerByUUID(attacker);
                     if (player instanceof ServerPlayer sp && players.contains(sp)) {
                         CompoundTag data = EnigmaticHandler.getPersistedData(sp);
-                        int heartsGained = data.getInt("AbyssalHeartsGained");
+                        int heartsGained = data.getIntOr("AbyssalHeartsGained", 0);
                         if (heartsGained < AbyssalHeart.getMaxCount(player)) {
                             heart.acceptors.add(player.getUUID());
                             data.putInt("AbyssalHeartsGained", heartsGained + 1);
@@ -75,7 +76,7 @@ public abstract class MixinEnderDragon extends Mob implements Enemy, AbyssalHear
         int i = 0;
         if (this.attackers != null) {
             for (UUID uuid : this.attackers) {
-                if (uuid != null) attacker.putUUID(String.valueOf(i++), uuid);
+                if (uuid != null) attacker.store(String.valueOf(i++), UUIDUtil.CODEC, uuid);
             }
         }
         compoundTag.put("Attackers", attacker);
@@ -84,10 +85,10 @@ public abstract class MixinEnderDragon extends Mob implements Enemy, AbyssalHear
     @Inject(method = "readAdditionalSaveData", at = @At("RETURN"))
     public void readData(CompoundTag compoundTag, CallbackInfo info) {
         Set<UUID> set = new HashSet<>();
-        CompoundTag attacker = compoundTag.getCompound("Attackers");
+        CompoundTag attacker = compoundTag.getCompoundOrEmpty("Attackers");
         for (String key : attacker.getAllKeys()) {
-            if (attacker.hasUUID(key)) {
-                UUID tagUUID = attacker.getUUID(key);
+            if (attacker.read(key, UUIDUtil.CODEC).isPresent()) {
+                UUID tagUUID = attacker.read(key, UUIDUtil.CODEC).orElse(null);
                 set.add(tagUUID);
             }
         }

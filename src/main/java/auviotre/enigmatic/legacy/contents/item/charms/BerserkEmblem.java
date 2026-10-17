@@ -74,7 +74,7 @@ public class BerserkEmblem extends CursedCurioItem {
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
         TooltipHandler.line(list);
-        if (Screen.hasShiftDown()) {
+        if (Minecraft.getInstance().hasShiftDown()) {
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.berserkCharm1", ChatFormatting.GOLD, attackDamage.get() + "%");
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.berserkCharm2", ChatFormatting.GOLD, attackSpeed.get() + "%");
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.berserkCharm3", ChatFormatting.GOLD, movementSpeed.get() + "%");
@@ -105,7 +105,7 @@ public class BerserkEmblem extends CursedCurioItem {
 
     public void curioTick(@NotNull SlotContext context, ItemStack stack) {
         LivingEntity entity = context.entity();
-        if (entity.level().isClientSide) return;
+        if (entity.level().isClientSide()) return;
         entity.getAttributes().addTransientAttributeModifiers(this.createAttributeMap(entity));
     }
 

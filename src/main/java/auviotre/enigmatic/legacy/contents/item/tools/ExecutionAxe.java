@@ -81,7 +81,7 @@ public class ExecutionAxe extends SwordItem {
 
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        if (Screen.hasShiftDown()) {
+        if (Minecraft.getInstance().hasShiftDown()) {
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.executionAxe1");
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.executionAxe2", ChatFormatting.GOLD, beheadingBonus.get() + "%");
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.executionAxe3");

@@ -51,6 +51,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import net.minecraft.core.UUIDUtil;
 public class PermanentItemEntity extends Entity {
     private static final EntityDataAccessor<ItemStack> ITEM = SynchedEntityData.defineId(PermanentItemEntity.class, EntityDataSerializers.ITEM_STACK);
     public float hoverStart = (float) (Math.random() * Math.PI * 2.0D);
@@ -136,7 +137,7 @@ public class PermanentItemEntity extends Entity {
         if (this.getItem().isEmpty()) {
             this.discard();
         } else {
-            if (!this.level().isClientSide && this.position != null) {
+            if (!this.level().isClientSide() && this.position != null) {
                 if (!this.position().equals(this.position))
                     this.teleportTo(this.position.x, this.position.y, this.position.z);
             }
@@ -151,7 +152,7 @@ public class PermanentItemEntity extends Entity {
 
             if (!this.isNoGravity()) this.setDeltaMovement(this.getDeltaMovement().add(0.0D, -0.04D, 0.0D));
 
-            if (this.level().isClientSide) {
+            if (this.level().isClientSide()) {
                 this.noPhysics = false;
                 LocalPlayer player = Minecraft.getInstance().player;
                 if (this.acceptors == null || (player != null && this.acceptors.contains(player.getUUID()))) {
@@ -164,10 +165,10 @@ public class PermanentItemEntity extends Entity {
             }
 
             ++this.age;
-            if (!this.level().isClientSide) {
+            if (!this.level().isClientSide()) {
                 double d0 = this.getDeltaMovement().subtract(vec3d).lengthSqr();
                 if (d0 > 0.01D) {
-                    this.hasImpulse = true;
+                    this.needsSync = true;
                 }
             }
 
@@ -191,7 +192,7 @@ public class PermanentItemEntity extends Entity {
     }
 
     public boolean hurt(DamageSource source, float amount) {
-        if (this.level().isClientSide || !this.isAlive()) return false;
+        if (this.level().isClientSide() || !this.isAlive()) return false;
 
         if (source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
             EnigmaticLegacy.LOGGER.warn("Attacked permanent item entity with absolute DamageSource: {}", source);
@@ -204,7 +205,7 @@ public class PermanentItemEntity extends Entity {
     public void remove(Entity.RemovalReason reason) {
         if (reason == RemovalReason.DISCARDED || reason == RemovalReason.KILLED) {
             EnigmaticLegacy.LOGGER.warn("Removing Permanent Item Entity: {}", this);
-            if (!this.level().isClientSide) SoulArchive.getInstance().removeItem(this);
+            if (!this.level().isClientSide()) SoulArchive.getInstance().removeItem(this);
         }
         super.remove(reason);
     }
@@ -213,8 +214,8 @@ public class PermanentItemEntity extends Entity {
         compound.putShort("Health", (short) this.health);
         compound.putShort("Age", (short) this.age);
         compound.putShort("PickupDelay", (short) this.pickupDelay);
-        if (this.getThrowerId() != null) compound.putUUID("Thrower", this.getThrowerId());
-        if (this.getOwnerId() != null) compound.putUUID("Owner", this.getOwnerId());
+        if (this.getThrowerId() != null) compound.store("Thrower", UUIDUtil.CODEC, this.getThrowerId());
+        if (this.getOwnerId() != null) compound.store("Owner", UUIDUtil.CODEC, this.getOwnerId());
         if (!this.getItem().isEmpty()) compound.put("Item", this.getItem().save(this.registryAccess()));
         if (this.position != null) {
             compound.putDouble("BoundX", this.position.x);
@@ -234,30 +235,30 @@ public class PermanentItemEntity extends Entity {
         int i = 0;
         if (acceptors != null) {
             for (UUID uuid : acceptors) {
-                if (uuid != null) acceptorTag.putUUID(String.valueOf(i++), uuid);
+                if (uuid != null) acceptorTag.store(String.valueOf(i++), UUIDUtil.CODEC, uuid);
             }
         }
         compound.put("acceptorSet", acceptorTag);
     }
 
     public void readAdditionalSaveData(CompoundTag compound) {
-        this.health = compound.getShort("Health");
-        this.age = compound.getShort("Age");
-        if (compound.contains("PickupDelay")) this.pickupDelay = compound.getShort("PickupDelay");
+        this.health = compound.getShortOr("Health", (short) 0);
+        this.age = compound.getShortOr("Age", (short) 0);
+        if (compound.contains("PickupDelay")) this.pickupDelay = compound.getShortOr("PickupDelay", (short) 0);
 
-        if (compound.contains("Owner")) this.owner = compound.getUUID("Owner");
+        if (compound.contains("Owner")) this.owner = compound.read("Owner", UUIDUtil.CODEC).orElse(null);
 
-        if (compound.contains("Thrower")) this.thrower = compound.getUUID("Thrower");
+        if (compound.contains("Thrower")) this.thrower = compound.read("Thrower", UUIDUtil.CODEC).orElse(null);
 
         if (compound.contains("BoundX") && compound.contains("BoundY") && compound.contains("BoundZ")) {
-            double x = compound.getDouble("BoundX");
-            double y = compound.getDouble("BoundY");
-            double z = compound.getDouble("BoundZ");
+            double x = compound.getDoubleOr("BoundX", 0.0D);
+            double y = compound.getDoubleOr("BoundY", 0.0D);
+            double z = compound.getDoubleOr("BoundZ", 0.0D);
             this.position = new Vec3(x, y, z);
         }
 
         ImmutableMap.Builder<String, ItemStack> builder = ImmutableMap.builder();
-        CompoundTag mapTag = compound.getCompound("restoreMap");
+        CompoundTag mapTag = compound.getCompoundOrEmpty("restoreMap");
         for (String key : mapTag.getAllKeys()) {
             ItemStack stack = ItemStack.parseOptional(this.registryAccess(), mapTag.getCompound(key));
             if (!stack.isEmpty()) builder.put(key, stack);
@@ -265,17 +266,17 @@ public class PermanentItemEntity extends Entity {
         this.restoreMap = builder.build();
 
         Set<UUID> set = new HashSet<>();
-        CompoundTag acceptorTag = compound.getCompound("acceptorSet");
+        CompoundTag acceptorTag = compound.getCompoundOrEmpty("acceptorSet");
         for (String key : acceptorTag.getAllKeys()) {
-            if (acceptorTag.hasUUID(key)) {
-                UUID tagUUID = acceptorTag.getUUID(key);
+            if (acceptorTag.read(key, UUIDUtil.CODEC).isPresent()) {
+                UUID tagUUID = acceptorTag.read(key, UUIDUtil.CODEC).orElse(null);
                 set.add(tagUUID);
             }
         }
         this.acceptors = set;
 
         if (compound.contains("Item", 10)) {
-            CompoundTag compoundtag = compound.getCompound("Item");
+            CompoundTag compoundtag = compound.getCompoundOrEmpty("Item");
             this.setItem(ItemStack.parseOptional(this.registryAccess(), compoundtag));
         } else this.discard();
         if (this.getItem().isEmpty()) this.discard();

@@ -28,6 +28,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.UUID;
 
+import net.minecraft.core.UUIDUtil;
 public class AbyssProjectile extends Projectile implements ItemSupplier {
     private static final EntityDataAccessor<Float> ID_DAMAGE = SynchedEntityData.defineId(AbyssProjectile.class, EntityDataSerializers.FLOAT);
     public int fireTime = 0;
@@ -119,7 +120,7 @@ public class AbyssProjectile extends Projectile implements ItemSupplier {
         if (entity instanceof LivingEntity livingEntity) {
             Entity target = hitResult.getEntity();
             if (target == this.getOwner()) return;
-            int level = target.getPersistentData().getInt("AnnihilationPoint");
+            int level = target.getPersistentData().getIntOr("AnnihilationPoint", 0);
             float damage = this.entityData.get(ID_DAMAGE) * 0.3F;
             if (target instanceof LivingEntity living) damage += living.getMaxHealth() * 0.02F * level;
             target.hurt(EnigmaticDamageTypes.source(this.level(), EnigmaticDamageTypes.ABYSS, this, this.getOwner()), damage);
@@ -160,12 +161,12 @@ public class AbyssProjectile extends Projectile implements ItemSupplier {
     }
 
     public void addAdditionalSaveData(CompoundTag tag) {
-        if (this.targetUUID != null) tag.putUUID("TargetUUID", this.targetUUID);
+        if (this.targetUUID != null) tag.store("TargetUUID", UUIDUtil.CODEC, this.targetUUID);
     }
 
     public void readAdditionalSaveData(CompoundTag tag) {
-        if (tag.hasUUID("TargetUUID")) {
-            this.targetUUID = tag.getUUID("TargetUUID");
+        if (tag.read("TargetUUID", UUIDUtil.CODEC).isPresent()) {
+            this.targetUUID = tag.read("TargetUUID", UUIDUtil.CODEC).orElse(null);
             this.cachedTarget = null;
         }
     }

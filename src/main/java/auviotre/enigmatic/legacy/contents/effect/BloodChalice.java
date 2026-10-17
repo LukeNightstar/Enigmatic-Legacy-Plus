@@ -22,7 +22,7 @@ public class BloodChalice extends MobEffect {
     }
 
     public boolean applyEffectTick(LivingEntity entity, int amplifier) {
-        if (!entity.level().isClientSide) {
+        if (!entity.level().isClientSide()) {
             AttributeInstance attribute = entity.getAttributes().getInstance(Attributes.ATTACK_DAMAGE);
             MobEffectInstance effect = entity.getEffect(EnigmaticEffects.BLOOD_CHALICE);
             if (attribute != null && effect != null) {

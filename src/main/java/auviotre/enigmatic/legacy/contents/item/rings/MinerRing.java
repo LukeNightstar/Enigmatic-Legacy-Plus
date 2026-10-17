@@ -41,6 +41,7 @@ import top.theillusivec4.curios.api.SlotContext;
 
 import java.util.List;
 
+import net.minecraft.client.Minecraft;
 public class MinerRing extends BaseCurioItem {
     private static final int MAX_POINT = 256;
     private final RecipeManager.CachedCheck<SingleRecipeInput, BlastingRecipe> quickCheck = RecipeManager.createCheck(RecipeType.BLASTING);
@@ -65,7 +66,7 @@ public class MinerRing extends BaseCurioItem {
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
         TooltipHandler.line(list);
-        if (Screen.hasShiftDown()) {
+        if (Minecraft.getInstance().hasShiftDown()) {
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.minerRing1");
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.minerRing2");
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.minerRing3");

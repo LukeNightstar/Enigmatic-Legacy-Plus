@@ -37,7 +37,7 @@ public class ProjectileDeflectAttribute extends PercentageAttribute {
                     Entity projectile = event.getEntity();
                     if (projectile instanceof Projectile arrow) {
                         if (arrow.getOwner() == player) {
-                            for (String tag : arrow.getTags()) {
+                            for (String tag : arrow.entityTags()) {
                                 if (tag.startsWith("ProjectileDeflected")) {
                                     try {
                                         int time = Integer.parseInt(tag.split(":")[1]);
@@ -67,7 +67,7 @@ public class ProjectileDeflectAttribute extends PercentageAttribute {
                             arrow.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
                         }
 
-                        projectile.getTags().removeIf(tag -> tag.startsWith("ProjectileDeflected"));
+                        projectile.entityTags().removeIf(tag -> tag.startsWith("ProjectileDeflected"));
                         projectile.addTag("ProjectileDeflected:" + projectile.tickCount);
 
                         Vec3 movement = projectile.getDeltaMovement();

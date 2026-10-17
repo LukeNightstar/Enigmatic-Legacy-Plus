@@ -27,6 +27,7 @@ import top.theillusivec4.curios.api.client.ICuriosScreen;
 
 import javax.annotation.Nonnull;
 
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 @OnlyIn(Dist.CLIENT)
 public class EnderChestInventoryButton extends ImageButton {
     public static final WidgetSprites SPRITES = new WidgetSprites(
@@ -52,7 +53,7 @@ public class EnderChestInventoryButton extends ImageButton {
                     RecipeBookComponent recipeBookGui = inventory.getRecipeBookComponent();
                     if (recipeBookGui.isVisible()) recipeBookGui.toggleVisibility();
                 }
-                PacketDistributor.sendToServer(new EnderRingKeyPacket(stack));
+                ClientPacketDistributor.sendToServer(new EnderRingKeyPacket(stack));
             }
         });
 

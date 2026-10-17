@@ -43,6 +43,7 @@ import top.theillusivec4.curios.api.SlotContext;
 
 import java.util.List;
 
+import net.minecraft.client.Minecraft;
 public class EtheriumCore extends SpellstoneItem {
     private static final String TAG_ID = "EtheriumCounterattack";
     public static ModConfigSpec.IntValue etheriumThresholdModifier;
@@ -70,7 +71,7 @@ public class EtheriumCore extends SpellstoneItem {
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
         TooltipHandler.line(list);
         boolean boost = stack.getOrDefault(EnigmaticComponents.BOOLEAN, false);
-        if (Screen.hasShiftDown()) {
+        if (Minecraft.getInstance().hasShiftDown()) {
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstoneSkill");
             if (boost) TooltipHandler.line(list, "tooltip.enigmaticlegacy.etheriumCoreSkill");
             else TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstoneSkillAbsent");

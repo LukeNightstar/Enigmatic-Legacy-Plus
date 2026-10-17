@@ -43,6 +43,7 @@ import top.theillusivec4.curios.api.SlotContext;
 
 import java.util.List;
 
+import net.minecraft.client.Minecraft;
 public class CursedXpScroll extends XpScroll {
     public static ModConfigSpec.DoubleValue magneticRange;
     public static ModConfigSpec.IntValue xpLevelUpperLimit;
@@ -79,7 +80,7 @@ public class CursedXpScroll extends XpScroll {
         else modeComponent = Component.translatable("tooltip.enigmaticlegacy.xpScrollExtraction");
 
         TooltipHandler.line(list);
-        if (Screen.hasShiftDown()) {
+        if (Minecraft.getInstance().hasShiftDown()) {
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.xpScroll1");
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedXpScroll1");
             TooltipHandler.line(list);

@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
+import net.minecraft.client.Minecraft;
 public class LootGenerator extends BaseItem {
     public static final List<ResourceKey<LootTable>> LOOT_LIST = new ArrayList<>();
 
@@ -52,7 +53,7 @@ public class LootGenerator extends BaseItem {
 
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        if (Screen.hasShiftDown()) {
+        if (Minecraft.getInstance().hasShiftDown()) {
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.lootGenerator1");
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.lootGenerator2");
             TooltipHandler.line(list);

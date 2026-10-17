@@ -42,6 +42,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
+import net.minecraft.client.Minecraft;
 public class EnderSlayer extends SwordItem {
     public static final Tier TIER = new SimpleTier(BlockTags.INCORRECT_FOR_DIAMOND_TOOL, 1876, 8.5F, 3.5F, 12, () -> Ingredient.of(Blocks.OBSIDIAN));
     public static ModConfigSpec.IntValue specialDamageBoost;
@@ -59,7 +60,7 @@ public class EnderSlayer extends SwordItem {
 
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        if (Screen.hasShiftDown()) {
+        if (Minecraft.getInstance().hasShiftDown()) {
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.enderSlayer3", ChatFormatting.GOLD, specialDamageBoost.get() + "%");
             TooltipHandler.line(list);
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.enderSlayer5");
@@ -122,7 +123,7 @@ public class EnderSlayer extends SwordItem {
         private static void onTick(EntityTickEvent.@NotNull Pre event) {
             Entity entity = event.getEntity();
             if (entity.getPersistentData().contains("EnderSlayerTeleportForbidden")) {
-                int tick = entity.getPersistentData().getInt("EnderSlayerTeleportForbidden");
+                int tick = entity.getPersistentData().getIntOr("EnderSlayerTeleportForbidden", 0);
                 if (tick > 1) entity.getPersistentData().putInt("EnderSlayerTeleportForbidden", tick - 1);
                 else entity.getPersistentData().remove("EnderSlayerTeleportForbidden");
             }

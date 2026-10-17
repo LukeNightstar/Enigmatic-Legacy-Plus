@@ -82,7 +82,7 @@ public class EnigmaticEnchantments {
                                 EnchantmentTarget.ATTACKER,
                                 EnchantmentTarget.VICTIM,
                                 new ApplyMobEffect(
-                                        HolderSet.direct(MobEffects.MOVEMENT_SLOWDOWN),
+                                        HolderSet.direct(MobEffects.SLOWNESS),
                                         LevelBasedValue.constant(1.0F), LevelBasedValue.perLevel(1.0F, 0.5F),
                                         LevelBasedValue.constant(3.0F), LevelBasedValue.constant(3.0F)
                                 ),

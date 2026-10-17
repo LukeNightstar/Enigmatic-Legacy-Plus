@@ -55,7 +55,7 @@ public class SoulCrystal extends BaseItem implements IPermanentCrystal {
         int lostCount = getLostCrystals(player);
         if (lostCount > 0) {
             setLostCrystals(player, lostCount - 1);
-            if (!player.level().isClientSide) player.playSound(SoundEvents.BEACON_ACTIVATE, 1.0f, 1.0f);
+            if (!player.level().isClientSide()) player.playSound(SoundEvents.BEACON_ACTIVATE, 1.0f, 1.0f);
             return true;
         }
         return false;
@@ -68,7 +68,7 @@ public class SoulCrystal extends BaseItem implements IPermanentCrystal {
     }
 
     public static int getLostCrystals(Player player) {
-        return EnigmaticHandler.getPersistedData(player).getInt("SixthCurseSoulLossCount");
+        return EnigmaticHandler.getPersistedData(player).getIntOr("SixthCurseSoulLossCount", 0);
     }
 
     public static Multimap<Holder<Attribute>, AttributeModifier> getOrCreateSoulMap(Player player) {

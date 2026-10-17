@@ -31,6 +31,7 @@ import top.theillusivec4.curios.api.SlotContext;
 
 import java.util.List;
 
+import net.minecraft.client.Minecraft;
 public class XpScroll extends BaseCurioItem {
     public static ModConfigSpec.DoubleValue magneticRange;
 
@@ -90,7 +91,7 @@ public class XpScroll extends BaseCurioItem {
         else modeComponent = Component.translatable("tooltip.enigmaticlegacy.xpScrollExtraction");
 
         TooltipHandler.line(list);
-        if (Screen.hasShiftDown()) {
+        if (Minecraft.getInstance().hasShiftDown()) {
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.xpScroll1");
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.xpScroll2");
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.xpScroll3");

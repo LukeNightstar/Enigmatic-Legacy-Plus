@@ -27,6 +27,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.UUID;
 
+import net.minecraft.core.UUIDUtil;
 public class SoulFlameBall extends Projectile {
     @Nullable
     private UUID targetUUID;
@@ -117,7 +118,7 @@ public class SoulFlameBall extends Projectile {
         if (entity instanceof LivingEntity owner) {
             Entity target = hitResult.getEntity();
             if (target == this.getOwner()) return;
-            int level = target.getPersistentData().getInt("IllusionSoulLevel");
+            int level = target.getPersistentData().getIntOr("IllusionSoulLevel", 0);
             float damage = Math.min(4.0F + level * 0.4F, owner.getMaxHealth() * 0.64F);
             target.hurt(EnigmaticDamageTypes.source(level(), DamageTypes.MAGIC, this, this.getOwner()), damage);
             target.getPersistentData().putInt("IllusionSoulLevel", level + 1);
@@ -131,7 +132,7 @@ public class SoulFlameBall extends Projectile {
 
     protected void onHitBlock(BlockHitResult hitResult) {
         super.onHitBlock(hitResult);
-        if (!this.level().isClientSide) {
+        if (!this.level().isClientSide()) {
             ((ServerLevel) level()).sendParticles(ParticleTypes.EXPLOSION, this.getX(), this.getY(), this.getZ(), 1, 0, 0, 0, 0);
             this.discard();
         }
@@ -157,13 +158,13 @@ public class SoulFlameBall extends Projectile {
 
     public void addAdditionalSaveData(CompoundTag tag) {
         super.addAdditionalSaveData(tag);
-        if (this.targetUUID != null) tag.putUUID("TargetUUID", this.targetUUID);
+        if (this.targetUUID != null) tag.store("TargetUUID", UUIDUtil.CODEC, this.targetUUID);
     }
 
     public void readAdditionalSaveData(CompoundTag tag) {
         super.readAdditionalSaveData(tag);
-        if (tag.hasUUID("TargetUUID")) {
-            this.targetUUID = tag.getUUID("TargetUUID");
+        if (tag.read("TargetUUID", UUIDUtil.CODEC).isPresent()) {
+            this.targetUUID = tag.read("TargetUUID", UUIDUtil.CODEC).orElse(null);
             this.cachedTarget = null;
         }
     }

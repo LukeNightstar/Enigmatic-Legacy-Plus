@@ -47,6 +47,7 @@ import top.theillusivec4.curios.api.SlotContext;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.client.Minecraft;
 public class VoidPearl extends SpellstoneItem {
     public static ModConfigSpec.DoubleValue shadowRange;
     public static ModConfigSpec.IntValue darknessDamage;
@@ -72,7 +73,7 @@ public class VoidPearl extends SpellstoneItem {
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
         TooltipHandler.line(list);
-        if (Screen.hasShiftDown()) {
+        if (Minecraft.getInstance().hasShiftDown()) {
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstoneSkill");
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstoneSkillAbsent");
             TooltipHandler.line(list);
@@ -118,11 +119,11 @@ public class VoidPearl extends SpellstoneItem {
                             entity.level().playSound(null, victim.blockPosition(), SoundEvents.PHANTOM_BITE, SoundSource.PLAYERS, 1.0F, 0.3F + entity.getRandom().nextFloat() * 0.4F);
 
                             victim.addEffect(new MobEffectInstance(MobEffects.WITHER, 80, 1, false, true), entity);
-                            victim.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 100, 2, false, true), entity);
+                            victim.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 100, 2, false, true), entity);
                             victim.addEffect(new MobEffectInstance(MobEffects.DARKNESS, 100, 0, false, true), entity);
                             victim.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 100, 0, false, true), entity);
                             victim.addEffect(new MobEffectInstance(MobEffects.HUNGER, 160, 2, false, true), entity);
-                            victim.addEffect(new MobEffectInstance(MobEffects.DIG_SLOWDOWN, 100, 3, false, true), entity);
+                            victim.addEffect(new MobEffectInstance(MobEffects.MINING_FATIGUE, 100, 3, false, true), entity);
                         }
                     }
                 }

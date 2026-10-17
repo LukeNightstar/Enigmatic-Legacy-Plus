@@ -108,7 +108,7 @@ public class SpellstoneSword extends Item {
         useItem.hurtAndBreak(Mth.floor(damage / 2), blocker, LivingEntity.getSlotForHand(blocker.getUsedItemHand()));
         if (blocker instanceof Player player) player.getCooldowns().removeCooldown(useItem.getItem());
         blocker.stopUsingItem();
-        blocker.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 2, 0, true, false));
+        blocker.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 2, 0, true, false));
         blocker.swing(blocker.getUsedItemHand());
         if (directEntity instanceof LivingEntity living && blocker != living) {
             List<LivingEntity> entities = level.getEntitiesOfClass(LivingEntity.class, blocker.getBoundingBox().inflate(3.2));
@@ -165,7 +165,7 @@ public class SpellstoneSword extends Item {
                 Vec3 vec = shooter.position().subtract(entity.position()).normalize();
                 entity.knockback(2.0F, vec.x, vec.z);
                 if (stack.getOrDefault(SPELL_LEVEL, 0) > 4) {
-                    int bless = entity.getPersistentData().getInt("ResonanceAngelBless");
+                    int bless = entity.getPersistentData().getIntOr("ResonanceAngelBless", 0);
                     entity.getPersistentData().putInt("ResonanceAngelBless", bless | 4);
                 }
             }
@@ -285,7 +285,7 @@ public class SpellstoneSword extends Item {
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
         ItemStack resonance = getResonance(stack);
         int level = stack.getOrDefault(SPELL_LEVEL, 0);
-        if (Screen.hasShiftDown()) {
+        if (Minecraft.getInstance().hasShiftDown()) {
             if (resonance.isEmpty()) {
                 TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstoneSword1");
                 TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstoneSword2");
@@ -916,7 +916,7 @@ public class SpellstoneSword extends Item {
                         event.setNewDamage(event.getNewDamage() * 1.6F);
                     }
                     if (level > 4) {
-                        int bless = entity.getPersistentData().getInt("ResonanceAngelBless");
+                        int bless = entity.getPersistentData().getIntOr("ResonanceAngelBless", 0);
                         int buff = (bless & 1) + (bless & 2 >> 1) + (bless & 4 >> 2);
                         float modifier = switch (buff) {
                             case 3 -> 1.0F;
@@ -931,7 +931,7 @@ public class SpellstoneSword extends Item {
                     event.setNewDamage(event.getNewDamage() * (1.0F + 0.025F * (float) len));
                 } else if (isResonatingWith(stack, EnigmaticItems.ILLUSION_LANTERN)) {
                     if (event.getSource().is(DamageTypeTags.IS_PLAYER_ATTACK)) {
-                        int soulLevel = entity.getPersistentData().getInt("IllusionSoulLevel");
+                        int soulLevel = entity.getPersistentData().getIntOr("IllusionSoulLevel", 0);
                         if (entity.getHealth() < soulLevel * 2 + event.getNewDamage()) {
                             event.setNewDamage(event.getNewDamage() + 5 * soulLevel);
                             if (entity.level() instanceof ServerLevel server)
@@ -939,7 +939,7 @@ public class SpellstoneSword extends Item {
                         }
                     }
                     if (event.getSource().getDirectEntity() instanceof SoulFlameBall) {
-                        int soulLevel = entity.getPersistentData().getInt("IllusionSoulLevel");
+                        int soulLevel = entity.getPersistentData().getIntOr("IllusionSoulLevel", 0);
                         entity.getPersistentData().putInt("IllusionSoulLevel", soulLevel + 1);
                     }
                     if (level > 4) {
@@ -1001,11 +1001,11 @@ public class SpellstoneSword extends Item {
                         }
                     } else if (isResonatingWith(stack, EnigmaticItems.ANGEL_BLESSING)) {
                         if (event.getSource().is(DamageTypeTags.IS_PLAYER_ATTACK) && level > 4) {
-                            int bless = entity.getPersistentData().getInt("ResonanceAngelBless");
+                            int bless = entity.getPersistentData().getIntOr("ResonanceAngelBless", 0);
                             entity.getPersistentData().putInt("ResonanceAngelBless", bless | 1);
                         }
                     } else if (isResonatingWith(stack, EnigmaticItems.ILLUSION_LANTERN)) {
-                        int soulLevel = entity.getPersistentData().getInt("IllusionSoulLevel");
+                        int soulLevel = entity.getPersistentData().getIntOr("IllusionSoulLevel", 0);
                         entity.getPersistentData().putInt("IllusionSoulLevel", soulLevel + (level + 1) / 2);
                     } else if (isResonatingWith(stack, EnigmaticItems.VOID_PEARL)) {
                         entity.invulnerableTime = 0;

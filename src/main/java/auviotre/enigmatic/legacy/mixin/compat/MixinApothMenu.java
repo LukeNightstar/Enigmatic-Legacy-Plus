@@ -75,7 +75,7 @@ public abstract class MixinApothMenu extends EnchantmentMenu {
                             this.enchantSlots.setChanged();
                             this.enchantmentSeed.set(player.getEnchantmentSeed());
                             this.slotsChanged(this.enchantSlots);
-                            world.playSound(null, pos, SoundEvents.ENCHANTMENT_TABLE_USE, SoundSource.BLOCKS, 1.0F, world.random.nextFloat() * 0.1F + 0.9F);
+                            world.playSound(null, pos, SoundEvents.ENCHANTMENT_TABLE_USE, SoundSource.BLOCKS, 1.0F, world.getRandom().nextFloat() * 0.1F + 0.9F);
                         }
 
                     });

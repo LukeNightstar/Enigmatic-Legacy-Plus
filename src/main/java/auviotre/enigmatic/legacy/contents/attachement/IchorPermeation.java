@@ -24,7 +24,7 @@ public class IchorPermeation implements INBTSerializable<CompoundTag> {
     }
 
     public void load(@NotNull CompoundTag tag) {
-        this.infected = tag.getBoolean("IchorPermeation");
+        this.infected = tag.getBooleanOr("IchorPermeation", false);
     }
 
     public @UnknownNullability CompoundTag serializeNBT(HolderLookup.Provider provider) {

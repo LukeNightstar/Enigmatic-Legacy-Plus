@@ -65,7 +65,7 @@ public class ScorchedCharm extends CursedCurioItem {
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
         TooltipHandler.line(list);
-        if (Screen.hasShiftDown()) {
+        if (Minecraft.getInstance().hasShiftDown()) {
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.scorchedCharm1");
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.scorchedCharm2");
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.scorchedCharm3");

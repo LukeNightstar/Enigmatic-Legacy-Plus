@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import net.minecraft.client.Minecraft;
 public class AbyssalHeart extends BaseCursedItem implements ITaintable, ISharableItem {
     public static ModConfigSpec.IntValue abyssalHeartCount;
     public static ModConfigSpec.DoubleValue abyssThreshold;
@@ -74,7 +75,7 @@ public class AbyssalHeart extends BaseCursedItem implements ITaintable, ISharabl
             Player player = level.getPlayerByUUID(uuid);
             if (player != null) {
                 CompoundTag data = EnigmaticHandler.getPersistedData(player);
-                int heartsGained = data.getInt("AbyssalHeartsGained");
+                int heartsGained = data.getIntOr("AbyssalHeartsGained", 0);
                 count += heartsGained;
             }
         }
@@ -83,7 +84,7 @@ public class AbyssalHeart extends BaseCursedItem implements ITaintable, ISharabl
 
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        if (!Screen.hasShiftDown()) {
+        if (!Minecraft.getInstance().hasShiftDown()) {
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.abyssalHeart1");
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.abyssalHeart2");
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.abyssalHeart3");

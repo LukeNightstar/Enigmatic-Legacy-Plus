@@ -30,6 +30,7 @@ import top.theillusivec4.curios.api.SlotContext;
 
 import java.util.List;
 
+import net.minecraft.client.Minecraft;
 public class AvariceScroll extends CursedCurioItem {
     public static final String EFFECT_TAG = EnigmaticLegacy.MODID + ":avarice_scroll_effect";
     public static ModConfigSpec.IntValue emeraldChance;
@@ -48,7 +49,7 @@ public class AvariceScroll extends CursedCurioItem {
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
         TooltipHandler.line(list);
-        if (Screen.hasShiftDown()) {
+        if (Minecraft.getInstance().hasShiftDown()) {
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.avariceScroll1", ChatFormatting.GOLD, 1);
             TooltipHandler.line(list);
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.avariceScroll2");

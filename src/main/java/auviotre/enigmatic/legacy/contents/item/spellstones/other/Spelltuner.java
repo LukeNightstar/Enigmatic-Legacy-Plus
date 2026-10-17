@@ -60,6 +60,7 @@ import top.theillusivec4.curios.api.SlotContext;
 
 import java.util.List;
 
+import net.minecraft.client.Minecraft;
 public class Spelltuner extends BaseCurioItem {
     public Spelltuner() {
         super(IItemHelper.singleProperties().rarity(Rarity.RARE).fireResistant());
@@ -84,7 +85,7 @@ public class Spelltuner extends BaseCurioItem {
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
         Context spellContext = stack.get(EnigmaticComponents.SPELLTUNER_CONTEXT);
         TooltipHandler.line(list);
-        if (Screen.hasShiftDown()) {
+        if (Minecraft.getInstance().hasShiftDown()) {
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.spelltuner1");
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.spelltuner2");
             TooltipHandler.line(list);

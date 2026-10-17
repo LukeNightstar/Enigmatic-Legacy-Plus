@@ -34,6 +34,7 @@ import top.theillusivec4.curios.api.SlotContext;
 
 import java.util.List;
 
+import net.minecraft.client.Minecraft;
 public class HeavenScroll extends BaseCurioItem {
     public HeavenScroll() {
         super(IItemHelper.singleProperties().rarity(Rarity.RARE));
@@ -42,7 +43,7 @@ public class HeavenScroll extends BaseCurioItem {
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
         TooltipHandler.line(list);
-        if (Screen.hasShiftDown()) {
+        if (Minecraft.getInstance().hasShiftDown()) {
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.heavenScroll1");
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.heavenScroll2");
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.heavenScroll3");

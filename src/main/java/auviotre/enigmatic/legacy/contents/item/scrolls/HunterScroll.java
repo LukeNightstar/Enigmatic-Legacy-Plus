@@ -39,6 +39,7 @@ import top.theillusivec4.curios.api.SlotContext;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.client.Minecraft;
 public class HunterScroll extends BaseCurioItem {
     public HunterScroll() {
         super(IItemHelper.singleProperties()
@@ -61,7 +62,7 @@ public class HunterScroll extends BaseCurioItem {
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
         TooltipHandler.line(list);
-        if (Screen.hasShiftDown()) {
+        if (Minecraft.getInstance().hasShiftDown()) {
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.hunterScroll1");
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.hunterScroll2");
         } else TooltipHandler.holdShift(list);

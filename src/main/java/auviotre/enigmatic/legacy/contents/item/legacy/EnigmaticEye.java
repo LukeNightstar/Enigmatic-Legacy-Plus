@@ -58,6 +58,7 @@ import top.theillusivec4.curios.api.SlotContext;
 import java.util.List;
 import java.util.Random;
 
+import net.minecraft.client.Minecraft;
 public class EnigmaticEye extends BaseCurioItem {
     public static ModConfigSpec.BooleanValue quoteSubtitles;
     public static ModConfigSpec.IntValue deathQuoteChance;
@@ -87,7 +88,7 @@ public class EnigmaticEye extends BaseCurioItem {
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull List<Component> list, @NotNull TooltipFlag flag) {
         if (!this.isDormant(stack)) TooltipHandler.line(list);
-        if (Screen.hasShiftDown()) {
+        if (Minecraft.getInstance().hasShiftDown()) {
             if (this.isDormant(stack)) {
                 TooltipHandler.line(list, "tooltip.enigmaticlegacy.enigmaticEye1");
                 TooltipHandler.line(list, "tooltip.enigmaticlegacy.enigmaticEye2");
@@ -153,7 +154,7 @@ public class EnigmaticEye extends BaseCurioItem {
         if (this.isDormant(stack) && !stack.has(EnigmaticComponents.ACTIVATION_ANIMATION)) {
             this.activateWithAnimation(stack);
             EnigmaticData data = player.getData(EnigmaticAttachments.ENIGMATIC_DATA);
-            if (!level.isClientSide) {
+            if (!level.isClientSide()) {
                 level.playSound(null, player.blockPosition(), EnigmaticSounds.CHARGED_ON.get(), SoundSource.PLAYERS, 1.0F, 0.95F + player.getRandom().nextFloat() * 0.1F);
                 if (!data.getUnlockedNarrator()) {
                     data.setUnlockedNarrator(true);
@@ -272,13 +273,13 @@ public class EnigmaticEye extends BaseCurioItem {
             if (!(player instanceof ServerPlayer serverPlayer)) return;
             CompoundTag data = EnigmaticHandler.getPersistedData(serverPlayer);
 
-            boolean deathFromEntity = data.getBoolean("DeathFromEntity");
+            boolean deathFromEntity = data.getBooleanOr("DeathFromEntity", false);
             data.remove("DeathFromEntity");
 
             if (event.isEndConquered()) return;
 
             // On Cursed Ring Destroyed
-            if (data.getBoolean("DestroyedCursedRing")) {
+            if (data.getBooleanOr("DestroyedCursedRing", false)) {
                 Quote.getRandom(Quote.RING_DESTRUCTION).play(serverPlayer, Quote.PlayOptions.defaultPlay().ifUnlocked().once().delay(10));
                 data.remove("DestroyedCursedRing");
                 return;

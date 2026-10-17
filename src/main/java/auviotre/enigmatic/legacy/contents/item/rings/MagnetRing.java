@@ -75,7 +75,7 @@ public class MagnetRing extends BaseCurioItem {
                 Vec3 delta = item.position().subtract(x, y, z);
                 if (delta.length() > 1.0) delta = delta.normalize();
                 item.setDeltaMovement(delta.scale(-1.2F));
-                item.hasImpulse = true;
+                item.needsSync = true;
                 pulled++;
             }
     }
@@ -90,6 +90,6 @@ public class MagnetRing extends BaseCurioItem {
 
     protected boolean canPullItem(@NotNull ItemEntity item) {
         ItemStack stack = item.getItem();
-        return item.isAlive() && !stack.isEmpty() && !item.getPersistentData().getBoolean("PreventRemoteMovement");
+        return item.isAlive() && !stack.isEmpty() && !item.getPersistentData().getBooleanOr("PreventRemoteMovement", false);
     }
 }

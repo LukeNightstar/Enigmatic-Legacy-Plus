@@ -47,6 +47,7 @@ import top.theillusivec4.curios.api.SlotContext;
 
 import java.util.List;
 
+import net.minecraft.client.Minecraft;
 public class AngelBlessing extends SpellstoneItem {
     public static ModConfigSpec.DoubleValue accelerationModifier;
     public static ModConfigSpec.DoubleValue accelerationModifierElytra;
@@ -87,7 +88,7 @@ public class AngelBlessing extends SpellstoneItem {
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
         TooltipHandler.line(list);
-        if (Screen.hasShiftDown()) {
+        if (Minecraft.getInstance().hasShiftDown()) {
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstoneSkill");
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.angelBlessingSkill");
             TooltipHandler.line(list);
@@ -156,11 +157,11 @@ public class AngelBlessing extends SpellstoneItem {
         if (redirected instanceof WitherSkull) return;
         if ((redirected instanceof AbstractArrow arrow && arrow.getOwner() == bearer)
                 || (redirected instanceof ThrowableItemProjectile projectile && projectile.getOwner() == bearer)) {
-            if (redirected.getTags().contains("AngelBlessingAccelerated")) {
+            if (redirected.entityTags().contains("AngelBlessingAccelerated")) {
                 return;
             }
 
-            if (redirected.getTags().stream().anyMatch(tag -> tag.startsWith("ProjectileDeflected")))
+            if (redirected.entityTags().stream().anyMatch(tag -> tag.startsWith("ProjectileDeflected")))
                 return;
 
             if (redirected instanceof ThrownTrident trident) {

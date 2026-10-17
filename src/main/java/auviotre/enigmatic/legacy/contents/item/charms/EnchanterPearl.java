@@ -23,6 +23,7 @@ import top.theillusivec4.curios.api.SlotContext;
 
 import java.util.List;
 
+import net.minecraft.client.Minecraft;
 public class EnchanterPearl extends CursedCurioItem {
     public EnchanterPearl() {
         super(IItemHelper.singleProperties().rarity(Rarity.RARE).fireResistant());
@@ -31,7 +32,7 @@ public class EnchanterPearl extends CursedCurioItem {
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
         TooltipHandler.line(list);
-        if (Screen.hasShiftDown()) {
+        if (Minecraft.getInstance().hasShiftDown()) {
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.enchantersPearl1");
             TooltipHandler.line(list);
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.enchantersPearl2");

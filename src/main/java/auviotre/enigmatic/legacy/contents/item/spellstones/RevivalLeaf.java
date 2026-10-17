@@ -61,6 +61,7 @@ import top.theillusivec4.curios.api.SlotContext;
 
 import java.util.List;
 
+import net.minecraft.client.Minecraft;
 public class RevivalLeaf extends SpellstoneItem {
     private static final String TAG_ID = "RevivalFlightLazyPos";
     public static ModConfigSpec.DoubleValue vulnerabilityModifier;
@@ -83,7 +84,7 @@ public class RevivalLeaf extends SpellstoneItem {
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
         TooltipHandler.line(list);
-        if (Screen.hasShiftDown()) {
+        if (Minecraft.getInstance().hasShiftDown()) {
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstoneSkill");
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.revivalLeafSkill");
             TooltipHandler.line(list);
@@ -145,7 +146,7 @@ public class RevivalLeaf extends SpellstoneItem {
                 player.getAttributes().addTransientAttributeModifiers(this.getModifiers());
                 if (player.getAbilities().flying && player.level().isClientSide()) {
                     if (player.getRandom().nextBoolean()) {
-                        BlockPos lazyPos = BlockPos.of(EnigmaticHandler.getPersistedData(player).getLong("RevivalFlightLazyPos"));
+                        BlockPos lazyPos = BlockPos.of(EnigmaticHandler.getPersistedData(player).getLongOr("RevivalFlightLazyPos", 0L));
                         player.level().addParticle(ParticleTypes.HAPPY_VILLAGER, player.getRandomX(0.5), player.getY(), player.getRandomZ(0.5), 0, 0, 0);
                         int[] offset = {0, 1};
                         for (int x : offset)
@@ -204,7 +205,7 @@ public class RevivalLeaf extends SpellstoneItem {
         CompoundTag data = EnigmaticHandler.getPersistedData(player);
         int range = (int) (player.getAttributes().getValue(Attributes.BLOCK_INTERACTION_RANGE) * 2 + 1);
         if (player.getPersistentData().contains(TAG_ID)) {
-            BlockPos lazyPos = BlockPos.of(data.getLong(TAG_ID));
+            BlockPos lazyPos = BlockPos.of(data.getLongOr(TAG_ID, 0L));
             BlockState blockState = player.level().getBlockState(lazyPos);
             if (blockState.is(EnigmaticTags.Blocks.PLANTS)) {
                 if (lazyPos.distToCenterSqr(player.position()) < range) return true;

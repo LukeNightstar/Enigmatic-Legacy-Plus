@@ -34,6 +34,7 @@ import top.theillusivec4.curios.api.SlotContext;
 
 import java.util.List;
 
+import net.minecraft.client.Minecraft;
 public class MiningCharm extends BaseCurioItem {
     public MiningCharm() {
         super(IItemHelper.singleProperties().rarity(Rarity.UNCOMMON));
@@ -42,7 +43,7 @@ public class MiningCharm extends BaseCurioItem {
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
         TooltipHandler.line(list);
-        if (Screen.hasShiftDown()) {
+        if (Minecraft.getInstance().hasShiftDown()) {
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.miningCharm1");
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.miningCharm2");
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.miningCharm3");

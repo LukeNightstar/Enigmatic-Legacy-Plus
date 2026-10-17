@@ -56,7 +56,7 @@ public interface TooltipHandler {
     }
 
     static void worthyOnly(List<Component> list, ItemStack stack) {
-        if (Screen.hasShiftDown()) {
+        if (Minecraft.getInstance().hasShiftDown()) {
             Player player = Minecraft.getInstance().player;
             ChatFormatting color = player != null && EnigmaticHandler.isTheWorthyOne(player) ? ChatFormatting.GOLD : ChatFormatting.DARK_RED;
             double threshold = AbyssalHeart.abyssThreshold.get();

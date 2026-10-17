@@ -83,7 +83,7 @@ public class ChaosElytra extends BaseElytraItem {
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
         TooltipHandler.line(list);
-        if (Screen.hasShiftDown()) {
+        if (Minecraft.getInstance().hasShiftDown()) {
             boolean boosted = EnigmaticHandler.isAbyssBoosted(Minecraft.getInstance().player);
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.majesticElytra1");
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.majesticElytra2");
@@ -204,9 +204,9 @@ public class ChaosElytra extends BaseElytraItem {
                     if (player.canAttack(entity)) {
                         chaosDescending(player, entity);
                         Vec3 vec = entity.position().subtract(player.position()).normalize();
-                        entity.hasImpulse = true;
+                        entity.needsSync = true;
                         entity.knockback(movement.length(), vec.x, vec.z);
-                        player.hasImpulse = true;
+                        player.needsSync = true;
                         player.setDeltaMovement(player.getDeltaMovement().scale(0.5F));
                     }
                 }
@@ -277,9 +277,9 @@ public class ChaosElytra extends BaseElytraItem {
             if (!(event.getEntity() instanceof Monster) || !(attacker instanceof Player player)) return;
             if (!getElytra(player).is(EnigmaticItems.CHAOS_ELYTRA)) return;
             CompoundTag data = EnigmaticHandler.getPersistedData(player);
-            if (data.getBoolean("ChaoAchievementCheck")) {
+            if (data.getBooleanOr("ChaoAchievementCheck", false)) {
                 if (event.getEntity().getMaxHealth() < player.getMaxHealth() / 2) return;
-                int count = data.getInt("ChaoExplosionKillCount");
+                int count = data.getIntOr("ChaoExplosionKillCount", 0);
                 data.putInt("ChaoExplosionKillCount", count + 1);
             }
         }

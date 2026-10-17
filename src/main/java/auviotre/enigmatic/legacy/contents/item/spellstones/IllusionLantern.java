@@ -52,6 +52,7 @@ import top.theillusivec4.curios.api.SlotContext;
 import java.util.List;
 import java.util.function.Predicate;
 
+import net.minecraft.client.Minecraft;
 public class IllusionLantern extends SpellstoneItem {
     public static ModConfigSpec.IntValue bypassDamageResistance;
     public static ModConfigSpec.DoubleValue ILVulnerabilityModifier;
@@ -73,7 +74,7 @@ public class IllusionLantern extends SpellstoneItem {
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
         TooltipHandler.line(list);
-        if (Screen.hasShiftDown()) {
+        if (Minecraft.getInstance().hasShiftDown()) {
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstoneSkill");
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstoneSkillAbsent");
             TooltipHandler.line(list);

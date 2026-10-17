@@ -30,6 +30,7 @@ import net.neoforged.neoforge.common.ItemAbility;
 
 import java.util.List;
 
+import net.minecraft.client.Minecraft;
 public class TheJudgement extends Item {
     public static final double ATTACK_RADIUS = 64.0;
 
@@ -39,7 +40,7 @@ public class TheJudgement extends Item {
 
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        if (Screen.hasShiftDown()) {
+        if (Minecraft.getInstance().hasShiftDown()) {
             int mode = this.noDrops(stack) ? 1 : 0;
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.theJudgement1");
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.theJudgement2", ChatFormatting.GOLD, (int) ATTACK_RADIUS);

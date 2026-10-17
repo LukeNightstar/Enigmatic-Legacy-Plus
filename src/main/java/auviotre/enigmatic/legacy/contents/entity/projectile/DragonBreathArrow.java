@@ -37,7 +37,7 @@ public class DragonBreathArrow extends AbstractArrow {
         if (!this.isNoGravity() && !this.isNoPhysics()) this.setDeltaMovement(this.getDeltaMovement().scale(1.01));
         super.tick();
         Vec3 movement = this.getDeltaMovement();
-        if (this.level().isClientSide) {
+        if (this.level().isClientSide()) {
             double dx = movement.x;
             double dy = movement.y;
             double dz = movement.z;
@@ -50,7 +50,7 @@ public class DragonBreathArrow extends AbstractArrow {
 
     protected void onHit(HitResult hitResult) {
         super.onHit(hitResult);
-        if (!this.level().isClientSide && hitResult.getType() == HitResult.Type.ENTITY && !this.ownedBy(((EntityHitResult) hitResult).getEntity())) {
+        if (!this.level().isClientSide() && hitResult.getType() == HitResult.Type.ENTITY && !this.ownedBy(((EntityHitResult) hitResult).getEntity())) {
             this.setPos(this.getPosition(0.0F).add(this.getDeltaMovement().scale(0.5F)));
             this.summonAreaEffect();
         }
@@ -73,7 +73,7 @@ public class DragonBreathArrow extends AbstractArrow {
         effectCloud.setRadiusOnUse(0.1F);
         effectCloud.setDurationOnUse(-1);
         effectCloud.setWaitTime(1);
-        effectCloud.addEffect(new MobEffectInstance(MobEffects.HARM, 1, Mth.floor(Mth.sqrt(dmg))));
+        effectCloud.addEffect(new MobEffectInstance(MobEffects.INSTANT_DAMAGE, 1, Mth.floor(Mth.sqrt(dmg))));
         ItemStack dragonBow = this.getWeaponItem();
         if (dragonBow != null) {
             PotionContents contents = dragonBow.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY);

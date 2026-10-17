@@ -28,6 +28,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
+import net.minecraft.client.Minecraft;
 public class ExtradimensionalEye extends BaseItem {
     public ExtradimensionalEye() {
         super(IItemHelper.singleProperties().rarity(Rarity.UNCOMMON));
@@ -35,7 +36,7 @@ public class ExtradimensionalEye extends BaseItem {
 
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        if (Screen.hasShiftDown()) {
+        if (Minecraft.getInstance().hasShiftDown()) {
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.extradimensionalEye1");
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.extradimensionalEye2");
             TooltipHandler.line(list);

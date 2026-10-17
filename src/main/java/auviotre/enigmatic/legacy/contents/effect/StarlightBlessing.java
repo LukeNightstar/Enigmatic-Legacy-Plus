@@ -35,7 +35,7 @@ public class StarlightBlessing extends MobEffect {
         MobEffectInstance instance = event.getEffectInstance();
         if (instance != null && instance.is(EnigmaticEffects.STARLIGHT_BLESSING)) {
             event.getEntity().heal(event.getEntity().getMaxHealth());
-            event.getEntity().addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE));
+            event.getEntity().addEffect(new MobEffectInstance(MobEffects.RESISTANCE));
         }
     }
 

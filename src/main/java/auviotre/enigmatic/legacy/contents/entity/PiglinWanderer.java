@@ -55,6 +55,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 import java.util.Optional;
 
+import net.minecraft.util.profiling.Profiler;
 public class PiglinWanderer extends AbstractPiglin implements SpearAttackMob {
     protected static final ImmutableList<SensorType<? extends Sensor<? super PiglinWanderer>>> SENSOR_TYPES = ImmutableList.of(
             SensorType.NEAREST_LIVING_ENTITIES,
@@ -112,9 +113,9 @@ public class PiglinWanderer extends AbstractPiglin implements SpearAttackMob {
 
     protected void customServerAiStep() {
         this.timeInOverworld = 0;
-        this.level().getProfiler().push("piglinWandererBrain");
+        Profiler.get().push("piglinWandererBrain");
         this.getBrain().tick((ServerLevel) this.level(), this);
-        this.level().getProfiler().pop();
+        Profiler.get().pop();
         Ai.updateActivity(this);
         super.customServerAiStep();
     }
@@ -155,7 +156,7 @@ public class PiglinWanderer extends AbstractPiglin implements SpearAttackMob {
 
     public boolean hurt(DamageSource source, float amount) {
         boolean flag = super.hurt(source, amount);
-        if (this.level().isClientSide) return false;
+        if (this.level().isClientSide()) return false;
         if (flag && source.getEntity() instanceof LivingEntity)
             Ai.wasHurtBy(this, (LivingEntity) source.getEntity());
         return flag;

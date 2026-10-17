@@ -99,7 +99,7 @@ public class AnnihilatingSword extends SwordItem {
                 if (entity == blocker) continue;
                 double xRatio = blocker.getX() - entity.getX();
                 double zRatio = blocker.getZ() - entity.getZ();
-                entity.hasImpulse = true;
+                entity.needsSync = true;
                 Vec3 vec = entity.getDeltaMovement();
                 Vec3 add = new Vec3(xRatio, 0.0, zRatio).normalize().scale(tick < 25 ? 1.2F : 0.55F).scale(1.0 - 0.5 * entity.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE));
                 if (tick <= 8) entity.hurt(entity.damageSources().mobAttack(blocker), dmg * 0.5F);
@@ -195,7 +195,7 @@ public class AnnihilatingSword extends SwordItem {
 
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        if (Screen.hasShiftDown()) {
+        if (Minecraft.getInstance().hasShiftDown()) {
             LocalPlayer player = Minecraft.getInstance().player;
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.annihilatingSword1");
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.annihilatingSword2");

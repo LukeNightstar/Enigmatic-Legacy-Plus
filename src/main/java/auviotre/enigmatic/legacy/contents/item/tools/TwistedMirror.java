@@ -23,6 +23,7 @@ import net.neoforged.api.distmarker.OnlyIn;
 
 import java.util.List;
 
+import net.minecraft.client.Minecraft;
 public class TwistedMirror extends BaseCursedItem {
     public TwistedMirror() {
         super(IItemHelper.singleProperties().rarity(Rarity.UNCOMMON));
@@ -30,7 +31,7 @@ public class TwistedMirror extends BaseCursedItem {
 
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        if (Screen.hasShiftDown()) {
+        if (Minecraft.getInstance().hasShiftDown()) {
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.twistedMirror1");
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.twistedMirror2");
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.twistedMirror3");

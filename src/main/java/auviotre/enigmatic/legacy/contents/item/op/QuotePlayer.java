@@ -22,6 +22,7 @@ import net.neoforged.api.distmarker.OnlyIn;
 
 import java.util.List;
 
+import net.minecraft.client.Minecraft;
 public class QuotePlayer extends Item {
     public QuotePlayer() {
         super(IItemHelper.singleProperties().rarity(Rarity.EPIC).fireResistant());
@@ -29,7 +30,7 @@ public class QuotePlayer extends Item {
 
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        if (Screen.hasShiftDown()) {
+        if (Minecraft.getInstance().hasShiftDown()) {
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.quotePlayer1");
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.quotePlayer2");
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.quotePlayer3");

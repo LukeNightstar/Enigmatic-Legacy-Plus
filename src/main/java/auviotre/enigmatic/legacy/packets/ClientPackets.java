@@ -47,7 +47,7 @@ public class ClientPackets {
             Entity entity = level.getEntity(packet.entityID);
             if (entity != null) {
                 entity.addTag("enigmaticlegacy.redirected");
-                entity.moveTo(packet.posX, packet.posY, packet.posZ);
+                entity.snapTo(packet.posX, packet.posY, packet.posZ);
                 entity.setDeltaMovement(packet.motionX, packet.motionY, packet.motionZ);
                 entity.setYRot(packet.rotationYaw);
                 entity.yRotO = packet.rotationYaw;
@@ -136,7 +136,7 @@ public class ClientPackets {
         Vec3 delta = tarPos.subtract(self).normalize();
         ClientLevel level = Minecraft.getInstance().level;
         if (level != null) {
-            for (double i = 0.1; i < dist; i += 0.2 * level.random.nextDouble() + 0.2) {
+            for (double i = 0.1; i < dist; i += 0.2 * level.getRandom().nextDouble() + 0.2) {
                 level.addParticle(EnigmaticParticles.ICHOR.get(),
                         self.x + delta.x * i, self.y + delta.y * i, self.z + delta.z * i,
                         delta.x * 0.05, delta.y * 0.05, delta.z * 0.05

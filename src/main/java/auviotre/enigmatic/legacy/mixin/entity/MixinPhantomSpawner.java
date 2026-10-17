@@ -33,8 +33,8 @@ public class MixinPhantomSpawner {
 
     @Inject(at = @At("RETURN"), method = "tick", cancellable = true)
     private void onTick(ServerLevel level, boolean spawnEnemies, boolean spawnFriendlies, CallbackInfoReturnable<Integer> info) {
-        if (spawnEnemies && level.getGameRules().getBoolean(GameRules.RULE_DOINSOMNIA)) {
-            var random = level.random;
+        if (spawnEnemies && level.getGameRules().get(GameRules.SPAWN_PHANTOMS)) {
+            var random = level.getRandom();
             --this.ticksUntilSpawn;
             if (this.ticksUntilSpawn <= 0) {
                 this.ticksUntilSpawn += (60 + random.nextInt(60)) * 10;
@@ -63,7 +63,7 @@ public class MixinPhantomSpawner {
                                                 for (int i1 = 0; i1 < l; ++i1) {
                                                     Phantom phantom = EntityType.PHANTOM.create(level);
                                                     if (phantom != null) {
-                                                        phantom.moveTo(blockPos, 0.0F, 0.0F);
+                                                        phantom.snapTo(blockPos, 0.0F, 0.0F);
                                                         EnigmaticHandler.setCurseBoosted(phantom, true, player);
                                                         spawnGroupData = phantom.finalizeSpawn(level, difficulty, EntitySpawnReason.NATURAL, spawnGroupData);
                                                         level.addFreshEntityWithPassengers(phantom);

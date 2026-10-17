@@ -18,6 +18,7 @@ import javax.annotation.Nullable;
 import java.util.Optional;
 import java.util.UUID;
 
+import net.minecraft.core.UUIDUtil;
 public class ExplorerMarker extends Entity implements OwnableEntity {
     protected static final EntityDataAccessor<Optional<UUID>> DATA_OWNER_UUID = SynchedEntityData.defineId(ExplorerMarker.class, EntityDataSerializers.OPTIONAL_UUID);
 
@@ -44,15 +45,15 @@ public class ExplorerMarker extends Entity implements OwnableEntity {
     }
 
     protected void readAdditionalSaveData(CompoundTag compoundTag) {
-        if (compoundTag.hasUUID("Owner")) {
-            UUID uuid = compoundTag.getUUID("Owner");
+        if (compoundTag.read("Owner", UUIDUtil.CODEC).isPresent()) {
+            UUID uuid = compoundTag.read("Owner", UUIDUtil.CODEC).orElse(null);
             this.setOwnerUUID(uuid);
         }
     }
 
     protected void addAdditionalSaveData(CompoundTag compoundTag) {
         if (this.getOwnerUUID() != null) {
-            compoundTag.putUUID("Owner", this.getOwnerUUID());
+            compoundTag.store("Owner", UUIDUtil.CODEC, this.getOwnerUUID());
         }
     }
 

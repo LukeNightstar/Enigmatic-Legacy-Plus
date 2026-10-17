@@ -66,7 +66,7 @@ public class CosmicScroll extends BaseCurioItem {
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
         TooltipHandler.line(list);
-        if (Screen.hasShiftDown()) {
+        if (Minecraft.getInstance().hasShiftDown()) {
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.cosmicScroll1", ChatFormatting.GOLD, "100%");
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.cosmicScroll2");
             TooltipHandler.line(list);
@@ -115,9 +115,9 @@ public class CosmicScroll extends BaseCurioItem {
                 event.setCanceled(true);
                 entity.setHealth(entity.getMaxHealth() / 2);
                 entity.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 1200, 2));
-                entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 1200, 1));
+                entity.addEffect(new MobEffectInstance(MobEffects.RESISTANCE, 1200, 1));
                 entity.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 1200, 0));
-                entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 1200, 1));
+                entity.addEffect(new MobEffectInstance(MobEffects.STRENGTH, 1200, 1));
                 data.setReviveCooldown(cooldown.get());
             }
         }

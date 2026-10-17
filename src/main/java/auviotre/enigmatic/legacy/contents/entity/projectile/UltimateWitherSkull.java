@@ -91,7 +91,7 @@ public class UltimateWitherSkull extends AbstractHurtingProjectile {
             }
         }
 
-        if (this.level().isClientSide || this.getOwner() == null) return;
+        if (this.level().isClientSide() || this.getOwner() == null) return;
 
         if (this.tickCount <= 10) {
             this.setPos(this.getX(), this.getY(), this.getZ());
@@ -170,7 +170,7 @@ public class UltimateWitherSkull extends AbstractHurtingProjectile {
 
     public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
-        this.setDangerous(compound.getBoolean("dangerous"));
+        this.setDangerous(compound.getBooleanOr("dangerous", false));
         this.entityData.set(UltimateWitherSkull.DATA_TARGET_ID, compound.getInt("boundTargetID"));
     }
 }

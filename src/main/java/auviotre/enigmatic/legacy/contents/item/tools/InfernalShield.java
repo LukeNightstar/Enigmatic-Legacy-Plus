@@ -31,6 +31,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
+import net.minecraft.client.Minecraft;
 public class InfernalShield extends BaseCursedItem {
     public InfernalShield() {
         super(IItemHelper.singleProperties().fireResistant().rarity(Rarity.RARE).durability(Tiers.NETHERITE.getUses()));
@@ -39,7 +40,7 @@ public class InfernalShield extends BaseCursedItem {
 
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        if (Screen.hasShiftDown()) {
+        if (Minecraft.getInstance().hasShiftDown()) {
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.infernalShield1");
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.infernalShield2");
             TooltipHandler.line(list);

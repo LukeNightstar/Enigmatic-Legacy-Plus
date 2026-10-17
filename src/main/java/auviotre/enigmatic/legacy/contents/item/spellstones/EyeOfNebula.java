@@ -42,6 +42,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Collections;
 import java.util.List;
 
+import net.minecraft.client.Minecraft;
 public class EyeOfNebula extends SpellstoneItem {
     public static ModConfigSpec.IntValue magicBoost;
     public static ModConfigSpec.IntValue magicResistance;
@@ -91,7 +92,7 @@ public class EyeOfNebula extends SpellstoneItem {
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
         TooltipHandler.line(list);
-        if (Screen.hasShiftDown()) {
+        if (Minecraft.getInstance().hasShiftDown()) {
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstoneSkill");
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.eyeOfNebulaSkill");
             TooltipHandler.line(list);

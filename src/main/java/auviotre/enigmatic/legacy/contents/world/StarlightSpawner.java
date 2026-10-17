@@ -27,7 +27,7 @@ public class StarlightSpawner implements CustomSpawner {
     public int tick(ServerLevel level, boolean spawnEnemies, boolean spawnFriendlies) {
         if (!spawnFriendlies) return 0;
         if (!Level.END.equals(level.dimension())) return 0;
-        RandomSource random = level.random;
+        RandomSource random = level.getRandom();
         --this.nextTick;
         if (this.nextTick > 0) return 0;
         this.nextTick = this.nextTick + 500 + random.nextInt(250);
@@ -54,7 +54,7 @@ public class StarlightSpawner implements CustomSpawner {
                 StarlightMeteor starlightMeteor = type.create(level);
                 if (NaturalSpawner.isValidEmptySpawnBlock(level, spawnPos, level.getBlockState(spawnPos), level.getFluidState(blockPos), type)) {
                     if (starlightMeteor != null) {
-                        starlightMeteor.moveTo(spawnPos, 0.0F, 0.0F);
+                        starlightMeteor.snapTo(spawnPos, 0.0F, 0.0F);
                         starlightMeteor.setDeltaMovement(offsetX, 1.6F, offsetZ);
                         level.addFreshEntityWithPassengers(starlightMeteor);
                         ++count;

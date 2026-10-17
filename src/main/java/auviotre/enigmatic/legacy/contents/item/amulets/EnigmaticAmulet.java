@@ -48,6 +48,7 @@ import top.theillusivec4.curios.api.event.CurioCanEquipEvent;
 
 import java.util.List;
 
+import net.minecraft.client.Minecraft;
 public class EnigmaticAmulet extends BaseCurioItem implements IAmulet {
     public static ModConfigSpec.DoubleValue attackDamage;
     public static ModConfigSpec.IntValue sprintingSpeed;
@@ -105,7 +106,7 @@ public class EnigmaticAmulet extends BaseCurioItem implements IAmulet {
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(@NotNull ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
         TooltipHandler.line(list);
-        if (Screen.hasShiftDown()) {
+        if (Minecraft.getInstance().hasShiftDown()) {
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.enigmaticAmuletShift1");
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.enigmaticAmuletShift2");
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.enigmaticAmuletShift3");

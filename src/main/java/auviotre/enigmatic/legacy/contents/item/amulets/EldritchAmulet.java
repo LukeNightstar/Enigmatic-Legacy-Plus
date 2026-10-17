@@ -87,7 +87,7 @@ public class EldritchAmulet extends BaseCurioItem {
             ListTag list = new ListTag();
             for (int i = 0; i < value.size(); i++) {
                 ItemStack stack = value.get(i);
-                if (!stack.isEmpty() && !player.level().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY) && EnchantmentHelper.has(stack, EnchantmentEffectComponents.PREVENT_EQUIPMENT_DROP))
+                if (!stack.isEmpty() && !player.level().getGameRules().get(GameRules.KEEP_INVENTORY) && EnchantmentHelper.has(stack, EnchantmentEffectComponents.PREVENT_EQUIPMENT_DROP))
                     stack = ItemStack.EMPTY;
                 list.add(stack.saveOptional(player.registryAccess()));
                 value.set(i, ItemStack.EMPTY);
@@ -108,7 +108,7 @@ public class EldritchAmulet extends BaseCurioItem {
                 Tag maybeList = tag.get("Inventory" + key);
                 if (maybeList instanceof ListTag list) {
                     for (int i = 0; i < value.size(); i++) {
-                        CompoundTag stackTag = list.getCompound(i);
+                        CompoundTag stackTag = list.getCompoundOrEmpty(i);
                         ItemStack stack = ItemStack.parseOptional(newPlayer.registryAccess(), stackTag);
                         value.set(i, stack);
                     }
@@ -125,7 +125,7 @@ public class EldritchAmulet extends BaseCurioItem {
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(@NotNull ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
         TooltipHandler.line(list);
-        if (Screen.hasShiftDown()) {
+        if (Minecraft.getInstance().hasShiftDown()) {
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.eldritchAmulet1");
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.eldritchAmulet2");
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.eldritchAmulet3");
@@ -169,8 +169,8 @@ public class EldritchAmulet extends BaseCurioItem {
             List<LivingEntity> entities = EnigmaticHandler.getObservedEntities(entity, entity.level(), 2.1F, 64, false);
             for (LivingEntity target : entities) {
                 if (EnigmaticHandler.hasCurio(target, this)) continue;
-                target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 10, 1));
-                target.addEffect(new MobEffectInstance(MobEffects.DIG_SLOWDOWN, 10, 1));
+                target.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 10, 1));
+                target.addEffect(new MobEffectInstance(MobEffects.MINING_FATIGUE, 10, 1));
                 target.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 10, 1));
             }
         }

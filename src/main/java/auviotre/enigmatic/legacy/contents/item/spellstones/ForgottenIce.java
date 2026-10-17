@@ -58,6 +58,7 @@ import top.theillusivec4.curios.api.SlotContext;
 import java.util.List;
 import java.util.Optional;
 
+import net.minecraft.client.Minecraft;
 public class ForgottenIce extends SpellstoneItem {
     public static final AttributeModifier HARD_FROZEN = new AttributeModifier(EnigmaticLegacy.location("hard_frozen"), -2.0F, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
     static final ReplaceDisk EFFECT = new ReplaceDisk(
@@ -105,7 +106,7 @@ public class ForgottenIce extends SpellstoneItem {
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
         TooltipHandler.line(list);
-        if (Screen.hasShiftDown()) {
+        if (Minecraft.getInstance().hasShiftDown()) {
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstoneSkill");
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.forgottenIceSkill");
             TooltipHandler.line(list);
@@ -136,7 +137,7 @@ public class ForgottenIce extends SpellstoneItem {
         List<LivingEntity> entities = entity.level().getEntitiesOfClass(LivingEntity.class, entity.getBoundingBox().inflate(5.0));
         for (LivingEntity target : entities) {
             if (target.isFullyFrozen()) {
-                int tick = target.getPersistentData().getInt("ForgottenFrozenTick");
+                int tick = target.getPersistentData().getIntOr("ForgottenFrozenTick", 0);
                 if (target.getTicksFrozen() > 340) {
                     tick++;
                     target.getPersistentData().putBoolean("ForgottenFrozenHard", true);
@@ -157,7 +158,7 @@ public class ForgottenIce extends SpellstoneItem {
         float damage = (float) (damageFeedback.getAsDouble() + player.getAttributeValue(Attributes.ATTACK_DAMAGE));
         for (LivingEntity entity : entities) {
             if (entity.is(player)) continue;
-            int tick = entity.getPersistentData().getInt("ForgottenFrozenTick");
+            int tick = entity.getPersistentData().getIntOr("ForgottenFrozenTick", 0);
             float extra = 0;
             if (entity.isFullyFrozen()) extra = ((0.01F)) * Math.min(tick, 400) / 2;
             if (entity.canFreeze()) entity.setTicksFrozen(entity.getTicksFrozen() + 500);
@@ -178,10 +179,10 @@ public class ForgottenIce extends SpellstoneItem {
         private static void onTick(EntityTickEvent.Pre event) {
             if (event.getEntity() instanceof LivingEntity entity) {
                 CompoundTag data = entity.getPersistentData();
-                if (data.getBoolean("ForgottenFrozenHard")) {
+                if (data.getBooleanOr("ForgottenFrozenHard", false)) {
                     Vec3 movement = entity.getDeltaMovement();
                     entity.setDeltaMovement(new Vec3(0, movement.y, 0));
-                    entity.hasImpulse = true;
+                    entity.needsSync = true;
                     entity.getAttributes().addTransientAttributeModifiers(ForgottenIce.getFrozenAttributes());
                     if (!entity.isFullyFrozen()) {
                         data.remove("ForgottenFrozenHard");

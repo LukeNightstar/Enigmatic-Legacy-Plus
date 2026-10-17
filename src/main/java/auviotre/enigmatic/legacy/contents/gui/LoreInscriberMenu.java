@@ -59,7 +59,7 @@ public class LoreInscriberMenu extends AbstractContainerMenu {
             public void onTake(Player thePlayer, ItemStack stack) {
                 this.setChanged();
                 LoreInscriberMenu.this.loreSlot.setItem(0, ItemStack.EMPTY);
-                if (!player.level().isClientSide)
+                if (!player.level().isClientSide())
                     player.level().playSound(null, player.blockPosition(), SoundEvents.ANVIL_USE, SoundSource.PLAYERS, 1.0F, 0.9F + player.getRandom().nextFloat() * 0.1F);
             }
         });

@@ -26,7 +26,7 @@ import java.util.List;
 public class MixinPiglinAi {
     private static void markPiglinWithCondition(Piglin piglin, Player player) {
         if (piglin != null && EnigmaticHandler.hasCurio(player, EnigmaticItems.AVARICE_SCROLL))
-            if (!piglin.getTags().contains(AvariceScroll.EFFECT_TAG)) {
+            if (!piglin.entityTags().contains(AvariceScroll.EFFECT_TAG)) {
                 piglin.addTag(AvariceScroll.EFFECT_TAG);
             }
     }
@@ -57,7 +57,7 @@ public class MixinPiglinAi {
     @Inject(at = @At("HEAD"), method = "stopHoldingOffHandItem", cancellable = true)
     private static void onPiglinBarter(@NotNull Piglin piglin, boolean repay, CallbackInfo info) {
         ItemStack stack = piglin.getItemInHand(InteractionHand.OFF_HAND);
-        if (piglin.level() instanceof ServerLevel && piglin.getTags().contains(AvariceScroll.EFFECT_TAG)) {
+        if (piglin.level() instanceof ServerLevel && piglin.entityTags().contains(AvariceScroll.EFFECT_TAG)) {
             piglin.removeTag(AvariceScroll.EFFECT_TAG);
             if (piglin.isAdult()) {
                 if (repay && stack.isPiglinCurrency()) {

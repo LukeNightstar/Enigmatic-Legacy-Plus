@@ -18,6 +18,7 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.PacketDistributor;
 
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 public class LoreInscriberScreen extends AbstractContainerScreen<LoreInscriberMenu> implements ContainerListener {
     private static final Identifier TEXTURE = EnigmaticLegacy.location("textures/gui/lore_inscriber.png");
     private EditBox name;
@@ -100,7 +101,7 @@ public class LoreInscriberScreen extends AbstractContainerScreen<LoreInscriberMe
             }
 
             if (this.menu.setItemName(s)) {
-                PacketDistributor.sendToServer(new LoreInscriberRenamePacket(s));
+                ClientPacketDistributor.sendToServer(new LoreInscriberRenamePacket(s));
             }
         }
     }

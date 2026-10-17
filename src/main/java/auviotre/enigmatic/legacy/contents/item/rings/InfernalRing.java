@@ -53,7 +53,7 @@ public class InfernalRing extends BaseCurioItem {
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
         TooltipHandler.line(list);
-        if (Screen.hasShiftDown()) {
+        if (Minecraft.getInstance().hasShiftDown()) {
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.infernalRing1");
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.infernalRing2");
             int value = resistance.get();

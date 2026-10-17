@@ -98,7 +98,7 @@ public class TheCube extends SpellstoneItem {
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
         TooltipHandler.line(list);
-        if (Screen.hasShiftDown()) {
+        if (Minecraft.getInstance().hasShiftDown()) {
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstoneSkill");
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.theCubeSkill");
             TooltipHandler.line(list);
@@ -218,8 +218,8 @@ public class TheCube extends SpellstoneItem {
             server.sendParticles(ParticleTypes.WITCH, player.getX(), player.getY(0.5), player.getZ(), 48, hOffset, yOffset, hOffset, 0.03);
         }
 
-        ServerLevel destLevel = player.server.getLevel(location.dimension());
-        if (destLevel == null) destLevel = player.server.overworld();
+        ServerLevel destLevel = player.level().getServer().getLevel(location.dimension());
+        if (destLevel == null) destLevel = player.level().getServer().overworld();
         Vec3 vec3 = location.pos().getBottomCenter();
         if (!player.level().equals(destLevel))
             player.changeDimension(new TeleportTransition(destLevel, vec3, player.getDeltaMovement(), player.getYRot(), player.getXRot(), TeleportTransition.DO_NOTHING));
@@ -253,8 +253,8 @@ public class TheCube extends SpellstoneItem {
             list.add(world);
         }
         ResourceKey<Level> key = list.get(player.getRandom().nextInt(list.size()));
-        ServerLevel level = player.server.getLevel(key);
-        if (level == null) level = player.server.overworld();
+        ServerLevel level = player.level().getServer().getLevel(key);
+        if (level == null) level = player.level().getServer().overworld();
 
         RandomSource random = player.getRandom();
         int border = (int) level.getWorldBorder().getSize() / 2;
@@ -368,9 +368,9 @@ public class TheCube extends SpellstoneItem {
                         if (autoTrigger.get()) EnigmaticItems.THE_CUBE.get().triggerActiveAbility(level, player, cube);
 
                         player.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 1200, 2));
-                        player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 1200, 1));
+                        player.addEffect(new MobEffectInstance(MobEffects.RESISTANCE, 1200, 1));
                         player.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 1200, 0));
-                        player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 1200, 1));
+                        player.addEffect(new MobEffectInstance(MobEffects.STRENGTH, 1200, 1));
 
                         PacketDistributor.sendToPlayer(player, new TheCubeRevivePacket(player.position(), cube.copy()));
                     }

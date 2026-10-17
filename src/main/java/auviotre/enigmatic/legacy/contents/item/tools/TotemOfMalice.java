@@ -39,6 +39,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
+import net.minecraft.client.Minecraft;
 public class TotemOfMalice extends BaseCurioItem {
     public static ModConfigSpec.IntValue specialDamageBoost;
     public static ModConfigSpec.IntValue specialDamageResistance;
@@ -87,7 +88,7 @@ public class TotemOfMalice extends BaseCurioItem {
 
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        if (Screen.hasShiftDown()) {
+        if (Minecraft.getInstance().hasShiftDown()) {
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.totemofMalice1");
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.totemofMalice2", ChatFormatting.GOLD, specialDamageBoost.get() + "%");
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.totemofMalice3", ChatFormatting.GOLD, specialDamageResistance.get() + "%");
