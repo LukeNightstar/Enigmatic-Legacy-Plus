@@ -101,6 +101,7 @@ import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
+import java.util.function.Predicate;
 
 public interface EnigmaticHandler {
     List<Holder<MobEffect>> DEBUFF_LIST = new ArrayList<>();
@@ -116,8 +117,30 @@ public interface EnigmaticHandler {
         return true;
     }
 
+    // Fork change: isTheCursedOne/isTheBlessedOne run many times per tick, so their result is cached per player for the current tick.
+    // Client and server players are equal (same entity id) in singleplayer and live on different threads, so each side has its own map.
+    Map<Player, CachedState> CURSED_CACHE_CLIENT = Collections.synchronizedMap(new WeakHashMap<>());
+    Map<Player, CachedState> CURSED_CACHE_SERVER = Collections.synchronizedMap(new WeakHashMap<>());
+    Map<Player, CachedState> BLESSED_CACHE_CLIENT = Collections.synchronizedMap(new WeakHashMap<>());
+    Map<Player, CachedState> BLESSED_CACHE_SERVER = Collections.synchronizedMap(new WeakHashMap<>());
+
+    record CachedState(int tick, boolean result) {
+    }
+
+    private static boolean cachedPerTick(Player player, Map<Player, CachedState> clientCache, Map<Player, CachedState> serverCache, Predicate<Player> check) {
+        Map<Player, CachedState> cache = player.level().isClientSide() ? clientCache : serverCache;
+        CachedState cached = cache.get(player);
+        if (cached != null && cached.tick() == player.tickCount) return cached.result();
+        boolean result = check.test(player);
+        cache.put(player, new CachedState(player.tickCount, result));
+        return result;
+    }
+
+    // Fork change: only players can be cursed or blessed (the mod's curio slots only exist on players).
     static boolean isTheCursedOne(LivingEntity entity) {
-        return !getCurio(entity, EnigmaticItems.CURSED_RING).isEmpty() || entity instanceof Player player && getPersistedData(player).getBooleanOr("SevenCursesBearing", false);
+        if (!(entity instanceof Player player)) return false;
+        return cachedPerTick(player, CURSED_CACHE_CLIENT, CURSED_CACHE_SERVER, p ->
+                !getCurio(p, EnigmaticItems.CURSED_RING).isEmpty() || getPersistedData(p).getBooleanOr("SevenCursesBearing", false));
     }
 
     static boolean isCursedItem(@NotNull ItemStack stack) {
@@ -132,7 +155,9 @@ public interface EnigmaticHandler {
     }
 
     static boolean isTheBlessedOne(LivingEntity entity) {
-        return !getCurio(entity, EnigmaticItems.REDEMPTION_RING).isEmpty() || entity instanceof Player player && getPersistedData(player).getBooleanOr("RedemptionBearing", false);
+        if (!(entity instanceof Player player)) return false;
+        return cachedPerTick(player, BLESSED_CACHE_CLIENT, BLESSED_CACHE_SERVER, p ->
+                !getCurio(p, EnigmaticItems.REDEMPTION_RING).isEmpty() || getPersistedData(p).getBooleanOr("RedemptionBearing", false));
     }
 
     static boolean isTheWorthyOne(LivingEntity entity) {
@@ -204,7 +229,8 @@ public interface EnigmaticHandler {
     }
 
     static boolean hasCurio(@Nullable LivingEntity entity, ItemLike itemLike) {
-        if (entity == null) return false;
+        // Fork change: skip the canUse check for non-players, which have no curio slots from this mod.
+        if (!(entity instanceof Player)) return false;
         Item item = itemLike.asItem();
         if (!canUse(entity, item.getDefaultInstance())) return false;
         Optional<ICuriosItemHandler> curios = CuriosApi.getCuriosInventory(entity);

@@ -42,6 +42,13 @@ This repository **modifies** Auviotre's Enigmatic Legacy Plus (1.21.1-1.1.2). Th
     removal are replaced with their current equivalents.
   - The Annihilating Sword keeps an empty `ATTRIBUTE_MODIFIERS` component (its stats are computed per stack), so mods
     that read that component from every item, such as Better Combat, do not crash.
+- Gameplay and translation changes made for this fork (marked "Fork change" in the code):
+  - Eldritch Amulet: creatures the wearer strikes are slowed, fatigued and weakened for 3 seconds, instead of
+    creatures under the wearer's gaze.
+  - Ring of the Seven Curses: "For the Worthy" mode no longer pulls endermen towards the bearer when
+    `minecraft:enderman` is in `neutralWhiteList`; only players track time with/without curses.
+  - Curse/blessing checks only apply to players and are cached per player for the current tick.
+  - Korean translation (`ko_kr.json`).
 - The data generators (`auviotre.enigmatic.legacy.data`) are not ported and are excluded from the build; the
   generated data that was already committed is used as is.
 
