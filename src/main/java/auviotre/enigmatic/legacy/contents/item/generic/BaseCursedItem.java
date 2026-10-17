@@ -9,6 +9,9 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
 import java.util.List;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
 
 public class BaseCursedItem extends BaseItem {
     public BaseCursedItem(Properties properties) {
@@ -20,7 +23,13 @@ public class BaseCursedItem extends BaseItem {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        TooltipHandler.cursedOnly(list, stack);
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
+            TooltipHandler.cursedOnly(list, stack);
+        } finally {
+            list.forEach(tooltip);
+        }
     }
 }

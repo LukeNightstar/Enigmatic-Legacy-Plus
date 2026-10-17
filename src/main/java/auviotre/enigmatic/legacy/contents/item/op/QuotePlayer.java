@@ -23,20 +23,29 @@ import net.neoforged.api.distmarker.OnlyIn;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
 public class QuotePlayer extends Item {
     public QuotePlayer() {
         super(IItemHelper.singleProperties().rarity(Rarity.EPIC).fireResistant());
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        if (Minecraft.getInstance().hasShiftDown()) {
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.quotePlayer1");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.quotePlayer2");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.quotePlayer3");
-        } else TooltipHandler.holdShift(list);
-        TooltipHandler.line(list);
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.quotePlayerSelection", ChatFormatting.GOLD, Quote.getAllQuotes().get(stack.getDamageValue()).getName().toUpperCase());
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
+            if (Minecraft.getInstance().hasShiftDown()) {
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.quotePlayer1");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.quotePlayer2");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.quotePlayer3");
+            } else TooltipHandler.holdShift(list);
+            TooltipHandler.line(list);
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.quotePlayerSelection", ChatFormatting.GOLD, Quote.getAllQuotes().get(stack.getDamageValue()).getName().toUpperCase());
+        } finally {
+            list.forEach(tooltip);
+        }
     }
 
     private int getQuoteIndex(ItemStack stack) {

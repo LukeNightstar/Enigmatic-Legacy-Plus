@@ -26,6 +26,9 @@ import java.util.Collection;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
 public class EscapeScroll extends BaseCurioItem {
 
     public EscapeScroll() {
@@ -66,13 +69,19 @@ public class EscapeScroll extends BaseCurioItem {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        TooltipHandler.line(list);
-        if (Minecraft.getInstance().hasShiftDown()) {
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.escapeScroll1");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.escapeScroll2");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.escapeScroll3");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.escapeScroll4");
-        } else TooltipHandler.holdShift(list);
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
+            TooltipHandler.line(list);
+            if (Minecraft.getInstance().hasShiftDown()) {
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.escapeScroll1");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.escapeScroll2");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.escapeScroll3");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.escapeScroll4");
+            } else TooltipHandler.holdShift(list);
+        } finally {
+            list.forEach(tooltip);
+        }
     }
 }

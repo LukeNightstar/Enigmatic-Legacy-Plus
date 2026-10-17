@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.api.item;
 
+import auviotre.enigmatic.legacy.registries.RegistrationContext;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.EquipmentSlotGroup;
@@ -17,15 +18,15 @@ public interface IItemHelper {
     List<ItemLike> UNKNOWN_ITEMS = new ArrayList<>();
 
     static Item.Properties properties() {
-        return new Item.Properties();
+        return RegistrationContext.itemProperties();
     }
 
     static Item.Properties properties(int size) {
-        return new Item.Properties().stacksTo(size);
+        return RegistrationContext.itemProperties().stacksTo(size);
     }
 
     static Item.Properties singleProperties() {
-        return new Item.Properties().stacksTo(1);
+        return RegistrationContext.itemProperties().stacksTo(1);
     }
 
     static @NotNull ItemAttributeModifiers createAttributes(float attackDamage, float attackSpeed) {

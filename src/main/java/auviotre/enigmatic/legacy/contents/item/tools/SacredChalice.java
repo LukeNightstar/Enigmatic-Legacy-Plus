@@ -25,6 +25,9 @@ import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.List;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
 
 public class SacredChalice extends BaseCursedItem {
     public SacredChalice() {
@@ -33,18 +36,24 @@ public class SacredChalice extends BaseCursedItem {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        if (!stack.getOrDefault(EnigmaticComponents.BOOLEAN, false)) {
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.sacredChalice1");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.sacredChalice2");
-        } else {
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.sacredChalice3");
-            if (RedemptionRing.Helper.canUseRelic(Minecraft.getInstance().player))
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.sacredChalice4Alt");
-            else TooltipHandler.line(list, "tooltip.enigmaticlegacy.sacredChalice4");
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
+            if (!stack.getOrDefault(EnigmaticComponents.BOOLEAN, false)) {
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.sacredChalice1");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.sacredChalice2");
+            } else {
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.sacredChalice3");
+                if (RedemptionRing.Helper.canUseRelic(Minecraft.getInstance().player))
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.sacredChalice4Alt");
+                else TooltipHandler.line(list, "tooltip.enigmaticlegacy.sacredChalice4");
+            }
+            TooltipHandler.line(list);
+            TooltipHandler.cursedOnly(list, stack);
+        } finally {
+            list.forEach(tooltip);
         }
-        TooltipHandler.line(list);
-        TooltipHandler.cursedOnly(list, stack);
     }
 
     public InteractionResult use(Level level, Player player, InteractionHand hand) {

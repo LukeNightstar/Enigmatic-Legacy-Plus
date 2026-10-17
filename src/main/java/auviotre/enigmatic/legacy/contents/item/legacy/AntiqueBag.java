@@ -47,6 +47,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
 
 public class AntiqueBag extends BaseItem {
     public static ModConfigSpec.ConfigValue<List<? extends String>> extraBookList;
@@ -84,11 +87,17 @@ public class AntiqueBag extends BaseItem {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.antiqueBag1");
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.antiqueBag2");
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.antiqueBag3");
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.antiqueBag4");
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.antiqueBag1");
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.antiqueBag2");
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.antiqueBag3");
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.antiqueBag4");
+        } finally {
+            list.forEach(tooltip);
+        }
     }
 
     public InteractionResult use(Level world, Player player, InteractionHand hand) {

@@ -69,6 +69,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Stream;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.EquipmentSlot;
+import org.jspecify.annotations.Nullable;
 
 public class ViolenceScroll extends BaseCurioItem {
     public static ModConfigSpec.IntValue attackSpeed;
@@ -95,49 +100,55 @@ public class ViolenceScroll extends BaseCurioItem {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        TooltipHandler.line(list);
-        int count = AbsorbedEnchants.getCount(stack);
-        if (Screen.hasAltDown()) {
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.violenceScrollList");
-            for (String enchantment : AbsorbedEnchants.getEnchantments(stack)) {
-                MutableComponent component = Component.translatable(Util.makeDescriptionId("enchantment", Identifier.parse(enchantment)));
-                list.add(CommonComponents.space().append(component).withStyle(ChatFormatting.DARK_RED));
-            }
-        } else if (Minecraft.getInstance().hasShiftDown()) {
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.violenceScroll1");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.violenceScroll2");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.violenceScroll3");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.violenceScroll4");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.violenceScrollCount", ChatFormatting.GOLD, count);
-            if (count > 0) {
-                if (Minecraft.getInstance().player != null) {
-                    MobEffectInstance effect = Minecraft.getInstance().player.getEffect(EnigmaticEffects.VIOLENCE_CURSE);
-                    if (effect != null) count += (int) ((effect.getAmplifier() + 1) * (1 + count * 0.08));
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
+            TooltipHandler.line(list);
+            int count = AbsorbedEnchants.getCount(stack);
+            if (Screen.hasAltDown()) {
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.violenceScrollList");
+                for (String enchantment : AbsorbedEnchants.getEnchantments(stack)) {
+                    MutableComponent component = Component.translatable(Util.makeDescriptionId("enchantment", Identifier.parse(enchantment)));
+                    list.add(CommonComponents.space().append(component).withStyle(ChatFormatting.DARK_RED));
                 }
+            } else if (Minecraft.getInstance().hasShiftDown()) {
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.violenceScroll1");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.violenceScroll2");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.violenceScroll3");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.violenceScroll4");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.violenceScrollCount", ChatFormatting.GOLD, count);
+                if (count > 0) {
+                    if (Minecraft.getInstance().player != null) {
+                        MobEffectInstance effect = Minecraft.getInstance().player.getEffect(EnigmaticEffects.VIOLENCE_CURSE);
+                        if (effect != null) count += (int) ((effect.getAmplifier() + 1) * (1 + count * 0.08));
+                    }
+                    TooltipHandler.line(list);
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.violenceScroll5", ChatFormatting.GOLD, String.format("+%d%%", count * attackSpeed.get()));
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.violenceScroll6", ChatFormatting.GOLD, String.format("+%d%%", count * entityReach.get()));
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.violenceScroll7", ChatFormatting.GOLD, String.format("+%d%%", count * krBoost.get()));
+                }
+                if (EnigmaticHandler.isAbyssBoosted(Minecraft.getInstance().player)) {
+                    TooltipHandler.line(list);
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.abyssBoost");
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.violenceScrollBoost");
+                }
+            } else {
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.violenceScrollLore1");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.violenceScrollLore2");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.violenceScrollLore3");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.violenceScrollLore4");
                 TooltipHandler.line(list);
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.violenceScroll5", ChatFormatting.GOLD, String.format("+%d%%", count * attackSpeed.get()));
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.violenceScroll6", ChatFormatting.GOLD, String.format("+%d%%", count * entityReach.get()));
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.violenceScroll7", ChatFormatting.GOLD, String.format("+%d%%", count * krBoost.get()));
-            }
-            if (EnigmaticHandler.isAbyssBoosted(Minecraft.getInstance().player)) {
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.violenceScrollCount", ChatFormatting.GOLD, count);
                 TooltipHandler.line(list);
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.abyssBoost");
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.violenceScrollBoost");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.violenceScrollAlt");
+                TooltipHandler.holdShift(list);
             }
-        } else {
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.violenceScrollLore1");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.violenceScrollLore2");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.violenceScrollLore3");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.violenceScrollLore4");
             TooltipHandler.line(list);
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.violenceScrollCount", ChatFormatting.GOLD, count);
-            TooltipHandler.line(list);
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.violenceScrollAlt");
-            TooltipHandler.holdShift(list);
+            TooltipHandler.worthyOnly(list, stack);
+        } finally {
+            list.forEach(tooltip);
         }
-        TooltipHandler.line(list);
-        TooltipHandler.worthyOnly(list, stack);
     }
 
     public void curioTick(@NotNull SlotContext context, ItemStack stack) {
@@ -181,10 +192,11 @@ public class ViolenceScroll extends BaseCurioItem {
         stack.set(EnigmaticComponents.VIOLENCE_TIMER, Math.max(i, 0));
     }
 
-    public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
+    @Override
+    public void inventoryTick(ItemStack stack, ServerLevel level, Entity entity, @Nullable EquipmentSlot slotId) {
         if (entity instanceof LivingEntity livingEntity && !level.isClientSide()) {
             float timer = stack.getOrDefault(EnigmaticComponents.ELDRITCH_TIMER, 0.0F);
-            if (isSelected && EnigmaticHandler.isTheWorthyOne(livingEntity))
+            if ((slotId == EquipmentSlot.MAINHAND) && EnigmaticHandler.isTheWorthyOne(livingEntity))
                 stack.set(EnigmaticComponents.ELDRITCH_TIMER, Math.min(1.0F, timer + 0.3F));
             else stack.set(EnigmaticComponents.ELDRITCH_TIMER, Math.max(0.0F, timer - 0.3F));
         }

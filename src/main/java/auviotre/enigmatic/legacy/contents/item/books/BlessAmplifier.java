@@ -29,6 +29,9 @@ import net.neoforged.neoforge.event.ItemStackedOnOtherEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
 
 public class BlessAmplifier extends BaseCursedItem {
     public BlessAmplifier() {
@@ -36,15 +39,21 @@ public class BlessAmplifier extends BaseCursedItem {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.blessAmplifier1");
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.blessAmplifier2");
-        if (RedemptionRing.Helper.canUseRelic(Minecraft.getInstance().player)) {
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.blessAmplifier1");
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.blessAmplifier2");
+            if (RedemptionRing.Helper.canUseRelic(Minecraft.getInstance().player)) {
+                TooltipHandler.line(list);
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.blessAmplifier3");
+            }
             TooltipHandler.line(list);
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.blessAmplifier3");
+            TooltipHandler.cursedOnly(list, stack);
+        } finally {
+            list.forEach(tooltip);
         }
-        TooltipHandler.line(list);
-        TooltipHandler.cursedOnly(list, stack);
     }
 
     protected boolean canAmplify(Player player, ItemStack amplifier, @NotNull ItemStack target) {

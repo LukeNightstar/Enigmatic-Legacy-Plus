@@ -45,6 +45,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.function.Supplier;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
 
 public class EtheriumArmor extends ArmorItem {
     public static ModConfigSpec.BooleanValue etheriumShieldRenderLayer;
@@ -82,14 +85,20 @@ public class EtheriumArmor extends ArmorItem {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.etheriumArmor");
-        if (Minecraft.getInstance().level != null) {
-            var holder = EnigmaticHandler.get(Minecraft.getInstance().level, Registries.ENCHANTMENT, EnigmaticEnchantments.ETHERIC_RESONANCE);
-            if (stack.getEnchantmentLevel(holder) > 0)
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.etheriumArmorBuff");
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.etheriumArmor");
+            if (Minecraft.getInstance().level != null) {
+                var holder = EnigmaticHandler.get(Minecraft.getInstance().level, Registries.ENCHANTMENT, EnigmaticEnchantments.ETHERIC_RESONANCE);
+                if (stack.getEnchantmentLevel(holder) > 0)
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.etheriumArmorBuff");
+            }
+            if (stack.isEnchanted()) TooltipHandler.line(list);
+        } finally {
+            list.forEach(tooltip);
         }
-        if (stack.isEnchanted()) TooltipHandler.line(list);
     }
 
     public ItemAttributeModifiers getDefaultAttributeModifiers() {

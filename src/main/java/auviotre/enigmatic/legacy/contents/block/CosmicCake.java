@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.block;
 
+import auviotre.enigmatic.legacy.registries.RegistrationContext;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.api.item.IItemHelper;
 import auviotre.enigmatic.legacy.registries.EnigmaticBlocks;
@@ -50,7 +51,7 @@ public class CosmicCake extends CakeBlock {
     };
 
     public CosmicCake() {
-        super(Properties.ofFullCopy(Blocks.CAKE));
+        super(Properties.ofFullCopy(Blocks.CAKE).setId(RegistrationContext.blockKey()));
     }
 
     protected static InteractionResult eat(LevelAccessor level, BlockPos pos, BlockState state, Player player) {
@@ -96,7 +97,7 @@ public class CosmicCake extends CakeBlock {
 
     public static class Item extends BlockItem {
         public Item(Block block) {
-            super(block, IItemHelper.singleProperties().fireResistant().rarity(Rarity.UNCOMMON));
+            super(block, IItemHelper.singleProperties().useBlockDescriptionPrefix().fireResistant().rarity(Rarity.UNCOMMON));
         }
     }
 

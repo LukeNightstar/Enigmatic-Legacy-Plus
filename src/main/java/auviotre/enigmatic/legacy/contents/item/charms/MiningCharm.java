@@ -35,25 +35,34 @@ import top.theillusivec4.curios.api.SlotContext;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
 public class MiningCharm extends BaseCurioItem {
     public MiningCharm() {
         super(IItemHelper.singleProperties().rarity(Rarity.UNCOMMON));
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        TooltipHandler.line(list);
-        if (Minecraft.getInstance().hasShiftDown()) {
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.miningCharm1");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.miningCharm2");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.miningCharm3");
-        } else TooltipHandler.holdShift(list);
-        Component mode = Component.translatable("tooltip.enigmaticlegacy.disabled");
-        if (stack.getOrDefault(EnigmaticComponents.BOOLEAN, false))
-            mode = Component.translatable("tooltip.enigmaticlegacy.enabled");
-        TooltipHandler.line(list);
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.miningCharmNightVision", ChatFormatting.GOLD, mode);
-        if (stack.isEmpty()) TooltipHandler.line(list);
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
+            TooltipHandler.line(list);
+            if (Minecraft.getInstance().hasShiftDown()) {
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.miningCharm1");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.miningCharm2");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.miningCharm3");
+            } else TooltipHandler.holdShift(list);
+            Component mode = Component.translatable("tooltip.enigmaticlegacy.disabled");
+            if (stack.getOrDefault(EnigmaticComponents.BOOLEAN, false))
+                mode = Component.translatable("tooltip.enigmaticlegacy.enabled");
+            TooltipHandler.line(list);
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.miningCharmNightVision", ChatFormatting.GOLD, mode);
+            if (stack.isEmpty()) TooltipHandler.line(list);
+        } finally {
+            list.forEach(tooltip);
+        }
     }
 
     @OnlyIn(Dist.CLIENT)

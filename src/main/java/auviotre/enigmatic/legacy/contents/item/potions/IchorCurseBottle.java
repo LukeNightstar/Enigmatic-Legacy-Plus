@@ -24,6 +24,9 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
 import java.util.List;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
 
 public class IchorCurseBottle extends BaseDrinkableItem {
     public static final FoodProperties FOOD_PROPERTIES = new FoodProperties.Builder()
@@ -41,16 +44,22 @@ public class IchorCurseBottle extends BaseDrinkableItem {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        MutableComponent component = Component.translatable(EnigmaticEffects.ICHOR_CURSE.get().getDescriptionId());
-        list.add(Component.translatable("potion.withDuration", component, Component.literal(StringUtil.formatTickDuration(9600 * 4, context.tickRate()))).withStyle(ChatFormatting.RED));
-        if (EnigmaticHandler.isTheBlessedOne(Minecraft.getInstance().player)) {
-            component = Component.translatable(MobEffects.ABSORPTION.value().getDescriptionId());
-            component = Component.translatable("potion.withAmplifier", component, Component.translatable("potion.potency.4"));
-            list.add(Component.translatable("potion.withDuration", component, Component.literal(StringUtil.formatTickDuration(2400, context.tickRate()))).withStyle(ChatFormatting.BLUE));
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
+            MutableComponent component = Component.translatable(EnigmaticEffects.ICHOR_CURSE.get().getDescriptionId());
+            list.add(Component.translatable("potion.withDuration", component, Component.literal(StringUtil.formatTickDuration(9600 * 4, context.tickRate()))).withStyle(ChatFormatting.RED));
+            if (EnigmaticHandler.isTheBlessedOne(Minecraft.getInstance().player)) {
+                component = Component.translatable(MobEffects.ABSORPTION.value().getDescriptionId());
+                component = Component.translatable("potion.withAmplifier", component, Component.translatable("potion.potency.4"));
+                list.add(Component.translatable("potion.withDuration", component, Component.literal(StringUtil.formatTickDuration(2400, context.tickRate()))).withStyle(ChatFormatting.BLUE));
+            }
+            TooltipHandler.line(list);
+            TooltipHandler.cursedOnly(list, stack);
+        } finally {
+            list.forEach(tooltip);
         }
-        TooltipHandler.line(list);
-        TooltipHandler.cursedOnly(list, stack);
     }
 
     public void onConsumed(Level level, Player player, ItemStack stack) {

@@ -40,6 +40,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
 public class HunterScroll extends BaseCurioItem {
     public HunterScroll() {
         super(IItemHelper.singleProperties()
@@ -60,12 +62,18 @@ public class HunterScroll extends BaseCurioItem {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        TooltipHandler.line(list);
-        if (Minecraft.getInstance().hasShiftDown()) {
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.hunterScroll1");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.hunterScroll2");
-        } else TooltipHandler.holdShift(list);
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
+            TooltipHandler.line(list);
+            if (Minecraft.getInstance().hasShiftDown()) {
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.hunterScroll1");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.hunterScroll2");
+            } else TooltipHandler.holdShift(list);
+        } finally {
+            list.forEach(tooltip);
+        }
     }
 
     public List<Component> getAttributesTooltip(List<Component> list, TooltipContext context, ItemStack stack) {

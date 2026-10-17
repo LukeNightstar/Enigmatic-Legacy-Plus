@@ -30,29 +30,38 @@ import java.util.List;
 import java.util.Objects;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
 public class LoreInscriber extends BaseItem {
     public LoreInscriber() {
         super(IItemHelper.singleProperties().rarity(Rarity.UNCOMMON));
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        if (Minecraft.getInstance().hasShiftDown()) {
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.loreInscriber1");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.loreInscriber2", ChatFormatting.GOLD, Component.translatable("item.enigmaticlegacyplus.lore_fragment"));
-            TooltipHandler.line(list);
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.loreInscriber3");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.loreInscriber4");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.loreInscriber5");
-            TooltipHandler.line(list);
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.loreInscriber6");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.loreInscriber7");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.loreInscriber8");
-            TooltipHandler.line(list);
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.loreInscriber9");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.loreInscriber10");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.loreInscriber11");
-        } else TooltipHandler.holdShift(list);
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
+            if (Minecraft.getInstance().hasShiftDown()) {
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.loreInscriber1");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.loreInscriber2", ChatFormatting.GOLD, Component.translatable("item.enigmaticlegacyplus.lore_fragment"));
+                TooltipHandler.line(list);
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.loreInscriber3");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.loreInscriber4");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.loreInscriber5");
+                TooltipHandler.line(list);
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.loreInscriber6");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.loreInscriber7");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.loreInscriber8");
+                TooltipHandler.line(list);
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.loreInscriber9");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.loreInscriber10");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.loreInscriber11");
+            } else TooltipHandler.holdShift(list);
+        } finally {
+            list.forEach(tooltip);
+        }
     }
 
     public InteractionResult use(Level level, Player player, InteractionHand hand) {
@@ -128,11 +137,17 @@ public class LoreInscriber extends BaseItem {
         }
 
         @OnlyIn(Dist.CLIENT)
-        public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.loreFragment1", ChatFormatting.GOLD, Component.translatable("item.enigmaticlegacyplus.lore_inscriber"));
-            TooltipHandler.line(list);
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.loreFragment2");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.loreFragment3");
+        @Override
+        public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+            List<Component> list = new ArrayList<>();
+            try {
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.loreFragment1", ChatFormatting.GOLD, Component.translatable("item.enigmaticlegacyplus.lore_inscriber"));
+                TooltipHandler.line(list);
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.loreFragment2");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.loreFragment3");
+            } finally {
+                list.forEach(tooltip);
+            }
         }
     }
 

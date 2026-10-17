@@ -92,6 +92,10 @@ import java.util.UUID;
 
 import static auviotre.enigmatic.legacy.registries.EnigmaticComponents.INT;
 import static auviotre.enigmatic.legacy.registries.EnigmaticComponents.SPELL_LEVEL;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.ItemInstance;
 
 public class SpellstoneSword extends Item {
     private static final float BASE_DAMAGE = 6.0F;
@@ -282,30 +286,36 @@ public class SpellstoneSword extends Item {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        ItemStack resonance = getResonance(stack);
-        int level = stack.getOrDefault(SPELL_LEVEL, 0);
-        if (Minecraft.getInstance().hasShiftDown()) {
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
+            ItemStack resonance = getResonance(stack);
+            int level = stack.getOrDefault(SPELL_LEVEL, 0);
+            if (Minecraft.getInstance().hasShiftDown()) {
+                if (resonance.isEmpty()) {
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstoneSword1");
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstoneSword2");
+                } else {
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstoneResonateEffect");
+                    int form = (int) (Form.getValue(stack) * 10);
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstoneResonateEffect" + form + "-1");
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstoneResonateEffect" + form + "-2");
+                    if (level > 4)
+                        TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstoneResonateEffect" + form + "-3");
+                }
+            } else TooltipHandler.holdShift(list);
+            TooltipHandler.line(list);
             if (resonance.isEmpty()) {
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstoneSword1");
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstoneSword2");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstoneResonateAbsent");
             } else {
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstoneResonateEffect");
-                int form = (int) (Form.getValue(stack) * 10);
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstoneResonateEffect" + form + "-1");
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstoneResonateEffect" + form + "-2");
-                if (level > 4)
-                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstoneResonateEffect" + form + "-3");
+                MutableComponent component = Component.translatable(resonance.getDescriptionId());
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstoneResonate", ChatFormatting.GOLD, component);
             }
-        } else TooltipHandler.holdShift(list);
-        TooltipHandler.line(list);
-        if (resonance.isEmpty()) {
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstoneResonateAbsent");
-        } else {
-            MutableComponent component = Component.translatable(resonance.getDescriptionId());
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstoneResonate", ChatFormatting.GOLD, component);
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstoneSwordLevel", ChatFormatting.GOLD, level);
+        } finally {
+            list.forEach(tooltip);
         }
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstoneSwordLevel", ChatFormatting.GOLD, level);
     }
 
     public String getDescriptionId(ItemStack stack) {
@@ -343,8 +353,9 @@ public class SpellstoneSword extends Item {
         return true;
     }
 
-    public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
-        if (isSelected && entity.getInBlockState().is(Blocks.BUBBLE_COLUMN) && isResonatingWith(stack, EnigmaticItems.OCEAN_STONE) && entity.tickCount % 4 == 0 && stack.getOrDefault(SPELL_LEVEL, 0) > 4) {
+    @Override
+    public void inventoryTick(ItemStack stack, ServerLevel level, Entity entity, @Nullable EquipmentSlot slotId) {
+        if ((slotId == EquipmentSlot.MAINHAND) && entity.getInBlockState().is(Blocks.BUBBLE_COLUMN) && isResonatingWith(stack, EnigmaticItems.OCEAN_STONE) && entity.tickCount % 4 == 0 && stack.getOrDefault(SPELL_LEVEL, 0) > 4) {
             stack.set(INT, Math.min(getMaxEnergy(stack), stack.getOrDefault(INT, 0) + 2));
         }
     }
@@ -659,7 +670,8 @@ public class SpellstoneSword extends Item {
         return super.getSweepHitBox(stack, player, target);
     }
 
-    public boolean canPerformAction(ItemStack stack, ItemAbility ability) {
+    @Override
+    public boolean canPerformAction(ItemInstance stack, ItemAbility ability) {
         if (ItemAbilities.DEFAULT_SWORD_ACTIONS.contains(ability)) return true;
         if (isResonatingWith(stack, EnigmaticItems.VOID_PEARL))
             return ItemAbilities.DEFAULT_SHIELD_ACTIONS.contains(ability);

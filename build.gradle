@@ -85,6 +85,10 @@ neoForge {
 
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
+// 26.1.2 port: data generators are not ported yet. Their output is already committed
+// under src/main/resources, so they are excluded from compilation for now.
+sourceSets.main.java { exclude 'auviotre/enigmatic/legacy/data/**' }
+
 configurations {
     runtimeClasspath.extendsFrom localRuntime
 }

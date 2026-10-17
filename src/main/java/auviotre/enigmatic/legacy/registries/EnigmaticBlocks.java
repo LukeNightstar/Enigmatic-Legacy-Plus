@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.registries;
 
+import auviotre.enigmatic.legacy.api.item.IItemHelper;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.contents.block.*;
 import net.minecraft.world.item.BlockItem;
@@ -23,28 +24,32 @@ public class EnigmaticBlocks {
     public static final DeferredBlock<AstralGlass> ASTRAL_GLASS = registerBlock("astral_glass", AstralGlass::new, Rarity.COMMON);
     public static final DeferredBlock<AstralGlassPane> ASTRAL_GLASS_PANE = registerBlock("astral_glass_pane", AstralGlassPane::new, Rarity.COMMON);
     public static final DeferredBlock<EtheriumOre> ETHERIUM_ORE = registerFireResistanceBlock("etherium_ore", EtheriumOre::new);
-    public static final DeferredBlock<Block> ETHERIUM_BLOCK = registerFireResistanceBlock("etherium_block", () -> new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.NETHERITE_BLOCK).mapColor(MapColor.COLOR_LIGHT_BLUE).lightLevel(state -> 10)));
-    public static final DeferredBlock<Block> STARLIGHT_BLOCK = registerFireResistanceBlock("starlight_block", () -> new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.NETHERITE_BLOCK).mapColor(MapColor.TERRACOTTA_WHITE).lightLevel(state -> 12)));
+    public static final DeferredBlock<Block> ETHERIUM_BLOCK = registerFireResistanceBlock("etherium_block", () -> new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.NETHERITE_BLOCK).setId(RegistrationContext.blockKey()).mapColor(MapColor.COLOR_LIGHT_BLUE).lightLevel(state -> 10)));
+    public static final DeferredBlock<Block> STARLIGHT_BLOCK = registerFireResistanceBlock("starlight_block", () -> new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.NETHERITE_BLOCK).setId(RegistrationContext.blockKey()).mapColor(MapColor.TERRACOTTA_WHITE).lightLevel(state -> 12)));
     public static final DeferredBlock<EtherealLantern> ETHEREAL_LANTERN = registerBlock("ethereal_lantern", EtherealLantern::new, EtherealLantern.Item::new);
     public static final DeferredBlock<AstralDustSack> ASTRAL_DUST_SACK = registerBlock("astral_dust_sack", AstralDustSack::new, Rarity.COMMON);
     public static final DeferredBlock<DimensionalAnchor> DIMENSIONAL_ANCHOR = registerFireResistanceBlock("dimensional_anchor", DimensionalAnchor::new);
     public static final DeferredBlock<CosmicCake> COSMIC_CAKE = registerBlock("cosmic_cake", CosmicCake::new, CosmicCake.Item::new);
 
     private static <B extends Block> DeferredBlock<B> registerBlock(String name, Supplier<? extends B> supplier, Function<B, ? extends BlockItem> itemSupplier) {
-        DeferredBlock<B> block = BLOCKS.register(name, supplier);
-        EnigmaticItems.ITEMS.register(name, () -> itemSupplier.apply(block.get()));
+        DeferredBlock<B> block = register(name, supplier);
+        EnigmaticItems.register(name, () -> itemSupplier.apply(block.get()));
         return block;
     }
 
     private static <B extends Block> DeferredBlock<B> registerBlock(String name, Supplier<? extends B> supplier, Rarity rarity) {
-        DeferredBlock<B> block = BLOCKS.register(name, supplier);
-        EnigmaticItems.ITEMS.register(name, () -> new BlockItem(block.get(), new Item.Properties().rarity(rarity)));
+        DeferredBlock<B> block = register(name, supplier);
+        EnigmaticItems.register(name, () -> new BlockItem(block.get(), IItemHelper.properties().useBlockDescriptionPrefix().rarity(rarity)));
         return block;
     }
 
     private static <B extends Block> DeferredBlock<B> registerFireResistanceBlock(String name, Supplier<? extends B> supplier) {
-        DeferredBlock<B> block = BLOCKS.register(name, supplier);
-        EnigmaticItems.ITEMS.register(name, () -> new BlockItem(block.get(), new Item.Properties().fireResistant()));
+        DeferredBlock<B> block = register(name, supplier);
+        EnigmaticItems.register(name, () -> new BlockItem(block.get(), IItemHelper.properties().useBlockDescriptionPrefix().fireResistant()));
         return block;
+    }
+
+    private static <B extends Block> DeferredBlock<B> register(String name, Supplier<? extends B> supplier) {
+        return BLOCKS.register(name, location -> RegistrationContext.constructBlock(location, supplier::get));
     }
 }

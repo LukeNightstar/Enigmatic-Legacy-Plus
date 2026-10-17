@@ -19,6 +19,9 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
 import java.util.List;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
 
 public class AstralFruit extends BaseItem {
     public static final FoodProperties DEFAULT_PROPERTIES = new FoodProperties.Builder()
@@ -42,11 +45,17 @@ public class AstralFruit extends BaseItem {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        if (this.enchanted) {
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.astralFruit");
-            TooltipHandler.line(list);
-            TooltipHandler.cursedOnly(list, stack);
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
+            if (this.enchanted) {
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.astralFruit");
+                TooltipHandler.line(list);
+                TooltipHandler.cursedOnly(list, stack);
+            }
+        } finally {
+            list.forEach(tooltip);
         }
     }
 

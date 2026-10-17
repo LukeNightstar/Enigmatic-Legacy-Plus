@@ -37,6 +37,9 @@ import org.jetbrains.annotations.Nullable;
 import top.theillusivec4.curios.api.SlotContext;
 
 import java.util.List;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
 
 public class BerserkEmblem extends CursedCurioItem {
     public static ModConfigSpec.DoubleValue attackDamage;
@@ -72,35 +75,41 @@ public class BerserkEmblem extends CursedCurioItem {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        TooltipHandler.line(list);
-        if (Minecraft.getInstance().hasShiftDown()) {
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.berserkCharm1", ChatFormatting.GOLD, attackDamage.get() + "%");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.berserkCharm2", ChatFormatting.GOLD, attackSpeed.get() + "%");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.berserkCharm3", ChatFormatting.GOLD, movementSpeed.get() + "%");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.berserkCharm4", ChatFormatting.GOLD, damageResistance.get() + "%");
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
             TooltipHandler.line(list);
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.berserkCharm5");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.berserkCharm6");
+            if (Minecraft.getInstance().hasShiftDown()) {
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.berserkCharm1", ChatFormatting.GOLD, attackDamage.get() + "%");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.berserkCharm2", ChatFormatting.GOLD, attackSpeed.get() + "%");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.berserkCharm3", ChatFormatting.GOLD, movementSpeed.get() + "%");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.berserkCharm4", ChatFormatting.GOLD, damageResistance.get() + "%");
+                TooltipHandler.line(list);
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.berserkCharm5");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.berserkCharm6");
+                TooltipHandler.line(list);
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.berserkCharm8");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.berserkCharm9");
+            } else TooltipHandler.holdShift(list);
+            LocalPlayer player = Minecraft.getInstance().player;
+            if (player != null && ItemStack.isSameItemSameComponents(stack, EnigmaticHandler.getCurio(player, this))) {
+                float missingPool = getMissingHealthPool(player);
+                int percentage = (int) (missingPool * 100F);
+                TooltipHandler.line(list);
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.berserkCharm7");
+                double damageBoost = percentage * attackDamage.get() * (EnigmaticHandler.hasCurio(player, EnigmaticItems.HELL_BLADE_CHARM) ? 1.25 : 1.0);
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.berserkCharm1", ChatFormatting.GOLD, String.format("%.1f%%", damageBoost));
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.berserkCharm2", ChatFormatting.GOLD, String.format("%.1f%%", percentage * attackSpeed.get()));
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.berserkCharm3", ChatFormatting.GOLD, String.format("%.1f%%", percentage * movementSpeed.get()));
+                double damageResist = percentage * damageResistance.get() * (EnigmaticHandler.hasCurio(player, EnigmaticItems.HELL_BLADE_CHARM) ? 0.6 : 1.0);
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.berserkCharm4", ChatFormatting.GOLD, String.format("%.1f%%", damageResist));
+            }
             TooltipHandler.line(list);
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.berserkCharm8");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.berserkCharm9");
-        } else TooltipHandler.holdShift(list);
-        LocalPlayer player = Minecraft.getInstance().player;
-        if (player != null && ItemStack.isSameItemSameComponents(stack, EnigmaticHandler.getCurio(player, this))) {
-            float missingPool = getMissingHealthPool(player);
-            int percentage = (int) (missingPool * 100F);
-            TooltipHandler.line(list);
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.berserkCharm7");
-            double damageBoost = percentage * attackDamage.get() * (EnigmaticHandler.hasCurio(player, EnigmaticItems.HELL_BLADE_CHARM) ? 1.25 : 1.0);
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.berserkCharm1", ChatFormatting.GOLD, String.format("%.1f%%", damageBoost));
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.berserkCharm2", ChatFormatting.GOLD, String.format("%.1f%%", percentage * attackSpeed.get()));
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.berserkCharm3", ChatFormatting.GOLD, String.format("%.1f%%", percentage * movementSpeed.get()));
-            double damageResist = percentage * damageResistance.get() * (EnigmaticHandler.hasCurio(player, EnigmaticItems.HELL_BLADE_CHARM) ? 0.6 : 1.0);
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.berserkCharm4", ChatFormatting.GOLD, String.format("%.1f%%", damageResist));
+            TooltipHandler.cursedOnly(list, stack);
+        } finally {
+            list.forEach(tooltip);
         }
-        TooltipHandler.line(list);
-        TooltipHandler.cursedOnly(list, stack);
     }
 
     public void curioTick(@NotNull SlotContext context, ItemStack stack) {

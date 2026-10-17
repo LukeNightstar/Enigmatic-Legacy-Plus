@@ -38,6 +38,9 @@ import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curios.api.SlotContext;
 
 import java.util.List;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
 
 public class RedemptionAmulet extends CursedCurioItem implements IAmulet {
     public RedemptionAmulet() {
@@ -49,26 +52,32 @@ public class RedemptionAmulet extends CursedCurioItem implements IAmulet {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        TooltipHandler.line(list);
-        if (Minecraft.getInstance().hasShiftDown()) {
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.enigmaticAmuletShift1");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.enigmaticAmuletShift2");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.enigmaticAmuletShift3");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.enigmaticAmuletShift4");
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
             TooltipHandler.line(list);
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.redemptionAmulet1");
-            if (RedemptionRing.Helper.canUseRelic(Minecraft.getInstance().player))
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.redemptionAmulet2");
-        } else TooltipHandler.holdShift(list);
-        TooltipHandler.line(list);
-        TooltipHandler.cursedOnly(list, stack);
-        TooltipHandler.line(list);
-        TooltipHandler.line(list, "curios.modifiers.amulet", ChatFormatting.GOLD);
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.enchantersPearl1", ChatFormatting.GOLD, 1);
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.redemptionAmuletStat1", ChatFormatting.GOLD, 2);
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.redemptionAmuletStat2", ChatFormatting.GOLD, 4);
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.redemptionAmuletStat3", ChatFormatting.GOLD, 8);
+            if (Minecraft.getInstance().hasShiftDown()) {
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.enigmaticAmuletShift1");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.enigmaticAmuletShift2");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.enigmaticAmuletShift3");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.enigmaticAmuletShift4");
+                TooltipHandler.line(list);
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.redemptionAmulet1");
+                if (RedemptionRing.Helper.canUseRelic(Minecraft.getInstance().player))
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.redemptionAmulet2");
+            } else TooltipHandler.holdShift(list);
+            TooltipHandler.line(list);
+            TooltipHandler.cursedOnly(list, stack);
+            TooltipHandler.line(list);
+            TooltipHandler.line(list, "curios.modifiers.amulet", ChatFormatting.GOLD);
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.enchantersPearl1", ChatFormatting.GOLD, 1);
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.redemptionAmuletStat1", ChatFormatting.GOLD, 2);
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.redemptionAmuletStat2", ChatFormatting.GOLD, 4);
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.redemptionAmuletStat3", ChatFormatting.GOLD, 8);
+        } finally {
+            list.forEach(tooltip);
+        }
     }
 
     public List<Component> getAttributesTooltip(List<Component> tooltips, TooltipContext context, ItemStack stack) {

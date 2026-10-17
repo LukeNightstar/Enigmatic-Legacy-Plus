@@ -91,6 +91,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
+import net.minecraft.world.entity.EquipmentSlot;
 
 public class CursedRing extends CursedCurioItem {
     public static final Multimap<Player, ItemLike> POSSESSIONS = ArrayListMultimap.create();
@@ -153,49 +157,56 @@ public class CursedRing extends CursedCurioItem {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        TooltipHandler.line(list);
-        if (Minecraft.getInstance().hasShiftDown()) {
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedRingCurses");
-            int multiplier = painMultiplier.getAsInt();
-            if (multiplier == 200) TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedRingCurse1");
-            else
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedRingCurse1_alt", ChatFormatting.GOLD, multiplier + "%");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedRingCurse2");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedRingCurse3", ChatFormatting.GOLD, armorDebuff.get() + "%");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedRingCurse4", ChatFormatting.GOLD, monsterDamageDebuff.get() + "%");
-            if (eternalBurning.get()) TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedRingCurse5");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedRingCurse6");
-            if (enableInsomnia.get()) TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedRingCurse7");
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
             TooltipHandler.line(list);
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedRingBlesses");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedRingBless1", ChatFormatting.GOLD, lootingBonus.get());
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedRingBless2", ChatFormatting.GOLD, fortuneBonus.get());
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedRingBless3", ChatFormatting.GOLD, experienceBonus.get() + "%");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedRingBless4", ChatFormatting.GOLD, enchantingBonus.get());
-            if (enableSpecialDrops.get()) TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedRingBless5");
-            if (enableEnderRing.get()) TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedRingBless6");
-            if (uniqueLegacy.get()) TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedRingBless7");
-        } else {
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedRingLore1");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedRingLore2");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedRingLore3");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedRingLore4");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedRingLore5");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedRingLore6");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedRingLore7");
-            TooltipHandler.line(list);
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.eternallyBound1");
-            if (EnigmaticHandler.canUnequipBoundRelics(Minecraft.getInstance().player)) {
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.eternallyBound2_creative");
-            } else TooltipHandler.line(list, "tooltip.enigmaticlegacy.eternallyBound2");
+            if (Minecraft.getInstance().hasShiftDown()) {
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedRingCurses");
+                int multiplier = painMultiplier.getAsInt();
+                if (multiplier == 200) TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedRingCurse1");
+                else
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedRingCurse1_alt", ChatFormatting.GOLD, multiplier + "%");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedRingCurse2");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedRingCurse3", ChatFormatting.GOLD, armorDebuff.get() + "%");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedRingCurse4", ChatFormatting.GOLD, monsterDamageDebuff.get() + "%");
+                if (eternalBurning.get()) TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedRingCurse5");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedRingCurse6");
+                if (enableInsomnia.get()) TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedRingCurse7");
+                TooltipHandler.line(list);
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedRingBlesses");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedRingBless1", ChatFormatting.GOLD, lootingBonus.get());
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedRingBless2", ChatFormatting.GOLD, fortuneBonus.get());
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedRingBless3", ChatFormatting.GOLD, experienceBonus.get() + "%");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedRingBless4", ChatFormatting.GOLD, enchantingBonus.get());
+                if (enableSpecialDrops.get()) TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedRingBless5");
+                if (enableEnderRing.get()) TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedRingBless6");
+                if (uniqueLegacy.get()) TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedRingBless7");
+            } else {
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedRingLore1");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedRingLore2");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedRingLore3");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedRingLore4");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedRingLore5");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedRingLore6");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedRingLore7");
+                TooltipHandler.line(list);
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.eternallyBound1");
+                if (EnigmaticHandler.canUnequipBoundRelics(Minecraft.getInstance().player)) {
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.eternallyBound2_creative");
+                } else TooltipHandler.line(list, "tooltip.enigmaticlegacy.eternallyBound2");
 
-            TooltipHandler.line(list);
-            TooltipHandler.holdShift(list);
+                TooltipHandler.line(list);
+                TooltipHandler.holdShift(list);
+            }
+        } finally {
+            list.forEach(tooltip);
         }
     }
 
-    public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
+    @Override
+    public void inventoryTick(ItemStack stack, ServerLevel level, Entity entity, @Nullable EquipmentSlot slotId) {
         if (entity instanceof LivingEntity livingEntity && autoEquip.get()) {
             if (livingEntity instanceof Player player && (player.isCreative() || player.isSpectator())) return;
             if (!EnigmaticHandler.hasCurio(livingEntity, this)) {

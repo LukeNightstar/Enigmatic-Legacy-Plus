@@ -61,6 +61,9 @@ import top.theillusivec4.curios.api.SlotContext;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
 public class Spelltuner extends BaseCurioItem {
     public Spelltuner() {
         super(IItemHelper.singleProperties().rarity(Rarity.RARE).fireResistant());
@@ -82,31 +85,37 @@ public class Spelltuner extends BaseCurioItem {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        Context spellContext = stack.get(EnigmaticComponents.SPELLTUNER_CONTEXT);
-        TooltipHandler.line(list);
-        if (Minecraft.getInstance().hasShiftDown()) {
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.spelltuner1");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.spelltuner2");
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
+            Context spellContext = stack.get(EnigmaticComponents.SPELLTUNER_CONTEXT);
             TooltipHandler.line(list);
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.spelltuner3");
-        } else {
-            if (spellContext != null) {
-                Item spellstone = spellContext.spellstone.getItem();
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.spelltunerContext", ChatFormatting.GOLD, spellContext.spellstone().getItem().getDescription());
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.spelltunerEffect");
-                try {
-                    assert spellstone instanceof SpellstoneItem;
-                    ((SpellstoneItem) spellstone).addTuneTooltip(list);
-                } catch (Exception ignore) {
-                }
+            if (Minecraft.getInstance().hasShiftDown()) {
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.spelltuner1");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.spelltuner2");
+                TooltipHandler.line(list);
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.spelltuner3");
             } else {
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.spelltunerContextAbsent");
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.spelltunerEffect");
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstoneSkillAbsent");
+                if (spellContext != null) {
+                    Item spellstone = spellContext.spellstone.getItem();
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.spelltunerContext", ChatFormatting.GOLD, spellContext.spellstone().getItem().getDescription());
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.spelltunerEffect");
+                    try {
+                        assert spellstone instanceof SpellstoneItem;
+                        ((SpellstoneItem) spellstone).addTuneTooltip(list);
+                    } catch (Exception ignore) {
+                    }
+                } else {
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.spelltunerContextAbsent");
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.spelltunerEffect");
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstoneSkillAbsent");
+                }
+                TooltipHandler.line(list);
+                TooltipHandler.holdShift(list);
             }
-            TooltipHandler.line(list);
-            TooltipHandler.holdShift(list);
+        } finally {
+            list.forEach(tooltip);
         }
     }
 

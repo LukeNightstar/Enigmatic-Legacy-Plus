@@ -39,6 +39,9 @@ import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curios.api.SlotContext;
 
 import java.util.List;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
 
 public class ForgerGem extends BaseCurioItem {
     public static ModConfigSpec.IntValue breakChanceModifier;
@@ -59,18 +62,24 @@ public class ForgerGem extends BaseCurioItem {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        TooltipHandler.line(list);
-        if (Minecraft.getInstance().hasShiftDown()) {
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.enchantersPearl1");
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
             TooltipHandler.line(list);
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.forgerGem1");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.forgerGem2");
-            if (EnigmaticHandler.isTheOne(Minecraft.getInstance().player)) {
+            if (Minecraft.getInstance().hasShiftDown()) {
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.enchantersPearl1");
                 TooltipHandler.line(list);
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.forgerGem3");
-            }
-        } else TooltipHandler.holdShift(list);
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.forgerGem1");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.forgerGem2");
+                if (EnigmaticHandler.isTheOne(Minecraft.getInstance().player)) {
+                    TooltipHandler.line(list);
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.forgerGem3");
+                }
+            } else TooltipHandler.holdShift(list);
+        } finally {
+            list.forEach(tooltip);
+        }
     }
 
     public boolean canEquip(SlotContext context, ItemStack stack) {

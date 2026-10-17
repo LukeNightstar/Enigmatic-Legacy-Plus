@@ -35,21 +35,30 @@ import top.theillusivec4.curios.api.SlotContext;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
 public class HeavenScroll extends BaseCurioItem {
     public HeavenScroll() {
         super(IItemHelper.singleProperties().rarity(Rarity.RARE));
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        TooltipHandler.line(list);
-        if (Minecraft.getInstance().hasShiftDown()) {
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.heavenScroll1");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.heavenScroll2");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.heavenScroll3");
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
             TooltipHandler.line(list);
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.heavenScroll4");
-        } else TooltipHandler.holdShift(list);
+            if (Minecraft.getInstance().hasShiftDown()) {
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.heavenScroll1");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.heavenScroll2");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.heavenScroll3");
+                TooltipHandler.line(list);
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.heavenScroll4");
+            } else TooltipHandler.holdShift(list);
+        } finally {
+            list.forEach(tooltip);
+        }
     }
 
     public boolean canEquip(SlotContext context, ItemStack stack) {

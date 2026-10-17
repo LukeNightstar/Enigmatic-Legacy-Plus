@@ -31,6 +31,10 @@ import net.neoforged.neoforge.common.ItemAbility;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
+import net.minecraft.world.item.ItemInstance;
 public class TheJudgement extends Item {
     public static final double ATTACK_RADIUS = 64.0;
 
@@ -39,18 +43,24 @@ public class TheJudgement extends Item {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        if (Minecraft.getInstance().hasShiftDown()) {
-            int mode = this.noDrops(stack) ? 1 : 0;
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.theJudgement1");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.theJudgement2", ChatFormatting.GOLD, (int) ATTACK_RADIUS);
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.theJudgement3");
-            TooltipHandler.line(list);
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.theJudgement4");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.theJudgement5");
-            TooltipHandler.line(list);
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.theJudgement6", Component.translatable("tooltip.enigmaticlegacy.theJudgementMode" + mode));
-        } else TooltipHandler.line(list, "tooltip.enigmaticlegacy.holdShift");
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
+            if (Minecraft.getInstance().hasShiftDown()) {
+                int mode = this.noDrops(stack) ? 1 : 0;
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.theJudgement1");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.theJudgement2", ChatFormatting.GOLD, (int) ATTACK_RADIUS);
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.theJudgement3");
+                TooltipHandler.line(list);
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.theJudgement4");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.theJudgement5");
+                TooltipHandler.line(list);
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.theJudgement6", Component.translatable("tooltip.enigmaticlegacy.theJudgementMode" + mode));
+            } else TooltipHandler.line(list, "tooltip.enigmaticlegacy.holdShift");
+        } finally {
+            list.forEach(tooltip);
+        }
     }
 
     public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
@@ -67,7 +77,8 @@ public class TheJudgement extends Item {
         return false;
     }
 
-    public boolean canPerformAction(ItemStack stack, ItemAbility itemAbility) {
+    @Override
+    public boolean canPerformAction(ItemInstance stack, ItemAbility itemAbility) {
         return ItemAbilities.DEFAULT_SWORD_ACTIONS.contains(itemAbility);
     }
 

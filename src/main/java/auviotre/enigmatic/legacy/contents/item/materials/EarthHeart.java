@@ -29,20 +29,33 @@ import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.EquipmentSlot;
+import org.jspecify.annotations.Nullable;
 
 public class EarthHeart extends BaseItem implements ITaintable {
     public EarthHeart() {
         super(IItemHelper.singleProperties().rarity(Rarity.UNCOMMON));
     }
 
-    public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
+    @Override
+    public void inventoryTick(ItemStack stack, ServerLevel level, Entity entity, @Nullable EquipmentSlot slotId) {
         if (entity instanceof Player player && !level.isClientSide())
             this.handleTaintable(stack, player);
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        if (ITaintable.isTainted(stack)) TooltipHandler.line(list, "tooltip.enigmaticlegacy.tainted");
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
+            if (ITaintable.isTainted(stack)) TooltipHandler.line(list, "tooltip.enigmaticlegacy.tainted");
+        } finally {
+            list.forEach(tooltip);
+        }
     }
 
     public boolean canTaint(Player player) {

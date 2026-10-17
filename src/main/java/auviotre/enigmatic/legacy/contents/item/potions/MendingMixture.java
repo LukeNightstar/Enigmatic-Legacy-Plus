@@ -20,6 +20,9 @@ import net.neoforged.neoforge.event.ItemStackedOnOtherEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
 
 public class MendingMixture extends BaseItem {
     public MendingMixture() {
@@ -27,9 +30,15 @@ public class MendingMixture extends BaseItem {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.mendingMixture1");
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.mendingMixture2");
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.mendingMixture1");
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.mendingMixture2");
+        } finally {
+            list.forEach(tooltip);
+        }
     }
 
     public boolean isFoil(ItemStack stack) {

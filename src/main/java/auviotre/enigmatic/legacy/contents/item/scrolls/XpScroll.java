@@ -32,6 +32,9 @@ import top.theillusivec4.curios.api.SlotContext;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
 public class XpScroll extends BaseCurioItem {
     public static ModConfigSpec.DoubleValue magneticRange;
 
@@ -82,41 +85,47 @@ public class XpScroll extends BaseCurioItem {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        MutableComponent modeComponent;
-        if (!stack.getOrDefault(EnigmaticComponents.XP_SCROLL_ACTIVE, false))
-            modeComponent = Component.translatable("tooltip.enigmaticlegacy.xpScrollDeactivated");
-        else if (stack.getOrDefault(EnigmaticComponents.XP_SCROLL_MODE, false))
-            modeComponent = Component.translatable("tooltip.enigmaticlegacy.xpScrollAbsorption");
-        else modeComponent = Component.translatable("tooltip.enigmaticlegacy.xpScrollExtraction");
-
-        TooltipHandler.line(list);
-        if (Minecraft.getInstance().hasShiftDown()) {
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.xpScroll1");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.xpScroll2");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.xpScroll3");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.xpScroll4");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.xpScroll5");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.xpScroll6");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.xpScroll7");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.xpScroll8");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.xpScroll9");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.xpScroll10");
-            TooltipHandler.line(list);
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.xpScroll11");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.xpScroll12", ChatFormatting.GOLD, String.format("%.0f", magneticRange.getAsDouble()));
-        } else TooltipHandler.holdShift(list);
-
-        TooltipHandler.line(list);
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.xpScrollMode", modeComponent.withStyle(ChatFormatting.GOLD));
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.xpScrollStoredXP");
-        Long stored = stack.getOrDefault(EnigmaticComponents.XP_SCROLL_STORED, 0L);
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.xpScrollUnits", ChatFormatting.GOLD, stored, getExpLevel(stored));
-
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
         try {
+            MutableComponent modeComponent;
+            if (!stack.getOrDefault(EnigmaticComponents.XP_SCROLL_ACTIVE, false))
+                modeComponent = Component.translatable("tooltip.enigmaticlegacy.xpScrollDeactivated");
+            else if (stack.getOrDefault(EnigmaticComponents.XP_SCROLL_MODE, false))
+                modeComponent = Component.translatable("tooltip.enigmaticlegacy.xpScrollAbsorption");
+            else modeComponent = Component.translatable("tooltip.enigmaticlegacy.xpScrollExtraction");
+
             TooltipHandler.line(list);
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.currentKeybind", ChatFormatting.LIGHT_PURPLE, KeyMapping.createNameSupplier("key.scrollAbility").get().getString().toUpperCase());
-        } catch (NullPointerException ignored) {
+            if (Minecraft.getInstance().hasShiftDown()) {
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.xpScroll1");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.xpScroll2");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.xpScroll3");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.xpScroll4");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.xpScroll5");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.xpScroll6");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.xpScroll7");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.xpScroll8");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.xpScroll9");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.xpScroll10");
+                TooltipHandler.line(list);
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.xpScroll11");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.xpScroll12", ChatFormatting.GOLD, String.format("%.0f", magneticRange.getAsDouble()));
+            } else TooltipHandler.holdShift(list);
+
+            TooltipHandler.line(list);
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.xpScrollMode", modeComponent.withStyle(ChatFormatting.GOLD));
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.xpScrollStoredXP");
+            Long stored = stack.getOrDefault(EnigmaticComponents.XP_SCROLL_STORED, 0L);
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.xpScrollUnits", ChatFormatting.GOLD, stored, getExpLevel(stored));
+
+            try {
+                TooltipHandler.line(list);
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.currentKeybind", ChatFormatting.LIGHT_PURPLE, KeyMapping.createNameSupplier("key.scrollAbility").get().getString().toUpperCase());
+            } catch (NullPointerException ignored) {
+            }
+        } finally {
+            list.forEach(tooltip);
         }
     }
 

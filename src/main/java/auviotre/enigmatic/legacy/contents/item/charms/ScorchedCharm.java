@@ -42,6 +42,8 @@ import top.theillusivec4.curios.api.SlotContext;
 
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
 
 public class ScorchedCharm extends CursedCurioItem {
     public static ModConfigSpec.IntValue lavaHealAmount;
@@ -63,21 +65,27 @@ public class ScorchedCharm extends CursedCurioItem {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        TooltipHandler.line(list);
-        if (Minecraft.getInstance().hasShiftDown()) {
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.scorchedCharm1");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.scorchedCharm2");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.scorchedCharm3");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.scorchedCharm4");
-            LocalPlayer player = Minecraft.getInstance().player;
-            if (RedemptionRing.Helper.canUseRelic(player) && player != null) {
-                int value = resistanceProbability.get() * (player.isInLava() ? 2 : 1);
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.scorchedCharm5", ChatFormatting.GOLD, String.format("%d%%", value));
-            }
-        } else TooltipHandler.holdShift(list);
-        TooltipHandler.line(list);
-        TooltipHandler.cursedOnly(list, stack);
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
+            TooltipHandler.line(list);
+            if (Minecraft.getInstance().hasShiftDown()) {
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.scorchedCharm1");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.scorchedCharm2");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.scorchedCharm3");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.scorchedCharm4");
+                LocalPlayer player = Minecraft.getInstance().player;
+                if (RedemptionRing.Helper.canUseRelic(player) && player != null) {
+                    int value = resistanceProbability.get() * (player.isInLava() ? 2 : 1);
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.scorchedCharm5", ChatFormatting.GOLD, String.format("%d%%", value));
+                }
+            } else TooltipHandler.holdShift(list);
+            TooltipHandler.line(list);
+            TooltipHandler.cursedOnly(list, stack);
+        } finally {
+            list.forEach(tooltip);
+        }
     }
 
     public void curioTick(SlotContext context, ItemStack stack) {

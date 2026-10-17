@@ -48,6 +48,9 @@ import top.theillusivec4.curios.api.SlotContext;
 import java.util.List;
 
 import net.neoforged.neoforge.client.network.ClientPacketDistributor;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
 public class ThunderScroll extends CursedCurioItem {
     public static final String TAG_ID = "ElectricPoint";
 
@@ -56,21 +59,27 @@ public class ThunderScroll extends CursedCurioItem {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        TooltipHandler.line(list);
-        if (Minecraft.getInstance().hasShiftDown()) {
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.thunderScroll1");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.thunderScroll2");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.thunderScroll3");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.thunderScroll4");
-            if (RedemptionRing.Helper.canUseRelic(Minecraft.getInstance().player)) {
-                TooltipHandler.line(list);
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.thunderScroll5");
-            }
-        } else TooltipHandler.holdShift(list);
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
+            TooltipHandler.line(list);
+            if (Minecraft.getInstance().hasShiftDown()) {
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.thunderScroll1");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.thunderScroll2");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.thunderScroll3");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.thunderScroll4");
+                if (RedemptionRing.Helper.canUseRelic(Minecraft.getInstance().player)) {
+                    TooltipHandler.line(list);
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.thunderScroll5");
+                }
+            } else TooltipHandler.holdShift(list);
 
-        TooltipHandler.line(list);
-        TooltipHandler.cursedOnly(list, stack);
+            TooltipHandler.line(list);
+            TooltipHandler.cursedOnly(list, stack);
+        } finally {
+            list.forEach(tooltip);
+        }
     }
 
     public Multimap<Holder<Attribute>, AttributeModifier> getAttributeModifiers(SlotContext context, Identifier id, ItemStack stack) {

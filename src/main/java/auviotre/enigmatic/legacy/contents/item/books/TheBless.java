@@ -40,6 +40,9 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
 
 public class TheBless extends TheAcknowledgment {
     public static ModConfigSpec.DoubleValue damageBoostByFire;
@@ -57,31 +60,37 @@ public class TheBless extends TheAcknowledgment {
 
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        LocalPlayer player = Minecraft.getInstance().player;
-        if (Minecraft.getInstance().hasShiftDown()) {
-            if (EnigmaticHandler.isTheCursedOne(player)) {
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.curseAlteration", ChatFormatting.GOLD, Component.translatable("tooltip.enigmaticlegacy.fourthCurse"));
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.fourthCurseAlteration");
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
+            LocalPlayer player = Minecraft.getInstance().player;
+            if (Minecraft.getInstance().hasShiftDown()) {
+                if (EnigmaticHandler.isTheCursedOne(player)) {
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.curseAlteration", ChatFormatting.GOLD, Component.translatable("tooltip.enigmaticlegacy.fourthCurse"));
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.fourthCurseAlteration");
+                    TooltipHandler.line(list);
+                }
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.inInventory", ChatFormatting.GOLD);
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.theBless4");
+                if (RedemptionRing.Helper.canUseRelic(player))
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.theBless5");
                 TooltipHandler.line(list);
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.theBless1");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.theBless2");
+                if (RedemptionRing.Helper.canUseRelic(player))
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.theBless3");
+            } else {
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.theBlessLore1");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.theBlessLore2");
+                TooltipHandler.line(list);
+                TooltipHandler.holdShift(list);
             }
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.inInventory", ChatFormatting.GOLD);
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.theBless4");
-            if (RedemptionRing.Helper.canUseRelic(player))
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.theBless5");
             TooltipHandler.line(list);
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.theBless1");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.theBless2");
-            if (RedemptionRing.Helper.canUseRelic(player))
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.theBless3");
-        } else {
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.theBlessLore1");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.theBlessLore2");
-            TooltipHandler.line(list);
-            TooltipHandler.holdShift(list);
+            TooltipHandler.cursedOnly(list, stack);
+        } finally {
+            list.forEach(tooltip);
         }
-        TooltipHandler.line(list);
-        TooltipHandler.cursedOnly(list, stack);
     }
 
     public List<Component> getTooltipInBag(List<Component> list) {

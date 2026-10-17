@@ -46,6 +46,9 @@ import org.jetbrains.annotations.NotNull;
 import top.theillusivec4.curios.api.SlotContext;
 
 import java.util.List;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
 
 public class CosmicScroll extends BaseCurioItem {
     public static ModConfigSpec.IntValue cooldown;
@@ -64,23 +67,29 @@ public class CosmicScroll extends BaseCurioItem {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        TooltipHandler.line(list);
-        if (Minecraft.getInstance().hasShiftDown()) {
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.cosmicScroll1", ChatFormatting.GOLD, "100%");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.cosmicScroll2");
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
             TooltipHandler.line(list);
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.cosmicScroll3");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.cosmicScroll4");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.cosmicScroll5", ChatFormatting.GOLD, cooldown.get() / 20);
-            if (Minecraft.getInstance().player != null) {
-                int reviveCooldown = Minecraft.getInstance().player.getData(EnigmaticAttachments.ENIGMATIC_DATA).getReviveCooldown();
-                if (reviveCooldown > 0) {
-                    TooltipHandler.line(list);
-                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.cosmicScrollCooldown", ChatFormatting.GOLD, reviveCooldown / 20);
+            if (Minecraft.getInstance().hasShiftDown()) {
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.cosmicScroll1", ChatFormatting.GOLD, "100%");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.cosmicScroll2");
+                TooltipHandler.line(list);
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.cosmicScroll3");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.cosmicScroll4");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.cosmicScroll5", ChatFormatting.GOLD, cooldown.get() / 20);
+                if (Minecraft.getInstance().player != null) {
+                    int reviveCooldown = Minecraft.getInstance().player.getData(EnigmaticAttachments.ENIGMATIC_DATA).getReviveCooldown();
+                    if (reviveCooldown > 0) {
+                        TooltipHandler.line(list);
+                        TooltipHandler.line(list, "tooltip.enigmaticlegacy.cosmicScrollCooldown", ChatFormatting.GOLD, reviveCooldown / 20);
+                    }
                 }
-            }
-        } else TooltipHandler.holdShift(list);
+            } else TooltipHandler.holdShift(list);
+        } finally {
+            list.forEach(tooltip);
+        }
     }
 
     @OnlyIn(Dist.CLIENT)

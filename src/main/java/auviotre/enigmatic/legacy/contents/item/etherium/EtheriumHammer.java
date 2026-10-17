@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.item.etherium;
 
+import auviotre.enigmatic.legacy.api.item.IItemHelper;
 import auviotre.enigmatic.legacy.handlers.EnigmaticHandler;
 import auviotre.enigmatic.legacy.handlers.TooltipHandler;
 import auviotre.enigmatic.legacy.registries.*;
@@ -42,25 +43,35 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
+import net.minecraft.world.item.ItemInstance;
 
 public class EtheriumHammer extends DiggerItem {
     public EtheriumHammer() {
-        super(EtheriumProperties.TIER, EnigmaticTags.Blocks.ALL_MINEABLE, new Item.Properties().fireResistant().attributes(EtheriumProperties.createAttributes(9.0F, -3.0F, 0.03F)));
+        super(EtheriumProperties.TIER, EnigmaticTags.Blocks.ALL_MINEABLE, IItemHelper.properties().fireResistant().attributes(EtheriumProperties.createAttributes(9.0F, -3.0F, 0.03F)));
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        if (!stack.getOrDefault(EnigmaticComponents.BOOLEAN, false)) {
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.etheriumHammer", ChatFormatting.GOLD, 3, 1);
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.etheriumDisable");
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
+            if (!stack.getOrDefault(EnigmaticComponents.BOOLEAN, false)) {
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.etheriumHammer", ChatFormatting.GOLD, 3, 1);
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.etheriumDisable");
+            }
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.etheriumDisable2");
+            if (Minecraft.getInstance().level != null) {
+                var holder = EnigmaticHandler.get(Minecraft.getInstance().level, Registries.ENCHANTMENT, EnigmaticEnchantments.ETHERIC_RESONANCE);
+                if (stack.getEnchantmentLevel(holder) > 0)
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.etheriumHammerBuff");
+            }
+            if (stack.isEnchanted()) TooltipHandler.line(list);
+        } finally {
+            list.forEach(tooltip);
         }
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.etheriumDisable2");
-        if (Minecraft.getInstance().level != null) {
-            var holder = EnigmaticHandler.get(Minecraft.getInstance().level, Registries.ENCHANTMENT, EnigmaticEnchantments.ETHERIC_RESONANCE);
-            if (stack.getEnchantmentLevel(holder) > 0)
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.etheriumHammerBuff");
-        }
-        if (stack.isEnchanted()) TooltipHandler.line(list);
     }
 
     public InteractionResult use(Level level, Player player, InteractionHand hand) {
@@ -73,7 +84,8 @@ public class EtheriumHammer extends DiggerItem {
         return super.use(level, player, hand);
     }
 
-    public boolean canPerformAction(ItemStack stack, ItemAbility ability) {
+    @Override
+    public boolean canPerformAction(ItemInstance stack, ItemAbility ability) {
         return ItemAbilities.DEFAULT_PICKAXE_ACTIONS.contains(ability) || ability == ItemAbilities.AXE_DIG
                 || ability == ItemAbilities.SHOVEL_DIG || ability == ItemAbilities.HOE_DIG || ability == ItemAbilities.SWORD_DIG;
     }

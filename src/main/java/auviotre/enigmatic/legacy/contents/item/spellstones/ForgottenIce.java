@@ -59,6 +59,9 @@ import java.util.List;
 import java.util.Optional;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
 public class ForgottenIce extends SpellstoneItem {
     public static final AttributeModifier HARD_FROZEN = new AttributeModifier(EnigmaticLegacy.location("hard_frozen"), -2.0F, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
     static final ReplaceDisk EFFECT = new ReplaceDisk(
@@ -104,23 +107,29 @@ public class ForgottenIce extends SpellstoneItem {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        TooltipHandler.line(list);
-        if (Minecraft.getInstance().hasShiftDown()) {
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstoneSkill");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.forgottenIceSkill");
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
             TooltipHandler.line(list);
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstoneCooldown", ChatFormatting.GOLD, String.format("%.01f", 0.05F * getCooldown(stack)));
-            TooltipHandler.line(list);
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstonePassive");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.forgottenIce1");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.forgottenIce2");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.forgottenIce3");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.forgottenIce4");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.forgottenIce5", ChatFormatting.GOLD, "30%");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.forgottenIce6");
-        } else TooltipHandler.line(list, "tooltip.enigmaticlegacy.holdShift");
-        this.addKeyText(list);
+            if (Minecraft.getInstance().hasShiftDown()) {
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstoneSkill");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.forgottenIceSkill");
+                TooltipHandler.line(list);
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstoneCooldown", ChatFormatting.GOLD, String.format("%.01f", 0.05F * getCooldown(stack)));
+                TooltipHandler.line(list);
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstonePassive");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.forgottenIce1");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.forgottenIce2");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.forgottenIce3");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.forgottenIce4");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.forgottenIce5", ChatFormatting.GOLD, "30%");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.forgottenIce6");
+            } else TooltipHandler.line(list, "tooltip.enigmaticlegacy.holdShift");
+            this.addKeyText(list);
+        } finally {
+            list.forEach(tooltip);
+        }
     }
 
     @OnlyIn(Dist.CLIENT)

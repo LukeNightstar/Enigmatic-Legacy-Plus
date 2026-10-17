@@ -55,6 +55,8 @@ import java.util.List;
 import java.util.Objects;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
 public class CreationHeart extends SpellstoneItem {
     public static ModConfigSpec.IntValue cooldown;
 
@@ -70,25 +72,31 @@ public class CreationHeart extends SpellstoneItem {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        TooltipHandler.line(list);
-        if (Minecraft.getInstance().hasShiftDown()) {
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstoneSkill");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.creationHeartSkill");
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
             TooltipHandler.line(list);
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstoneCooldown", ChatFormatting.GOLD, String.format("%.01f", 0.05F * getCooldown(stack)));
-            TooltipHandler.line(list);
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstonePassive");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.creationHeart1");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.creationHeart2");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.creationHeart3");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.creationHeart4");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.creationHeart5");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.creationHeart6");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.creationHeart7");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.creationHeart8");
-        } else TooltipHandler.line(list, "tooltip.enigmaticlegacy.holdShift");
-        this.addKeyText(list);
+            if (Minecraft.getInstance().hasShiftDown()) {
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstoneSkill");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.creationHeartSkill");
+                TooltipHandler.line(list);
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstoneCooldown", ChatFormatting.GOLD, String.format("%.01f", 0.05F * getCooldown(stack)));
+                TooltipHandler.line(list);
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstonePassive");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.creationHeart1");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.creationHeart2");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.creationHeart3");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.creationHeart4");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.creationHeart5");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.creationHeart6");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.creationHeart7");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.creationHeart8");
+            } else TooltipHandler.line(list, "tooltip.enigmaticlegacy.holdShift");
+            this.addKeyText(list);
+        } finally {
+            list.forEach(tooltip);
+        }
     }
 
     public int getCooldown(ItemStack stack) {

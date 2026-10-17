@@ -43,6 +43,9 @@ import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.fluids.FluidStack;
 
 import java.util.List;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
 
 public class StarlightBucket extends Item {
     public static ModConfigSpec.BooleanValue checkExtraContent;
@@ -63,19 +66,25 @@ public class StarlightBucket extends Item {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.starlightBucket1");
-        Component component = Component.translatable("tooltip.enigmaticlegacy.starlightBucketEmpty");
-        Item content = getContent(stack);
-        if (content instanceof MilkBucketItem) {
-            component = Component.translatable("fluid_type.minecraft.milk");
-        } else if (content instanceof BucketItem bucket) {
-            if (bucket.content != Fluids.EMPTY)
-                component = new FluidStack(bucket.content, Integer.MAX_VALUE).getHoverName();
-        } else if (content instanceof SolidBucketItem bucket) {
-            if (!bucket.getBlock().defaultBlockState().isAir()) component = bucket.getBlock().getName();
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.starlightBucket1");
+            Component component = Component.translatable("tooltip.enigmaticlegacy.starlightBucketEmpty");
+            Item content = getContent(stack);
+            if (content instanceof MilkBucketItem) {
+                component = Component.translatable("fluid_type.minecraft.milk");
+            } else if (content instanceof BucketItem bucket) {
+                if (bucket.content != Fluids.EMPTY)
+                    component = new FluidStack(bucket.content, Integer.MAX_VALUE).getHoverName();
+            } else if (content instanceof SolidBucketItem bucket) {
+                if (!bucket.getBlock().defaultBlockState().isAir()) component = bucket.getBlock().getName();
+            }
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.starlightBucket2", ChatFormatting.LIGHT_PURPLE, component);
+        } finally {
+            list.forEach(tooltip);
         }
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.starlightBucket2", ChatFormatting.LIGHT_PURPLE, component);
     }
 
     public InteractionResult use(Level level, Player player, InteractionHand hand) {

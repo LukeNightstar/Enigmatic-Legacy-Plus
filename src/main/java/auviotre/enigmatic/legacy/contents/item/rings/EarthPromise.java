@@ -45,6 +45,9 @@ import org.jetbrains.annotations.NotNull;
 import top.theillusivec4.curios.api.SlotContext;
 
 import java.util.List;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
 
 public class EarthPromise extends CursedCurioItem {
     public static ModConfigSpec.IntValue cooldown;
@@ -65,20 +68,26 @@ public class EarthPromise extends CursedCurioItem {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        TooltipHandler.line(list);
-        if (Minecraft.getInstance().hasShiftDown()) {
-            if (EnigmaticHandler.isTheCursedOne(Minecraft.getInstance().player)) {
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.curseAlteration", ChatFormatting.GOLD, Component.translatable("tooltip.enigmaticlegacy.firstCurse"));
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.firstCurseAlteration", ChatFormatting.GOLD, firstCurseModifier.get() + "%");
-                TooltipHandler.line(list);
-            }
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.earthPromise1", ChatFormatting.GOLD, healthThreshold.get() + "%");
-            int cool = RedemptionRing.Helper.canUseRelic(Minecraft.getInstance().player) ? cooldown.get() / 25 : cooldown.get() / 20;
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.earthPromise2", ChatFormatting.GOLD, cool);
-        } else TooltipHandler.holdShift(list);
-        TooltipHandler.line(list);
-        TooltipHandler.cursedOnly(list, stack);
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
+            TooltipHandler.line(list);
+            if (Minecraft.getInstance().hasShiftDown()) {
+                if (EnigmaticHandler.isTheCursedOne(Minecraft.getInstance().player)) {
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.curseAlteration", ChatFormatting.GOLD, Component.translatable("tooltip.enigmaticlegacy.firstCurse"));
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.firstCurseAlteration", ChatFormatting.GOLD, firstCurseModifier.get() + "%");
+                    TooltipHandler.line(list);
+                }
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.earthPromise1", ChatFormatting.GOLD, healthThreshold.get() + "%");
+                int cool = RedemptionRing.Helper.canUseRelic(Minecraft.getInstance().player) ? cooldown.get() / 25 : cooldown.get() / 20;
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.earthPromise2", ChatFormatting.GOLD, cool);
+            } else TooltipHandler.holdShift(list);
+            TooltipHandler.line(list);
+            TooltipHandler.cursedOnly(list, stack);
+        } finally {
+            list.forEach(tooltip);
+        }
     }
 
     public Multimap<Holder<Attribute>, AttributeModifier> getAttributeModifiers(SlotContext context, Identifier id, ItemStack stack) {

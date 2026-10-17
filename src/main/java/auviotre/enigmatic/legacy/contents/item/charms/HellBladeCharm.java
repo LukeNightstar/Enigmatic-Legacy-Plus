@@ -52,6 +52,11 @@ import top.theillusivec4.curios.api.SlotContext;
 
 import java.util.List;
 import java.util.Set;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
+import net.minecraft.world.entity.EquipmentSlot;
+import org.jspecify.annotations.Nullable;
 
 public class HellBladeCharm extends BaseCurioItem {
     public static ModConfigSpec.IntValue attackDamage;
@@ -91,18 +96,24 @@ public class HellBladeCharm extends BaseCurioItem {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        TooltipHandler.line(list);
-        ItemStack curio = EnigmaticHandler.getCurio(Minecraft.getInstance().player, EnigmaticItems.HELL_BLADE_CHARM);
-        if (curio == stack && !stack.getOrDefault(EnigmaticComponents.BOOLEAN, false)) {
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.hellBladeCharmUnequip");
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
             TooltipHandler.line(list);
+            ItemStack curio = EnigmaticHandler.getCurio(Minecraft.getInstance().player, EnigmaticItems.HELL_BLADE_CHARM);
+            if (curio == stack && !stack.getOrDefault(EnigmaticComponents.BOOLEAN, false)) {
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.hellBladeCharmUnequip");
+                TooltipHandler.line(list);
+            }
+            if (Minecraft.getInstance().hasShiftDown()) {
+                int threshold = EnigmaticHandler.isTheCursedOne(Minecraft.getInstance().player) ? 80 : 64;
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.hellBladeCharm1", ChatFormatting.GOLD, threshold + "%");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.hellBladeCharm2");
+            } else TooltipHandler.holdShift(list);
+        } finally {
+            list.forEach(tooltip);
         }
-        if (Minecraft.getInstance().hasShiftDown()) {
-            int threshold = EnigmaticHandler.isTheCursedOne(Minecraft.getInstance().player) ? 80 : 64;
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.hellBladeCharm1", ChatFormatting.GOLD, threshold + "%");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.hellBladeCharm2");
-        } else TooltipHandler.holdShift(list);
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -117,7 +128,8 @@ public class HellBladeCharm extends BaseCurioItem {
         return list;
     }
 
-    public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
+    @Override
+    public void inventoryTick(ItemStack stack, ServerLevel level, Entity entity, @Nullable EquipmentSlot slotId) {
         if (entity instanceof LivingEntity owner && stack.getOrDefault(EnigmaticComponents.BOOLEAN, false)) {
             if (stack != EnigmaticHandler.getCurio(owner, this)) stack.set(EnigmaticComponents.BOOLEAN, false);
         }

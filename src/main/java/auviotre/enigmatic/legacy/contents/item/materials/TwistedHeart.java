@@ -9,6 +9,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.EquipmentSlot;
+import org.jspecify.annotations.Nullable;
 
 public class TwistedHeart extends BaseCursedItem implements ITaintable {
     public TwistedHeart() {
@@ -19,7 +22,8 @@ public class TwistedHeart extends BaseCursedItem implements ITaintable {
         return EnigmaticHandler.isTheCursedOne(player);
     }
 
-    public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
+    @Override
+    public void inventoryTick(ItemStack stack, ServerLevel level, Entity entity, @Nullable EquipmentSlot slotId) {
         if (entity instanceof Player player && !level.isClientSide())
             this.handleTaintable(stack, player);
     }

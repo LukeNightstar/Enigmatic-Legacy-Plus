@@ -41,6 +41,9 @@ import top.theillusivec4.curios.api.SlotContext;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
 public class GolemHeart extends SpellstoneItem {
     public static ModConfigSpec.DoubleValue defaultArmorBonus;
     public static ModConfigSpec.DoubleValue superArmorBonus;
@@ -68,26 +71,32 @@ public class GolemHeart extends SpellstoneItem {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        TooltipHandler.line(list);
-        if (Minecraft.getInstance().hasShiftDown()) {
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstoneSkill");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstoneSkillAbsent");
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
             TooltipHandler.line(list);
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstoneCooldown", ChatFormatting.GOLD, String.format("%.01f", 0.05F * getCooldown(stack)));
-            TooltipHandler.line(list);
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstonePassive");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.golemHeart1", ChatFormatting.GOLD, String.format("%.1f", defaultArmorBonus.getAsDouble()));
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.golemHeart2");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.golemHeart3", ChatFormatting.GOLD, String.format("%.1f", superArmorBonus.getAsDouble()), String.format("%.1f", superArmorToughnessBonus.getAsDouble()));
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.golemHeart4", ChatFormatting.GOLD, explosionResistance.get() + "%");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.golemHeart5", ChatFormatting.GOLD, meleeResistance.get() + "%");
-            double resistance = knockbackResistance.getAsDouble() * 100;
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.golemHeart6", ChatFormatting.GOLD, String.format("%.0f%%", resistance));
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.golemHeart7");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.golemHeart8");
-        } else TooltipHandler.line(list, "tooltip.enigmaticlegacy.holdShift");
-        this.addKeyText(list);
+            if (Minecraft.getInstance().hasShiftDown()) {
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstoneSkill");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstoneSkillAbsent");
+                TooltipHandler.line(list);
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstoneCooldown", ChatFormatting.GOLD, String.format("%.01f", 0.05F * getCooldown(stack)));
+                TooltipHandler.line(list);
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstonePassive");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.golemHeart1", ChatFormatting.GOLD, String.format("%.1f", defaultArmorBonus.getAsDouble()));
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.golemHeart2");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.golemHeart3", ChatFormatting.GOLD, String.format("%.1f", superArmorBonus.getAsDouble()), String.format("%.1f", superArmorToughnessBonus.getAsDouble()));
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.golemHeart4", ChatFormatting.GOLD, explosionResistance.get() + "%");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.golemHeart5", ChatFormatting.GOLD, meleeResistance.get() + "%");
+                double resistance = knockbackResistance.getAsDouble() * 100;
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.golemHeart6", ChatFormatting.GOLD, String.format("%.0f%%", resistance));
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.golemHeart7");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.golemHeart8");
+            } else TooltipHandler.line(list, "tooltip.enigmaticlegacy.holdShift");
+            this.addKeyText(list);
+        } finally {
+            list.forEach(tooltip);
+        }
     }
 
     @OnlyIn(Dist.CLIENT)

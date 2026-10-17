@@ -37,6 +37,9 @@ import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
 
 public class TwistedPotion extends BaseDrinkableItem {
     public TwistedPotion() {
@@ -73,11 +76,17 @@ public class TwistedPotion extends BaseDrinkableItem {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.twistedPotion1");
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.twistedPotion2");
-        TooltipHandler.line(list);
-        TooltipHandler.cursedOnly(list, stack);
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.twistedPotion1");
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.twistedPotion2");
+            TooltipHandler.line(list);
+            TooltipHandler.cursedOnly(list, stack);
+        } finally {
+            list.forEach(tooltip);
+        }
     }
 
     public boolean isFoil(ItemStack stack) {

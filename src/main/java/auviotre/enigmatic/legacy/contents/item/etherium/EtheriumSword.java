@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.item.etherium;
 
+import auviotre.enigmatic.legacy.api.item.IItemHelper;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.handlers.EnigmaticHandler;
 import auviotre.enigmatic.legacy.handlers.TooltipHandler;
@@ -34,30 +35,39 @@ import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
 
 public class EtheriumSword extends SwordItem {
     public EtheriumSword() {
-        super(EtheriumProperties.TIER, new Item.Properties().fireResistant().attributes(EtheriumProperties.createAttributes(6.0F, -2.6F, 0.04F)
+        super(EtheriumProperties.TIER, IItemHelper.properties().fireResistant().attributes(EtheriumProperties.createAttributes(6.0F, -2.6F, 0.04F)
                 .withModifierAdded(Attributes.ENTITY_INTERACTION_RANGE, new AttributeModifier(AttributeUtil.BASE_ENTITY_REACH_ID, 1, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
         ));
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        double power = 10;
-        LocalPlayer player = Minecraft.getInstance().player;
-        if (player != null) {
-            power += EtheriumProperties.getShieldThreshold(player) * 50;
-            if (player.isUsingItem() && player.getUseItem().is(EnigmaticItems.ETHERIUM_SWORD))
-                power *= 1.5;
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
+            double power = 10;
+            LocalPlayer player = Minecraft.getInstance().player;
+            if (player != null) {
+                power += EtheriumProperties.getShieldThreshold(player) * 50;
+                if (player.isUsingItem() && player.getUseItem().is(EnigmaticItems.ETHERIUM_SWORD))
+                    power *= 1.5;
+            }
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.etheriumSword", ChatFormatting.GOLD, String.format("%.1f%%", power));
+            if (Minecraft.getInstance().level != null) {
+                var holder = EnigmaticHandler.get(Minecraft.getInstance().level, Registries.ENCHANTMENT, EnigmaticEnchantments.ETHERIC_RESONANCE);
+                if (stack.getEnchantmentLevel(holder) > 0)
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.etheriumSwordBuff");
+            }
+            if (stack.isEnchanted()) TooltipHandler.line(list);
+        } finally {
+            list.forEach(tooltip);
         }
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.etheriumSword", ChatFormatting.GOLD, String.format("%.1f%%", power));
-        if (Minecraft.getInstance().level != null) {
-            var holder = EnigmaticHandler.get(Minecraft.getInstance().level, Registries.ENCHANTMENT, EnigmaticEnchantments.ETHERIC_RESONANCE);
-            if (stack.getEnchantmentLevel(holder) > 0)
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.etheriumSwordBuff");
-        }
-        if (stack.isEnchanted()) TooltipHandler.line(list);
     }
 
     public InteractionResult use(Level level, Player player, InteractionHand hand) {

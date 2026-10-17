@@ -42,6 +42,11 @@ import top.theillusivec4.curios.api.SlotContext;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
+import net.minecraft.world.entity.EquipmentSlot;
+import org.jspecify.annotations.Nullable;
 
 public class DesolationRing extends BaseCurioItem {
     public static ModConfigSpec.IntValue effectiveRange;
@@ -60,22 +65,28 @@ public class DesolationRing extends BaseCurioItem {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(@NotNull ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        TooltipHandler.line(list);
-        if (Minecraft.getInstance().hasShiftDown()) {
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.desolationRing1");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.desolationRing2");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.desolationRing3");
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
             TooltipHandler.line(list);
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.desolationRing4");
-            if (EnigmaticHandler.isAbyssBoosted(Minecraft.getInstance().player)) {
+            if (Minecraft.getInstance().hasShiftDown()) {
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.desolationRing1");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.desolationRing2");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.desolationRing3");
                 TooltipHandler.line(list);
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.abyssBoost");
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.desolationRingBoost");
-            }
-        } else TooltipHandler.holdShift(list);
-        TooltipHandler.line(list);
-        TooltipHandler.worthyOnly(list, stack);
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.desolationRing4");
+                if (EnigmaticHandler.isAbyssBoosted(Minecraft.getInstance().player)) {
+                    TooltipHandler.line(list);
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.abyssBoost");
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.desolationRingBoost");
+                }
+            } else TooltipHandler.holdShift(list);
+            TooltipHandler.line(list);
+            TooltipHandler.worthyOnly(list, stack);
+        } finally {
+            list.forEach(tooltip);
+        }
     }
 
     public void curioTick(@NotNull SlotContext context, ItemStack stack) {
@@ -91,10 +102,11 @@ public class DesolationRing extends BaseCurioItem {
         }
     }
 
-    public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
+    @Override
+    public void inventoryTick(ItemStack stack, ServerLevel level, Entity entity, @Nullable EquipmentSlot slotId) {
         if (entity instanceof LivingEntity livingEntity && !level.isClientSide()) {
             float timer = stack.getOrDefault(EnigmaticComponents.ELDRITCH_TIMER, 0.0F);
-            if (isSelected && EnigmaticHandler.isTheWorthyOne(livingEntity))
+            if ((slotId == EquipmentSlot.MAINHAND) && EnigmaticHandler.isTheWorthyOne(livingEntity))
                 stack.set(EnigmaticComponents.ELDRITCH_TIMER, Math.min(1.0F, timer + 0.3F));
             else stack.set(EnigmaticComponents.ELDRITCH_TIMER, Math.max(0.0F, timer - 0.3F));
         }

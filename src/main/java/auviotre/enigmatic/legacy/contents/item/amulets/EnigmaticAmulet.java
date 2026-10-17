@@ -49,6 +49,9 @@ import top.theillusivec4.curios.api.event.CurioCanEquipEvent;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
 public class EnigmaticAmulet extends BaseCurioItem implements IAmulet {
     public static ModConfigSpec.DoubleValue attackDamage;
     public static ModConfigSpec.IntValue sprintingSpeed;
@@ -104,30 +107,36 @@ public class EnigmaticAmulet extends BaseCurioItem implements IAmulet {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(@NotNull ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        TooltipHandler.line(list);
-        if (Minecraft.getInstance().hasShiftDown()) {
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.enigmaticAmuletShift1");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.enigmaticAmuletShift2");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.enigmaticAmuletShift3");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.enigmaticAmuletShift4");
-        } else {
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.enigmaticAmulet1");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.enigmaticAmulet2");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.enigmaticAmulet3");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.enigmaticAmulet4");
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
             TooltipHandler.line(list);
-            TooltipHandler.holdShift(list);
-        }
+            if (Minecraft.getInstance().hasShiftDown()) {
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.enigmaticAmuletShift1");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.enigmaticAmuletShift2");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.enigmaticAmuletShift3");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.enigmaticAmuletShift4");
+            } else {
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.enigmaticAmulet1");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.enigmaticAmulet2");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.enigmaticAmulet3");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.enigmaticAmulet4");
+                TooltipHandler.line(list);
+                TooltipHandler.holdShift(list);
+            }
 
-        String name = stack.get(EnigmaticComponents.AMULET_NAME);
-        if (name != null) {
+            String name = stack.get(EnigmaticComponents.AMULET_NAME);
+            if (name != null) {
+                TooltipHandler.line(list);
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.enigmaticAmuletInscription", ChatFormatting.RED, name);
+            }
+
             TooltipHandler.line(list);
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.enigmaticAmuletInscription", ChatFormatting.RED, name);
+            this.addAttributes(list, stack);
+        } finally {
+            list.forEach(tooltip);
         }
-
-        TooltipHandler.line(list);
-        this.addAttributes(list, stack);
     }
 
     @OnlyIn(Dist.CLIENT)

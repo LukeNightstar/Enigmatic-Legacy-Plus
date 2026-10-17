@@ -33,6 +33,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
 
 public class DragonBreathBow extends ProjectileWeaponItem {
     public DragonBreathBow() {
@@ -46,17 +48,23 @@ public class DragonBreathBow extends ProjectileWeaponItem {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(@NotNull ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-//      TooltipHandler.line(list, "tooltip.enigmaticlegacy.dragonBreathBowAmmo", ChatFormatting.LIGHT_PURPLE, Items.DRAGON_BREATH.getDescription());
-        PotionContents potioncontents = stack.get(DataComponents.POTION_CONTENTS);
-        if (potioncontents != null) {
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.dragonBreathBowEffects");
-            potioncontents.addPotionTooltip(list::add, 1.0F, context.tickRate());
-        } else {
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.dragonBreathBowNoEffects1");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.dragonBreathBowNoEffects2");
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
+    //      TooltipHandler.line(list, "tooltip.enigmaticlegacy.dragonBreathBowAmmo", ChatFormatting.LIGHT_PURPLE, Items.DRAGON_BREATH.getDescription());
+            PotionContents potioncontents = stack.get(DataComponents.POTION_CONTENTS);
+            if (potioncontents != null) {
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.dragonBreathBowEffects");
+                potioncontents.addPotionTooltip(list::add, 1.0F, context.tickRate());
+            } else {
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.dragonBreathBowNoEffects1");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.dragonBreathBowNoEffects2");
+            }
+            if (stack.isEnchanted()) TooltipHandler.line(list);
+        } finally {
+            list.forEach(tooltip);
         }
-        if (stack.isEnchanted()) TooltipHandler.line(list);
     }
 
     public InteractionResult use(Level level, @NotNull Player player, InteractionHand hand) {

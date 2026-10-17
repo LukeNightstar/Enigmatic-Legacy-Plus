@@ -19,6 +19,9 @@ import net.neoforged.neoforge.common.ModConfigSpec;
 import top.theillusivec4.curios.api.SlotContext;
 
 import java.util.List;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
 
 public class DislocationRing extends MagnetRing {
     public static ModConfigSpec.DoubleValue magneticRange;
@@ -31,11 +34,17 @@ public class DislocationRing extends MagnetRing {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        TooltipHandler.line(list);
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.dislocationRing1");
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.dislocationRing2", ChatFormatting.GOLD, String.format("%.0f", magneticRange.get()));
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.dislocationRing3");
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
+            TooltipHandler.line(list);
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.dislocationRing1");
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.dislocationRing2", ChatFormatting.GOLD, String.format("%.0f", magneticRange.get()));
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.dislocationRing3");
+        } finally {
+            list.forEach(tooltip);
+        }
     }
 
     @Override

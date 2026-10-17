@@ -59,6 +59,12 @@ import java.util.List;
 import java.util.Random;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.EquipmentSlot;
+import org.jspecify.annotations.Nullable;
 public class EnigmaticEye extends BaseCurioItem {
     public static ModConfigSpec.BooleanValue quoteSubtitles;
     public static ModConfigSpec.IntValue deathQuoteChance;
@@ -86,23 +92,29 @@ public class EnigmaticEye extends BaseCurioItem {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull List<Component> list, @NotNull TooltipFlag flag) {
-        if (!this.isDormant(stack)) TooltipHandler.line(list);
-        if (Minecraft.getInstance().hasShiftDown()) {
-            if (this.isDormant(stack)) {
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.enigmaticEye1");
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.enigmaticEye2");
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.enigmaticEye3");
-            } else {
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.enigmaticEyeAwakened1");
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.enigmaticEyeAwakened2");
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.enigmaticEyeAwakened3");
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.enigmaticEyeAwakened4");
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.enigmaticEyeAwakened5");
-//                TooltipHandler.line(list);
-//                TooltipHandler.line(list, "tooltip.enigmaticlegacy.enigmaticEyeAwakened6");
-            }
-        } else TooltipHandler.holdShift(list);
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
+            if (!this.isDormant(stack)) TooltipHandler.line(list);
+            if (Minecraft.getInstance().hasShiftDown()) {
+                if (this.isDormant(stack)) {
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.enigmaticEye1");
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.enigmaticEye2");
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.enigmaticEye3");
+                } else {
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.enigmaticEyeAwakened1");
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.enigmaticEyeAwakened2");
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.enigmaticEyeAwakened3");
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.enigmaticEyeAwakened4");
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.enigmaticEyeAwakened5");
+    //                TooltipHandler.line(list);
+    //                TooltipHandler.line(list, "tooltip.enigmaticlegacy.enigmaticEyeAwakened6");
+                }
+            } else TooltipHandler.holdShift(list);
+        } finally {
+            list.forEach(tooltip);
+        }
     }
 
     private boolean isDormant(ItemStack stack) {
@@ -128,7 +140,8 @@ public class EnigmaticEye extends BaseCurioItem {
         else return Component.translatable("item.enigmaticlegacyplus.enigmatic_eye_active");
     }
 
-    public void inventoryTick(ItemStack stack, @NotNull Level level, @NotNull Entity entity, int slotId, boolean isSelected) {
+    @Override
+    public void inventoryTick(ItemStack stack, ServerLevel level, Entity entity, @Nullable EquipmentSlot slotId) {
         int animTicks = stack.getOrDefault(EnigmaticComponents.ACTIVATION_ANIMATION.get(), -1);
 
         if (animTicks > 0) {
@@ -146,7 +159,7 @@ public class EnigmaticEye extends BaseCurioItem {
             }
         }
 
-        super.inventoryTick(stack, level, entity, slotId, isSelected);
+        super.inventoryTick(stack, level, entity, slotId);
     }
 
     public InteractionResult use(@NotNull Level level, Player player, @NotNull InteractionHand hand) {

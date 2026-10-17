@@ -35,6 +35,9 @@ import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
 
 public class VoidTome extends BaseItem {
     public VoidTome() {
@@ -42,14 +45,20 @@ public class VoidTome extends BaseItem {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        if (!stack.getOrDefault(EnigmaticComponents.BOOLEAN, false)) {
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.voidTomeUse");
-            TooltipHandler.line(list);
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
+            if (!stack.getOrDefault(EnigmaticComponents.BOOLEAN, false)) {
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.voidTomeUse");
+                TooltipHandler.line(list);
+            }
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.inInventory", ChatFormatting.GOLD);
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.voidTome1", ChatFormatting.GOLD, "16%");
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.voidTome2", ChatFormatting.GOLD, "8%");
+        } finally {
+            list.forEach(tooltip);
         }
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.inInventory", ChatFormatting.GOLD);
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.voidTome1", ChatFormatting.GOLD, "16%");
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.voidTome2", ChatFormatting.GOLD, "8%");
     }
 
     public InteractionResult use(Level world, Player player, InteractionHand hand) {

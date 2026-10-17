@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.item.tools;
 
+import auviotre.enigmatic.legacy.api.item.IItemHelper;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.api.SubscribeConfig;
 import auviotre.enigmatic.legacy.contents.entity.PiglinWanderer;
@@ -44,6 +45,9 @@ import top.theillusivec4.curios.api.CuriosApi;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
 
 public class ExecutionAxe extends SwordItem {
     public static final Map<Class<? extends LivingEntity>, ItemLike> SKULL_MAP = Map.of(
@@ -60,7 +64,7 @@ public class ExecutionAxe extends SwordItem {
     public static ModConfigSpec.IntValue beheadingBonus;
 
     public ExecutionAxe() {
-        super(Tiers.NETHERITE, new Item.Properties().fireResistant().rarity(Rarity.UNCOMMON).attributes(createAttributes(Tiers.NETHERITE, 5.0F, -2.4F)));
+        super(Tiers.NETHERITE, IItemHelper.properties().fireResistant().rarity(Rarity.UNCOMMON).attributes(createAttributes(Tiers.NETHERITE, 5.0F, -2.4F)));
     }
 
     @SubscribeConfig
@@ -80,22 +84,28 @@ public class ExecutionAxe extends SwordItem {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        if (Minecraft.getInstance().hasShiftDown()) {
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.executionAxe1");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.executionAxe2", ChatFormatting.GOLD, beheadingBonus.get() + "%");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.executionAxe3");
-        } else {
-            TooltipHandler.holdShift(list);
-            TooltipHandler.line(list);
-        }
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
+            if (Minecraft.getInstance().hasShiftDown()) {
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.executionAxe1");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.executionAxe2", ChatFormatting.GOLD, beheadingBonus.get() + "%");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.executionAxe3");
+            } else {
+                TooltipHandler.holdShift(list);
+                TooltipHandler.line(list);
+            }
 
-        int looting = beheadingBase.get();
-        if (Minecraft.getInstance().player != null && Minecraft.getInstance().level != null) {
-            looting += beheadingBonus.get() * getLootingLevel(Minecraft.getInstance().player, Minecraft.getInstance().level);
+            int looting = beheadingBase.get();
+            if (Minecraft.getInstance().player != null && Minecraft.getInstance().level != null) {
+                looting += beheadingBonus.get() * getLootingLevel(Minecraft.getInstance().player, Minecraft.getInstance().level);
+            }
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.executionAxeBeheadingChance", ChatFormatting.GOLD, looting + "%");
+            TooltipHandler.line(list);
+        } finally {
+            list.forEach(tooltip);
         }
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.executionAxeBeheadingChance", ChatFormatting.GOLD, looting + "%");
-        TooltipHandler.line(list);
     }
 
     public boolean isCorrectToolForDrops(ItemStack stack, BlockState state) {

@@ -40,6 +40,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
 public class TotemOfMalice extends BaseCurioItem {
     public static ModConfigSpec.IntValue specialDamageBoost;
     public static ModConfigSpec.IntValue specialDamageResistance;
@@ -87,22 +90,28 @@ public class TotemOfMalice extends BaseCurioItem {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        if (Minecraft.getInstance().hasShiftDown()) {
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.totemofMalice1");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.totemofMalice2", ChatFormatting.GOLD, specialDamageBoost.get() + "%");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.totemofMalice3", ChatFormatting.GOLD, specialDamageResistance.get() + "%");
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
+            if (Minecraft.getInstance().hasShiftDown()) {
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.totemofMalice1");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.totemofMalice2", ChatFormatting.GOLD, specialDamageBoost.get() + "%");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.totemofMalice3", ChatFormatting.GOLD, specialDamageResistance.get() + "%");
+                TooltipHandler.line(list);
+                if (getDurability(stack) > 0) {
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.totemofMalice4");
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.totemofMalice5");
+                } else {
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.totemofMalice4_alt");
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.totemofMalice5_alt");
+                }
+            } else TooltipHandler.holdShift(list);
             TooltipHandler.line(list);
-            if (getDurability(stack) > 0) {
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.totemofMalice4");
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.totemofMalice5");
-            } else {
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.totemofMalice4_alt");
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.totemofMalice5_alt");
-            }
-        } else TooltipHandler.holdShift(list);
-        TooltipHandler.line(list);
-        TooltipHandler.cursedOnly(list, stack);
+            TooltipHandler.cursedOnly(list, stack);
+        } finally {
+            list.forEach(tooltip);
+        }
     }
 
     public boolean supportsEnchantment(ItemStack stack, Holder<Enchantment> enchantment) {

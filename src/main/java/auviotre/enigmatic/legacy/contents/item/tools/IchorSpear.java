@@ -33,6 +33,9 @@ import net.neoforged.neoforge.common.ModConfigSpec;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
 public class IchorSpear extends BaseItem implements ProjectileItem {
     public static ModConfigSpec.IntValue baseDamage;
     public static ModConfigSpec.IntValue duration;
@@ -52,12 +55,18 @@ public class IchorSpear extends BaseItem implements ProjectileItem {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        if (Minecraft.getInstance().hasShiftDown()) {
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.ichorSpear");
-            if (stack.getCount() == stack.getMaxStackSize())
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.ichorSpearFull");
-        } else TooltipHandler.holdShift(list);
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
+            if (Minecraft.getInstance().hasShiftDown()) {
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.ichorSpear");
+                if (stack.getCount() == stack.getMaxStackSize())
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.ichorSpearFull");
+            } else TooltipHandler.holdShift(list);
+        } finally {
+            list.forEach(tooltip);
+        }
     }
 
     public void releaseUsing(ItemStack stack, Level level, LivingEntity entity, int tickCount) {

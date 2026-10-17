@@ -25,6 +25,9 @@ import org.jetbrains.annotations.NotNull;
 import top.theillusivec4.curios.api.SlotContext;
 
 import java.util.List;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
 
 public class EtherealForgingCharm extends BaseCurioItem {
     public EtherealForgingCharm() {
@@ -36,19 +39,25 @@ public class EtherealForgingCharm extends BaseCurioItem {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.etherealForgingCharm1");
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.etherealForgingCharm2");
-        if (stack.getOrDefault(EnigmaticComponents.BOOLEAN, false)) {
-            TooltipHandler.line(list);
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.etherealForgingCharm3");
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.etherealForgingCharm1");
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.etherealForgingCharm2");
+            if (stack.getOrDefault(EnigmaticComponents.BOOLEAN, false)) {
+                TooltipHandler.line(list);
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.etherealForgingCharm3");
+            }
+            if (Minecraft.getInstance().level != null) {
+                var holder = EnigmaticHandler.get(Minecraft.getInstance().level, Registries.ENCHANTMENT, EnigmaticEnchantments.ETHERIC_RESONANCE);
+                if (stack.getEnchantmentLevel(holder) > 0)
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.etherealForgingCharmBuff");
+            }
+            if (stack.isEnchanted()) TooltipHandler.line(list);
+        } finally {
+            list.forEach(tooltip);
         }
-        if (Minecraft.getInstance().level != null) {
-            var holder = EnigmaticHandler.get(Minecraft.getInstance().level, Registries.ENCHANTMENT, EnigmaticEnchantments.ETHERIC_RESONANCE);
-            if (stack.getEnchantmentLevel(holder) > 0)
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.etherealForgingCharmBuff");
-        }
-        if (stack.isEnchanted()) TooltipHandler.line(list);
     }
 
     public Multimap<Holder<Attribute>, AttributeModifier> getAttributeModifiers(SlotContext context, Identifier id, ItemStack stack) {

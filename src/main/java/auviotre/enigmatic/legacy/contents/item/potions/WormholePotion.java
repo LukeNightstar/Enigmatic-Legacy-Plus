@@ -28,6 +28,11 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
+import net.minecraft.world.entity.EquipmentSlot;
+import org.jspecify.annotations.Nullable;
 
 public class WormholePotion extends BaseDrinkableItem {
     public WormholePotion() {
@@ -56,7 +61,8 @@ public class WormholePotion extends BaseDrinkableItem {
         }
     }
 
-    public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
+    @Override
+    public void inventoryTick(ItemStack stack, ServerLevel level, Entity entity, @Nullable EquipmentSlot slotId) {
         if (stack.is(this)) {
             if (!stack.has(EnigmaticComponents.WORMHOLE_UUID))
                 stack.set(EnigmaticComponents.WORMHOLE_UUID, entity.getUUID().toString());
@@ -73,22 +79,28 @@ public class WormholePotion extends BaseDrinkableItem {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        if (stack.has(EnigmaticComponents.WORMHOLE_UUID)) {
-            String string = stack.get(EnigmaticComponents.WORMHOLE_UUID);
-            if (string == null) {
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
+            if (stack.has(EnigmaticComponents.WORMHOLE_UUID)) {
+                String string = stack.get(EnigmaticComponents.WORMHOLE_UUID);
+                if (string == null) {
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.wormholePotion2");
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.wormholePotion3");
+                    return;
+                }
+                UUID uuid = UUID.fromString(string);
+                Player player = Minecraft.getInstance().player;
+                if (player != null && player.level().getPlayerByUUID(uuid) != null) {
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.wormholePotion1", ChatFormatting.GOLD, player.level().getPlayerByUUID(uuid).getName());
+                }
+            } else {
                 TooltipHandler.line(list, "tooltip.enigmaticlegacy.wormholePotion2");
                 TooltipHandler.line(list, "tooltip.enigmaticlegacy.wormholePotion3");
-                return;
             }
-            UUID uuid = UUID.fromString(string);
-            Player player = Minecraft.getInstance().player;
-            if (player != null && player.level().getPlayerByUUID(uuid) != null) {
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.wormholePotion1", ChatFormatting.GOLD, player.level().getPlayerByUUID(uuid).getName());
-            }
-        } else {
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.wormholePotion2");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.wormholePotion3");
+        } finally {
+            list.forEach(tooltip);
         }
     }
 

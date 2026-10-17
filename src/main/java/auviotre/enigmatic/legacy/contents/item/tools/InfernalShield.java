@@ -32,6 +32,11 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.item.ItemInstance;
 public class InfernalShield extends BaseCursedItem {
     public InfernalShield() {
         super(IItemHelper.singleProperties().fireResistant().rarity(Rarity.RARE).durability(Tiers.NETHERITE.getUses()));
@@ -39,24 +44,31 @@ public class InfernalShield extends BaseCursedItem {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        if (Minecraft.getInstance().hasShiftDown()) {
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.infernalShield1");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.infernalShield2");
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
+            if (Minecraft.getInstance().hasShiftDown()) {
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.infernalShield1");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.infernalShield2");
+                TooltipHandler.line(list);
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.infernalShield3");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.infernalShield4");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.infernalShield5");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.infernalShield6");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.infernalShield7");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.infernalShield8");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.infernalShield9");
+            } else TooltipHandler.holdShift(list);
             TooltipHandler.line(list);
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.infernalShield3");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.infernalShield4");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.infernalShield5");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.infernalShield6");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.infernalShield7");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.infernalShield8");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.infernalShield9");
-        } else TooltipHandler.holdShift(list);
-        TooltipHandler.line(list);
-        TooltipHandler.cursedOnly(list, stack);
+            TooltipHandler.cursedOnly(list, stack);
+        } finally {
+            list.forEach(tooltip);
+        }
     }
 
-    public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
+    @Override
+    public void inventoryTick(ItemStack stack, ServerLevel level, Entity entity, @Nullable EquipmentSlot slotId) {
         if (entity instanceof LivingEntity living && living.isHolding(this)) entity.clearFire();
     }
 
@@ -69,7 +81,8 @@ public class InfernalShield extends BaseCursedItem {
         return InteractionResult.PASS;
     }
 
-    public boolean canPerformAction(ItemStack stack, ItemAbility itemAbility) {
+    @Override
+    public boolean canPerformAction(ItemInstance stack, ItemAbility itemAbility) {
         return ItemAbilities.DEFAULT_SHIELD_ACTIONS.contains(itemAbility);
     }
 

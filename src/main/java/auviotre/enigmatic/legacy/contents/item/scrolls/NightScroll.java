@@ -48,6 +48,9 @@ import top.theillusivec4.curios.api.SlotContext;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
 
 public class NightScroll extends CursedCurioItem {
     public static ModConfigSpec.IntValue effectiveRange;
@@ -80,20 +83,26 @@ public class NightScroll extends CursedCurioItem {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        TooltipHandler.line(list);
-        if (Minecraft.getInstance().hasShiftDown()) {
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.nightScroll1");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.nightScroll2");
-        } else TooltipHandler.holdShift(list);
-        TooltipHandler.line(list);
-        TooltipHandler.line(list, "curios.modifiers.scroll", ChatFormatting.GOLD);
-        float darkModifier = getDarkModifier(Minecraft.getInstance().player);
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.nightScroll3", ChatFormatting.GOLD, String.format("%.01f%%", darkModifier * damageBoost.get()));
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.nightScroll4", ChatFormatting.GOLD, String.format("%.01f%%", darkModifier * damageResistance.get()));
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.nightScroll5", ChatFormatting.GOLD, String.format("%.01f%%", darkModifier * lifeSteal.get()));
-        TooltipHandler.line(list);
-        TooltipHandler.cursedOnly(list, stack);
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
+            TooltipHandler.line(list);
+            if (Minecraft.getInstance().hasShiftDown()) {
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.nightScroll1");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.nightScroll2");
+            } else TooltipHandler.holdShift(list);
+            TooltipHandler.line(list);
+            TooltipHandler.line(list, "curios.modifiers.scroll", ChatFormatting.GOLD);
+            float darkModifier = getDarkModifier(Minecraft.getInstance().player);
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.nightScroll3", ChatFormatting.GOLD, String.format("%.01f%%", darkModifier * damageBoost.get()));
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.nightScroll4", ChatFormatting.GOLD, String.format("%.01f%%", darkModifier * damageResistance.get()));
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.nightScroll5", ChatFormatting.GOLD, String.format("%.01f%%", darkModifier * lifeSteal.get()));
+            TooltipHandler.line(list);
+            TooltipHandler.cursedOnly(list, stack);
+        } finally {
+            list.forEach(tooltip);
+        }
     }
 
     public List<Component> getAttributesTooltip(List<Component> tooltips, TooltipContext context, ItemStack stack) {

@@ -67,6 +67,11 @@ import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
+import net.minecraft.world.entity.EquipmentSlot;
+import org.jspecify.annotations.Nullable;
 
 public class AnnihilatingSword extends SwordItem {
     private static final Tier TIER = new SimpleTier(BlockTags.INCORRECT_FOR_NETHERITE_TOOL, 3268, 10.8F, 8.0F, 64, () -> Ingredient.EMPTY);
@@ -194,42 +199,49 @@ public class AnnihilatingSword extends SwordItem {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        if (Minecraft.getInstance().hasShiftDown()) {
-            LocalPlayer player = Minecraft.getInstance().player;
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.annihilatingSword1");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.annihilatingSword2");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.annihilatingSword3");
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
+            if (Minecraft.getInstance().hasShiftDown()) {
+                LocalPlayer player = Minecraft.getInstance().player;
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.annihilatingSword1");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.annihilatingSword2");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.annihilatingSword3");
+                TooltipHandler.line(list);
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.annihilatingSword4");
+                if (player != null && ItemStack.isSameItemSameComponents(player.getOffhandItem(), stack)) {
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.annihilatingSword5Off");
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.annihilatingSword6Off");
+                } else {
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.annihilatingSword5Main", ChatFormatting.GOLD, String.format("+%d%%", (int) (getDamageBoost(stack) * 100)));
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.annihilatingSword6Main");
+                }
+                int energy = stack.getOrDefault(EnigmaticComponents.ANNI_ENERGY, 0.0F).intValue();
+                if (energy > 0) {
+                    TooltipHandler.line(list);
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.annihilatingSword7", ChatFormatting.GOLD, energy);
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.annihilatingSword8", ChatFormatting.GOLD, String.format("×%.02f", 1 + energy * 0.2));
+                }
+                if (EnigmaticHandler.isAbyssBoosted(Minecraft.getInstance().player)) {
+                    TooltipHandler.line(list);
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.abyssBoost");
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.annihilatingSwordBoost");
+                }
+            } else TooltipHandler.holdShift(list);
             TooltipHandler.line(list);
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.annihilatingSword4");
-            if (player != null && ItemStack.isSameItemSameComponents(player.getOffhandItem(), stack)) {
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.annihilatingSword5Off");
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.annihilatingSword6Off");
-            } else {
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.annihilatingSword5Main", ChatFormatting.GOLD, String.format("+%d%%", (int) (getDamageBoost(stack) * 100)));
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.annihilatingSword6Main");
-            }
-            int energy = stack.getOrDefault(EnigmaticComponents.ANNI_ENERGY, 0.0F).intValue();
-            if (energy > 0) {
-                TooltipHandler.line(list);
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.annihilatingSword7", ChatFormatting.GOLD, energy);
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.annihilatingSword8", ChatFormatting.GOLD, String.format("×%.02f", 1 + energy * 0.2));
-            }
-            if (EnigmaticHandler.isAbyssBoosted(Minecraft.getInstance().player)) {
-                TooltipHandler.line(list);
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.abyssBoost");
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.annihilatingSwordBoost");
-            }
-        } else TooltipHandler.holdShift(list);
-        TooltipHandler.line(list);
-        TooltipHandler.worthyOnly(list, stack);
-        if (stack.isEmpty()) TooltipHandler.line(list);
+            TooltipHandler.worthyOnly(list, stack);
+            if (stack.isEmpty()) TooltipHandler.line(list);
+        } finally {
+            list.forEach(tooltip);
+        }
     }
 
-    public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
+    @Override
+    public void inventoryTick(ItemStack stack, ServerLevel level, Entity entity, @Nullable EquipmentSlot slotId) {
         if (entity instanceof LivingEntity livingEntity && !level.isClientSide()) {
             float timer = stack.getOrDefault(EnigmaticComponents.ELDRITCH_TIMER, 0.0F);
-            if ((isSelected || livingEntity.getOffhandItem().is(this)) && EnigmaticHandler.isTheWorthyOne(livingEntity))
+            if (((slotId == EquipmentSlot.MAINHAND) || livingEntity.getOffhandItem().is(this)) && EnigmaticHandler.isTheWorthyOne(livingEntity))
                 stack.set(EnigmaticComponents.ELDRITCH_TIMER, Math.min(1.0F, timer + 0.4F));
             else stack.set(EnigmaticComponents.ELDRITCH_TIMER, Math.max(0.0F, timer - 0.3F));
         }

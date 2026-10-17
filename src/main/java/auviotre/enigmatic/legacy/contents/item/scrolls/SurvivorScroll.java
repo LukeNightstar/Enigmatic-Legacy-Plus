@@ -41,6 +41,9 @@ import top.theillusivec4.curios.api.SlotContext;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
 public class SurvivorScroll extends BaseCurioItem {
     public static ModConfigSpec.IntValue threshold;
 
@@ -66,14 +69,20 @@ public class SurvivorScroll extends BaseCurioItem {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> list, TooltipFlag flag) {
-        TooltipHandler.line(list);
-        if (Minecraft.getInstance().hasShiftDown()) {
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.suvivalScroll1");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.suvivalScroll2");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.suvivalScroll3");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.suvivalScroll4");
-        } else TooltipHandler.holdShift(list);
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
+            TooltipHandler.line(list);
+            if (Minecraft.getInstance().hasShiftDown()) {
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.suvivalScroll1");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.suvivalScroll2");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.suvivalScroll3");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.suvivalScroll4");
+            } else TooltipHandler.holdShift(list);
+        } finally {
+            list.forEach(tooltip);
+        }
     }
 
     public void curioTick(SlotContext context, ItemStack stack) {

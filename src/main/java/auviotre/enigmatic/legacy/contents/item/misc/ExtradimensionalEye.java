@@ -29,32 +29,41 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
 public class ExtradimensionalEye extends BaseItem {
     public ExtradimensionalEye() {
         super(IItemHelper.singleProperties().rarity(Rarity.UNCOMMON));
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        if (Minecraft.getInstance().hasShiftDown()) {
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.extradimensionalEye1");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.extradimensionalEye2");
-            TooltipHandler.line(list);
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.extradimensionalEye3");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.extradimensionalEye4");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.extradimensionalEye5");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.extradimensionalEye6");
-        } else TooltipHandler.holdShift(list);
-        if (stack.has(EnigmaticComponents.DIMENSIONAL_POS)) {
-            GlobalPos globalPos = stack.get(EnigmaticComponents.DIMENSIONAL_POS);
-            if (globalPos == null) return;
-            BlockPos pos = globalPos.pos();
-            TooltipHandler.line(list);
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.extradimensionalEyeLocation");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.extradimensionalEyePos", ChatFormatting.GOLD, pos.getX(), pos.getY(), pos.getZ());
-            ResourceKey<Level> dimension = globalPos.dimension();
-            MutableComponent component = Component.translatable(dimension.location().toLanguageKey("dimension"));
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.extradimensionalEyeDimension", ChatFormatting.GOLD, component);
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
+            if (Minecraft.getInstance().hasShiftDown()) {
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.extradimensionalEye1");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.extradimensionalEye2");
+                TooltipHandler.line(list);
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.extradimensionalEye3");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.extradimensionalEye4");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.extradimensionalEye5");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.extradimensionalEye6");
+            } else TooltipHandler.holdShift(list);
+            if (stack.has(EnigmaticComponents.DIMENSIONAL_POS)) {
+                GlobalPos globalPos = stack.get(EnigmaticComponents.DIMENSIONAL_POS);
+                if (globalPos == null) return;
+                BlockPos pos = globalPos.pos();
+                TooltipHandler.line(list);
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.extradimensionalEyeLocation");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.extradimensionalEyePos", ChatFormatting.GOLD, pos.getX(), pos.getY(), pos.getZ());
+                ResourceKey<Level> dimension = globalPos.dimension();
+                MutableComponent component = Component.translatable(dimension.location().toLanguageKey("dimension"));
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.extradimensionalEyeDimension", ChatFormatting.GOLD, component);
+            }
+        } finally {
+            list.forEach(tooltip);
         }
     }
 

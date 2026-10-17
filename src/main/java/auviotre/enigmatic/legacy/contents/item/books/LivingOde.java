@@ -36,6 +36,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
 
 public class LivingOde extends BaseItem {
     public static ModConfigSpec.DoubleValue effectiveRange;
@@ -74,22 +76,28 @@ public class LivingOde extends BaseItem {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.inInventory", ChatFormatting.GOLD);
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.animalGuidebook1");
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.animalGuidebook2");
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.hunterGuidebook1", ChatFormatting.GOLD, String.format("%.0f", effectiveRange.get()));
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.hunterGuidebook2");
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.odeToLiving1", ChatFormatting.GOLD, redirectResistance.get() + "%");
-        if (EnigmaticHandler.isTheCursedOne(Minecraft.getInstance().player)) {
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.inInventory", ChatFormatting.GOLD);
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.animalGuidebook1");
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.animalGuidebook2");
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.hunterGuidebook1", ChatFormatting.GOLD, String.format("%.0f", effectiveRange.get()));
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.hunterGuidebook2");
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.odeToLiving1", ChatFormatting.GOLD, redirectResistance.get() + "%");
+            if (EnigmaticHandler.isTheCursedOne(Minecraft.getInstance().player)) {
+                TooltipHandler.line(list);
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.curseAlteration", ChatFormatting.GOLD, Component.translatable("tooltip.enigmaticlegacy.secondCurse"));
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.secondCurseAlteration2");
+            }
             TooltipHandler.line(list);
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.curseAlteration", ChatFormatting.GOLD, Component.translatable("tooltip.enigmaticlegacy.secondCurse"));
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.secondCurseAlteration2");
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.odeToLiving2");
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.odeToLiving3");
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.odeToLiving4");
+        } finally {
+            list.forEach(tooltip);
         }
-        TooltipHandler.line(list);
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.odeToLiving2");
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.odeToLiving3");
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.odeToLiving4");
     }
 
     public InteractionResult interactLivingEntity(ItemStack stack, Player player, LivingEntity target, InteractionHand hand) {

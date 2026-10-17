@@ -35,6 +35,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
 
 public class Infinimeal extends BaseItem {
     public static final DispenseItemBehavior DISPENSE_ITEM_BEHAVIOR = new OptionalDispenseItemBehavior() {
@@ -222,11 +224,17 @@ public class Infinimeal extends BaseItem {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.infinimeal1");
-        TooltipHandler.line(list);
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.infinimeal2");
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.infinimeal3");
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.infinimeal1");
+            TooltipHandler.line(list);
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.infinimeal2");
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.infinimeal3");
+        } finally {
+            list.forEach(tooltip);
+        }
     }
 
     public InteractionResult useOn(@NotNull UseOnContext context) {

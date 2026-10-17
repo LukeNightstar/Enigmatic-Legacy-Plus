@@ -58,6 +58,9 @@ import top.theillusivec4.curios.api.SlotContext;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
 
 public class ChaosElytra extends BaseElytraItem {
     public static ModConfigSpec.IntValue specialDamageResistance;
@@ -81,26 +84,32 @@ public class ChaosElytra extends BaseElytraItem {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        TooltipHandler.line(list);
-        if (Minecraft.getInstance().hasShiftDown()) {
-            boolean boosted = EnigmaticHandler.isAbyssBoosted(Minecraft.getInstance().player);
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.majesticElytra1");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.majesticElytra2");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.majesticElytra3");
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
             TooltipHandler.line(list);
-            int resistance = (int) Math.min(100, (boosted ? 1.25 : 1.0) * specialDamageResistance.get());
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.chaosElytra1", ChatFormatting.GOLD, resistance + "%");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.chaosElytra2");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.chaosElytra3");
-            if (boosted) {
+            if (Minecraft.getInstance().hasShiftDown()) {
+                boolean boosted = EnigmaticHandler.isAbyssBoosted(Minecraft.getInstance().player);
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.majesticElytra1");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.majesticElytra2");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.majesticElytra3");
                 TooltipHandler.line(list);
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.abyssBoost");
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.chaosElytraBoost");
-            }
-        } else TooltipHandler.holdShift(list);
-        TooltipHandler.line(list);
-        TooltipHandler.worthyOnly(list, stack);
+                int resistance = (int) Math.min(100, (boosted ? 1.25 : 1.0) * specialDamageResistance.get());
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.chaosElytra1", ChatFormatting.GOLD, resistance + "%");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.chaosElytra2");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.chaosElytra3");
+                if (boosted) {
+                    TooltipHandler.line(list);
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.abyssBoost");
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.chaosElytraBoost");
+                }
+            } else TooltipHandler.holdShift(list);
+            TooltipHandler.line(list);
+            TooltipHandler.worthyOnly(list, stack);
+        } finally {
+            list.forEach(tooltip);
+        }
     }
 
     public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
@@ -150,11 +159,12 @@ public class ChaosElytra extends BaseElytraItem {
         if (ticks > 0 && livingEntity.isFallFlying()) stack.elytraFlightTick(livingEntity, ticks);
     }
 
-    public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
+    @Override
+    public void inventoryTick(ItemStack stack, ServerLevel level, Entity entity, @Nullable EquipmentSlot slotId) {
         if (entity instanceof LivingEntity livingEntity && !level.isClientSide()) {
             float timer = stack.getOrDefault(EnigmaticComponents.ELDRITCH_TIMER, 0.0F);
             ItemStack itemBySlot = livingEntity.getItemBySlot(getEquipmentSlot());
-            if ((isSelected || itemBySlot.equals(stack)) && EnigmaticHandler.isTheWorthyOne(livingEntity))
+            if (((slotId == EquipmentSlot.MAINHAND) || itemBySlot.equals(stack)) && EnigmaticHandler.isTheWorthyOne(livingEntity))
                 stack.set(EnigmaticComponents.ELDRITCH_TIMER, Math.min(1.0F, timer + 0.3F));
             else stack.set(EnigmaticComponents.ELDRITCH_TIMER, Math.max(0.0F, timer - 0.3F));
 

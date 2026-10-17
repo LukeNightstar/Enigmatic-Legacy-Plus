@@ -53,6 +53,12 @@ import top.theillusivec4.curios.api.SlotContext;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.EquipmentSlot;
+import org.jspecify.annotations.Nullable;
 
 public class EldritchAmulet extends BaseCurioItem {
     public static ModConfigSpec.IntValue attackDamage;
@@ -123,34 +129,40 @@ public class EldritchAmulet extends BaseCurioItem {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(@NotNull ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        TooltipHandler.line(list);
-        if (Minecraft.getInstance().hasShiftDown()) {
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.eldritchAmulet1");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.eldritchAmulet2");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.eldritchAmulet3");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.eldritchAmulet4");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.eldritchAmulet5");
-            if (EnigmaticHandler.isAbyssBoosted(Minecraft.getInstance().player)) {
-                TooltipHandler.line(list);
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.abyssBoost");
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.eldritchAmuletBoost", ChatFormatting.GOLD, "80%");
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
+            TooltipHandler.line(list);
+            if (Minecraft.getInstance().hasShiftDown()) {
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.eldritchAmulet1");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.eldritchAmulet2");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.eldritchAmulet3");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.eldritchAmulet4");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.eldritchAmulet5");
+                if (EnigmaticHandler.isAbyssBoosted(Minecraft.getInstance().player)) {
+                    TooltipHandler.line(list);
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.abyssBoost");
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.eldritchAmuletBoost", ChatFormatting.GOLD, "80%");
+                }
+            } else {
+                TooltipHandler.holdShift(list);
+                String name = stack.get(EnigmaticComponents.AMULET_NAME);
+                if (name != null) {
+                    TooltipHandler.line(list);
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.enigmaticAmuletInscription", ChatFormatting.RED, name);
+                }
             }
-        } else {
-            TooltipHandler.holdShift(list);
-            String name = stack.get(EnigmaticComponents.AMULET_NAME);
-            if (name != null) {
-                TooltipHandler.line(list);
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.enigmaticAmuletInscription", ChatFormatting.RED, name);
-            }
+            TooltipHandler.line(list);
+            TooltipHandler.worthyOnly(list, stack);
+            TooltipHandler.line(list);
+            TooltipHandler.line(list, "curios.modifiers.amulet", ChatFormatting.GOLD);
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.enchantersPearl1", ChatFormatting.GOLD, 1);
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.eldritchAmuletStat1", ChatFormatting.GOLD, attackDamage.getAsInt() + "%");
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.eldritchAmuletStat2", ChatFormatting.GOLD, lifeSteal.getAsInt() + "%");
+        } finally {
+            list.forEach(tooltip);
         }
-        TooltipHandler.line(list);
-        TooltipHandler.worthyOnly(list, stack);
-        TooltipHandler.line(list);
-        TooltipHandler.line(list, "curios.modifiers.amulet", ChatFormatting.GOLD);
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.enchantersPearl1", ChatFormatting.GOLD, 1);
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.eldritchAmuletStat1", ChatFormatting.GOLD, attackDamage.getAsInt() + "%");
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.eldritchAmuletStat2", ChatFormatting.GOLD, lifeSteal.getAsInt() + "%");
     }
 
     public List<Component> getAttributesTooltip(List<Component> tooltips, TooltipContext context, ItemStack stack) {
@@ -177,10 +189,11 @@ public class EldritchAmulet extends BaseCurioItem {
         entity.getAttributes().addTransientAttributeModifiers(getModifiers());
     }
 
-    public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
+    @Override
+    public void inventoryTick(ItemStack stack, ServerLevel level, Entity entity, @Nullable EquipmentSlot slotId) {
         if (entity instanceof LivingEntity livingEntity && !level.isClientSide()) {
             float timer = stack.getOrDefault(EnigmaticComponents.ELDRITCH_TIMER, 0.0F);
-            if (isSelected && EnigmaticHandler.isTheWorthyOne(livingEntity))
+            if ((slotId == EquipmentSlot.MAINHAND) && EnigmaticHandler.isTheWorthyOne(livingEntity))
                 stack.set(EnigmaticComponents.ELDRITCH_TIMER, Math.min(1.0F, timer + 0.3F));
             else stack.set(EnigmaticComponents.ELDRITCH_TIMER, Math.max(0.0F, timer - 0.3F));
         }

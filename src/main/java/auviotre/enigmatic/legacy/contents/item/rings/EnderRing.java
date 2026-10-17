@@ -14,6 +14,9 @@ import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
 import java.util.List;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
 
 public class EnderRing extends BaseCurioItem {
     public static ModConfigSpec.IntValue buttonOffsetX;
@@ -34,14 +37,20 @@ public class EnderRing extends BaseCurioItem {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        TooltipHandler.line(list);
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.enderRing1");
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.enderRing2");
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
         try {
             TooltipHandler.line(list);
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.currentKeybind", ChatFormatting.LIGHT_PURPLE, KeyMapping.createNameSupplier("key.enderRing").get().getString().toUpperCase());
-        } catch (NullPointerException ignored) {
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.enderRing1");
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.enderRing2");
+            try {
+                TooltipHandler.line(list);
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.currentKeybind", ChatFormatting.LIGHT_PURPLE, KeyMapping.createNameSupplier("key.enderRing").get().getString().toUpperCase());
+            } catch (NullPointerException ignored) {
+            }
+        } finally {
+            list.forEach(tooltip);
         }
     }
 }

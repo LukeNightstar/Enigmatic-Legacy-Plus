@@ -17,6 +17,9 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
 import java.util.List;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
 
 public class RedemptionPotion extends BaseDrinkableItem {
     public RedemptionPotion() {
@@ -24,8 +27,14 @@ public class RedemptionPotion extends BaseDrinkableItem {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.redemptionPotion");
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.redemptionPotion");
+        } finally {
+            list.forEach(tooltip);
+        }
     }
 
     public void onConsumed(Level level, Player player, ItemStack stack) {

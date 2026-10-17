@@ -42,6 +42,12 @@ import java.util.Set;
 import java.util.UUID;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.EquipmentSlot;
+import org.jspecify.annotations.Nullable;
 public class AbyssalHeart extends BaseCursedItem implements ITaintable, ISharableItem {
     public static ModConfigSpec.IntValue abyssalHeartCount;
     public static ModConfigSpec.DoubleValue abyssThreshold;
@@ -83,18 +89,25 @@ public class AbyssalHeart extends BaseCursedItem implements ITaintable, ISharabl
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        if (!Minecraft.getInstance().hasShiftDown()) {
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.abyssalHeart1");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.abyssalHeart2");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.abyssalHeart3");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.abyssalHeart4");
-            TooltipHandler.line(list);
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
+            if (!Minecraft.getInstance().hasShiftDown()) {
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.abyssalHeart1");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.abyssalHeart2");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.abyssalHeart3");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.abyssalHeart4");
+                TooltipHandler.line(list);
+            }
+            TooltipHandler.worthyOnly(list, stack);
+        } finally {
+            list.forEach(tooltip);
         }
-        TooltipHandler.worthyOnly(list, stack);
     }
 
-    public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
+    @Override
+    public void inventoryTick(ItemStack stack, ServerLevel level, Entity entity, @Nullable EquipmentSlot slotId) {
         if (entity instanceof Player player && !level.isClientSide()) {
             this.handleTaintable(stack, player);
             float timer = stack.getOrDefault(EnigmaticComponents.ELDRITCH_TIMER, 0.0F);

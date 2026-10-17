@@ -28,6 +28,9 @@ import javax.annotation.Nonnull;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
 public class TheAcknowledgment extends Item implements IBagContent {
     private static final Identifier BOOK_ID = EnigmaticLegacy.location("the_acknowledgment");
 
@@ -48,17 +51,23 @@ public class TheAcknowledgment extends Item implements IBagContent {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        if (Minecraft.getInstance().hasShiftDown()) {
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.curseAlteration", ChatFormatting.GOLD, Component.translatable("tooltip.enigmaticlegacy.fourthCurse"));
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.fourthCurseAlteration2", ChatFormatting.GOLD, "20%");
-        } else {
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.theAcknowledgment1");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.theAcknowledgment2");
-            TooltipHandler.line(list);
-            TooltipHandler.holdShift(list);
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
+            if (Minecraft.getInstance().hasShiftDown()) {
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.curseAlteration", ChatFormatting.GOLD, Component.translatable("tooltip.enigmaticlegacy.fourthCurse"));
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.fourthCurseAlteration2", ChatFormatting.GOLD, "20%");
+            } else {
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.theAcknowledgment1");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.theAcknowledgment2");
+                TooltipHandler.line(list);
+                TooltipHandler.holdShift(list);
+            }
+            if (stack.isEnchanted()) TooltipHandler.line(list);
+        } finally {
+            list.forEach(tooltip);
         }
-        if (stack.isEnchanted()) TooltipHandler.line(list);
     }
 
     public List<Component> getTooltipInBag(List<Component> list) {

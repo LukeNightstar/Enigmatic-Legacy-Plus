@@ -36,6 +36,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
 public class ForbiddenFruit extends BaseItem {
     public static final FoodProperties FOOD_PROPERTIES = new FoodProperties.Builder()
             .effect(() -> new MobEffectInstance(MobEffects.WITHER, 400, 3), 1.0F)
@@ -53,15 +56,21 @@ public class ForbiddenFruit extends BaseItem {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        if (Minecraft.getInstance().hasShiftDown()) {
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.forbiddenFruit1");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.forbiddenFruit2");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.forbiddenFruit3", ChatFormatting.GOLD, "80%");
-        } else {
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.forbiddenFruitLore");
-            TooltipHandler.line(list);
-            TooltipHandler.holdShift(list);
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
+            if (Minecraft.getInstance().hasShiftDown()) {
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.forbiddenFruit1");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.forbiddenFruit2");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.forbiddenFruit3", ChatFormatting.GOLD, "80%");
+            } else {
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.forbiddenFruitLore");
+                TooltipHandler.line(list);
+                TooltipHandler.holdShift(list);
+            }
+        } finally {
+            list.forEach(tooltip);
         }
     }
 

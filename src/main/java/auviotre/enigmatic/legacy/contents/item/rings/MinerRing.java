@@ -42,6 +42,9 @@ import top.theillusivec4.curios.api.SlotContext;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
 public class MinerRing extends BaseCurioItem {
     private static final int MAX_POINT = 256;
     private final RecipeManager.CachedCheck<SingleRecipeInput, BlastingRecipe> quickCheck = RecipeManager.createCheck(RecipeType.BLASTING);
@@ -64,16 +67,22 @@ public class MinerRing extends BaseCurioItem {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        TooltipHandler.line(list);
-        if (Minecraft.getInstance().hasShiftDown()) {
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.minerRing1");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.minerRing2");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.minerRing3");
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
             TooltipHandler.line(list);
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.minerRing4");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.minerRing5");
-        } else TooltipHandler.holdShift(list);
+            if (Minecraft.getInstance().hasShiftDown()) {
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.minerRing1");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.minerRing2");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.minerRing3");
+                TooltipHandler.line(list);
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.minerRing4");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.minerRing5");
+            } else TooltipHandler.holdShift(list);
+        } finally {
+            list.forEach(tooltip);
+        }
     }
 
     public Multimap<Holder<Attribute>, AttributeModifier> getAttributeModifiers(SlotContext context, Identifier id, ItemStack stack) {

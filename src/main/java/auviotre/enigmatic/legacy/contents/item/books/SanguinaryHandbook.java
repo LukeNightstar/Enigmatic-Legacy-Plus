@@ -38,6 +38,9 @@ import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
 
 public class SanguinaryHandbook extends BaseCursedItem {
     public static ModConfigSpec.DoubleValue damageMultiplier;
@@ -62,14 +65,20 @@ public class SanguinaryHandbook extends BaseCursedItem {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.inInventory", ChatFormatting.GOLD);
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.sanguinaryHandbookBuff", ChatFormatting.GOLD, String.format("+%.0f%%", damageMultiplier.get() * 100));
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.sanguinaryHandbook1");
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.sanguinaryHandbook2");
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.sanguinaryHandbook3");
-        TooltipHandler.line(list);
-        TooltipHandler.cursedOnly(list, stack);
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.inInventory", ChatFormatting.GOLD);
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.sanguinaryHandbookBuff", ChatFormatting.GOLD, String.format("+%.0f%%", damageMultiplier.get() * 100));
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.sanguinaryHandbook1");
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.sanguinaryHandbook2");
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.sanguinaryHandbook3");
+            TooltipHandler.line(list);
+            TooltipHandler.cursedOnly(list, stack);
+        } finally {
+            list.forEach(tooltip);
+        }
     }
 
     @Mod(value = EnigmaticLegacy.MODID)

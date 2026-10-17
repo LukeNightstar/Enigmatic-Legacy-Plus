@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.block;
 
+import auviotre.enigmatic.legacy.registries.RegistrationContext;
 import auviotre.enigmatic.legacy.contents.block.entity.DimensionalAnchorEntity;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
@@ -50,7 +51,7 @@ public class DimensionalAnchor extends BaseEntityBlock {
     private static final VoxelShape SHAPE = Shapes.join(Shapes.block(), Block.box(2.0, 14.0, 2.0, 14.0, 16.0, 14.0), BooleanOp.ONLY_FIRST);
 
     public DimensionalAnchor() {
-        this(Properties.of().mapColor(MapColor.COLOR_BLACK).requiresCorrectToolForDrops().strength(50F, 1200F).lightLevel(state -> getScaledChargeLevel(state, 15)));
+        this(Properties.of().setId(RegistrationContext.blockKey()).mapColor(MapColor.COLOR_BLACK).requiresCorrectToolForDrops().strength(50F, 1200F).lightLevel(state -> getScaledChargeLevel(state, 15)));
     }
 
     public DimensionalAnchor(Properties properties) {

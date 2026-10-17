@@ -38,6 +38,9 @@ import org.jetbrains.annotations.Nullable;
 import top.theillusivec4.curios.api.SlotContext;
 
 import java.util.List;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
 
 public class RedemptionRing extends BaseCurioItem {
     public static ModConfigSpec.IntValue damageMultiplier;
@@ -71,54 +74,60 @@ public class RedemptionRing extends BaseCurioItem {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        TooltipHandler.line(list);
-        if (Minecraft.getInstance().hasShiftDown()) {
-            int level = Helper.getLevel(stack);
-            RandomSource random = RandomSource.create();
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.redemptionRing1");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.redemptionRing2");
-            if (level > 0)
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.redemptionRingBless1", ChatFormatting.GOLD, Helper.getDamageResistance(stack) + "%");
-            else
-                TooltipHandler.obscure(list, "tooltip.enigmaticlegacy.redemptionRingBless1", random, ChatFormatting.GOLD, "100%");
-            if (level > 1) {
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.redemptionRingBless2", ChatFormatting.GOLD, Helper.getDamageBoost(stack) + "%");
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.redemptionRingBless3");
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
+            TooltipHandler.line(list);
+            if (Minecraft.getInstance().hasShiftDown()) {
+                int level = Helper.getLevel(stack);
+                RandomSource random = RandomSource.create();
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.redemptionRing1");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.redemptionRing2");
+                if (level > 0)
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.redemptionRingBless1", ChatFormatting.GOLD, Helper.getDamageResistance(stack) + "%");
+                else
+                    TooltipHandler.obscure(list, "tooltip.enigmaticlegacy.redemptionRingBless1", random, ChatFormatting.GOLD, "100%");
+                if (level > 1) {
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.redemptionRingBless2", ChatFormatting.GOLD, Helper.getDamageBoost(stack) + "%");
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.redemptionRingBless3");
+                } else {
+                    TooltipHandler.obscure(list, "tooltip.enigmaticlegacy.redemptionRingBless2", random, ChatFormatting.GOLD, "0%");
+                    TooltipHandler.obscure(list, "tooltip.enigmaticlegacy.redemptionRingBless3", random);
+                }
+                if (level > 2) {
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.redemptionRingBless4", ChatFormatting.GOLD, Helper.getBonus(stack, lootingBonus.get()));
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.redemptionRingBless5", ChatFormatting.GOLD, Helper.getBonus(stack, fortuneBonus.get()));
+                } else {
+                    TooltipHandler.obscure(list, "tooltip.enigmaticlegacy.redemptionRingBless4", random, ChatFormatting.GOLD, 0);
+                    TooltipHandler.obscure(list, "tooltip.enigmaticlegacy.redemptionRingBless5", random, ChatFormatting.GOLD, 0);
+                }
+                if (enableSpecialDrops.get()) {
+                    if (level > 3) TooltipHandler.line(list, "tooltip.enigmaticlegacy.redemptionRingBless6");
+                    else TooltipHandler.obscure(list, "tooltip.enigmaticlegacy.redemptionRingBless6", random);
+                }
+                if (uniqueLegacy.get()) {
+                    if (level > 4) TooltipHandler.line(list, "tooltip.enigmaticlegacy.redemptionRingBless7");
+                    else TooltipHandler.obscure(list, "tooltip.enigmaticlegacy.redemptionRingBless7", random);
+                }
+                if (flag.isAdvanced()) {
+                    TooltipHandler.line(list);
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.blessLevel", ChatFormatting.DARK_GRAY, level);
+                }
             } else {
-                TooltipHandler.obscure(list, "tooltip.enigmaticlegacy.redemptionRingBless2", random, ChatFormatting.GOLD, "0%");
-                TooltipHandler.obscure(list, "tooltip.enigmaticlegacy.redemptionRingBless3", random);
-            }
-            if (level > 2) {
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.redemptionRingBless4", ChatFormatting.GOLD, Helper.getBonus(stack, lootingBonus.get()));
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.redemptionRingBless5", ChatFormatting.GOLD, Helper.getBonus(stack, fortuneBonus.get()));
-            } else {
-                TooltipHandler.obscure(list, "tooltip.enigmaticlegacy.redemptionRingBless4", random, ChatFormatting.GOLD, 0);
-                TooltipHandler.obscure(list, "tooltip.enigmaticlegacy.redemptionRingBless5", random, ChatFormatting.GOLD, 0);
-            }
-            if (enableSpecialDrops.get()) {
-                if (level > 3) TooltipHandler.line(list, "tooltip.enigmaticlegacy.redemptionRingBless6");
-                else TooltipHandler.obscure(list, "tooltip.enigmaticlegacy.redemptionRingBless6", random);
-            }
-            if (uniqueLegacy.get()) {
-                if (level > 4) TooltipHandler.line(list, "tooltip.enigmaticlegacy.redemptionRingBless7");
-                else TooltipHandler.obscure(list, "tooltip.enigmaticlegacy.redemptionRingBless7", random);
-            }
-            if (flag.isAdvanced()) {
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.redemptionRingLore1");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.redemptionRingLore2");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.redemptionRingLore3");
                 TooltipHandler.line(list);
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.blessLevel", ChatFormatting.DARK_GRAY, level);
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.eternallyBound1");
+                if (EnigmaticHandler.canUnequipBoundRelics(Minecraft.getInstance().player)) {
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.eternallyBound2_creative");
+                } else TooltipHandler.line(list, "tooltip.enigmaticlegacy.eternallyBound2");
+                TooltipHandler.line(list);
+                TooltipHandler.holdShift(list);
             }
-        } else {
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.redemptionRingLore1");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.redemptionRingLore2");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.redemptionRingLore3");
-            TooltipHandler.line(list);
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.eternallyBound1");
-            if (EnigmaticHandler.canUnequipBoundRelics(Minecraft.getInstance().player)) {
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.eternallyBound2_creative");
-            } else TooltipHandler.line(list, "tooltip.enigmaticlegacy.eternallyBound2");
-            TooltipHandler.line(list);
-            TooltipHandler.holdShift(list);
+        } finally {
+            list.forEach(tooltip);
         }
     }
 

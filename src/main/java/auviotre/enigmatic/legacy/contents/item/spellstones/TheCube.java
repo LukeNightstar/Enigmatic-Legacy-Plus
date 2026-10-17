@@ -67,6 +67,10 @@ import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TheCube extends SpellstoneItem {
     private static final List<ResourceKey<Level>> WORLDS = ImmutableList.of(Level.OVERWORLD, Level.NETHER, Level.END);
@@ -96,30 +100,36 @@ public class TheCube extends SpellstoneItem {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        TooltipHandler.line(list);
-        if (Minecraft.getInstance().hasShiftDown()) {
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstoneSkill");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.theCubeSkill");
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
             TooltipHandler.line(list);
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstoneCooldown", ChatFormatting.GOLD, String.format("%.2f", 0.05F * getCooldown(stack)));
-            TooltipHandler.line(list);
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstonePassive");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.theCube1");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.theCube2");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.theCube3");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.theCube4");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.theCube5", ChatFormatting.GOLD, String.format("%d", (int) getDamageLimit(Minecraft.getInstance().player)));
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.theCube6");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.theCube7");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.theCube8");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.theCube9");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.theCube10");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.theCube11");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.theCube12");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.theCube13");
-        } else TooltipHandler.line(list, "tooltip.enigmaticlegacy.holdShift");
-        this.addKeyText(list);
+            if (Minecraft.getInstance().hasShiftDown()) {
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstoneSkill");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.theCubeSkill");
+                TooltipHandler.line(list);
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstoneCooldown", ChatFormatting.GOLD, String.format("%.2f", 0.05F * getCooldown(stack)));
+                TooltipHandler.line(list);
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstonePassive");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.theCube1");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.theCube2");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.theCube3");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.theCube4");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.theCube5", ChatFormatting.GOLD, String.format("%d", (int) getDamageLimit(Minecraft.getInstance().player)));
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.theCube6");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.theCube7");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.theCube8");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.theCube9");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.theCube10");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.theCube11");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.theCube12");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.theCube13");
+            } else TooltipHandler.line(list, "tooltip.enigmaticlegacy.holdShift");
+            this.addKeyText(list);
+        } finally {
+            list.forEach(tooltip);
+        }
     }
 
     @OnlyIn(Dist.CLIENT)

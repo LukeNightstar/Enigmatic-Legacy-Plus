@@ -31,6 +31,9 @@ import top.theillusivec4.curios.api.SlotContext;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
 public class AvariceScroll extends CursedCurioItem {
     public static final String EFFECT_TAG = EnigmaticLegacy.MODID + ":avarice_scroll_effect";
     public static ModConfigSpec.IntValue emeraldChance;
@@ -47,23 +50,29 @@ public class AvariceScroll extends CursedCurioItem {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        TooltipHandler.line(list);
-        if (Minecraft.getInstance().hasShiftDown()) {
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.avariceScroll1", ChatFormatting.GOLD, 1);
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
             TooltipHandler.line(list);
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.avariceScroll2");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.avariceScroll3");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.avariceScroll4");
-            TooltipHandler.line(list);
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.avariceScroll5", ChatFormatting.GOLD, emeraldChance.get() + "%");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.avariceScroll6");
-            TooltipHandler.line(list);
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.avariceScroll7");
-        } else TooltipHandler.holdShift(list);
+            if (Minecraft.getInstance().hasShiftDown()) {
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.avariceScroll1", ChatFormatting.GOLD, 1);
+                TooltipHandler.line(list);
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.avariceScroll2");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.avariceScroll3");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.avariceScroll4");
+                TooltipHandler.line(list);
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.avariceScroll5", ChatFormatting.GOLD, emeraldChance.get() + "%");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.avariceScroll6");
+                TooltipHandler.line(list);
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.avariceScroll7");
+            } else TooltipHandler.holdShift(list);
 
-        TooltipHandler.line(list);
-        TooltipHandler.cursedOnly(list, stack);
+            TooltipHandler.line(list);
+            TooltipHandler.cursedOnly(list, stack);
+        } finally {
+            list.forEach(tooltip);
+        }
     }
 
     public int getFortuneLevel(SlotContext slotContext, LootContext lootContext, ItemStack curio) {

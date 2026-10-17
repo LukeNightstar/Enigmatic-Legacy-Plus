@@ -47,6 +47,11 @@ import org.jetbrains.annotations.NotNull;
 import top.theillusivec4.curios.api.SlotContext;
 
 import java.util.List;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
+import net.minecraft.server.level.ServerLevel;
+import org.jspecify.annotations.Nullable;
 
 public class MajesticElytra extends BaseElytraItem {
     public static ModConfigSpec.IntValue resistanceModifier;
@@ -64,17 +69,23 @@ public class MajesticElytra extends BaseElytraItem {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        TooltipHandler.line(list);
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.majesticElytra1");
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.majesticElytra2");
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.majesticElytra3");
-        if (Minecraft.getInstance().level != null) {
-            var holder = EnigmaticHandler.get(Minecraft.getInstance().level, Registries.ENCHANTMENT, EnigmaticEnchantments.ETHERIC_RESONANCE);
-            if (stack.getEnchantmentLevel(holder) > 0)
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.majesticElytraBuff", ChatFormatting.GOLD, String.format("%d%%", resistanceModifier.get()));
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
+            TooltipHandler.line(list);
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.majesticElytra1");
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.majesticElytra2");
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.majesticElytra3");
+            if (Minecraft.getInstance().level != null) {
+                var holder = EnigmaticHandler.get(Minecraft.getInstance().level, Registries.ENCHANTMENT, EnigmaticEnchantments.ETHERIC_RESONANCE);
+                if (stack.getEnchantmentLevel(holder) > 0)
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.majesticElytraBuff", ChatFormatting.GOLD, String.format("%d%%", resistanceModifier.get()));
+            }
+            if (stack.isEnchanted()) TooltipHandler.line(list);
+        } finally {
+            list.forEach(tooltip);
         }
-        if (stack.isEnchanted()) TooltipHandler.line(list);
     }
 
     public Multimap<Holder<Attribute>, AttributeModifier> getAttributeModifiers(SlotContext context, Identifier id, ItemStack stack) {
@@ -115,7 +126,8 @@ public class MajesticElytra extends BaseElytraItem {
         if (ticks > 0 && livingEntity.isFallFlying()) stack.elytraFlightTick(livingEntity, ticks);
     }
 
-    public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
+    @Override
+    public void inventoryTick(ItemStack stack, ServerLevel level, Entity entity, @Nullable EquipmentSlot slotId) {
         if (entity instanceof LivingEntity livingEntity && !level.isClientSide()) {
             if (livingEntity.getItemBySlot(EquipmentSlot.CHEST).is(this)) {
                 if (livingEntity instanceof Player player && player.level().isClientSide()) handleBoosting(player);

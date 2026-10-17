@@ -39,6 +39,9 @@ import top.theillusivec4.curios.api.CuriosApi;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
 
 public class CursedScroll extends CursedCurioItem {
     public static ModConfigSpec.IntValue damageBoost;
@@ -94,27 +97,33 @@ public class CursedScroll extends CursedCurioItem {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        TooltipHandler.line(list);
-        if (Minecraft.getInstance().hasShiftDown()) {
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedScroll1", ChatFormatting.GOLD, damageBoost.get() + "%");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedScroll2", ChatFormatting.GOLD, miningBoost.get() + "%");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedScroll3", ChatFormatting.GOLD, regenBoost.get() + "%");
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
             TooltipHandler.line(list);
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedScroll4");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedScroll5");
-        } else TooltipHandler.holdShift(list);
-        LocalPlayer player = Minecraft.getInstance().player;
-        if (player != null && ItemStack.isSameItemSameComponents(stack, EnigmaticHandler.getCurio(player, this))) {
-            double curses = getCurseAmount(player);
+            if (Minecraft.getInstance().hasShiftDown()) {
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedScroll1", ChatFormatting.GOLD, damageBoost.get() + "%");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedScroll2", ChatFormatting.GOLD, miningBoost.get() + "%");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedScroll3", ChatFormatting.GOLD, regenBoost.get() + "%");
+                TooltipHandler.line(list);
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedScroll4");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedScroll5");
+            } else TooltipHandler.holdShift(list);
+            LocalPlayer player = Minecraft.getInstance().player;
+            if (player != null && ItemStack.isSameItemSameComponents(stack, EnigmaticHandler.getCurio(player, this))) {
+                double curses = getCurseAmount(player);
+                TooltipHandler.line(list);
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedScroll6");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedScroll1", ChatFormatting.GOLD, String.format("%.1f%%", damageBoost.get() * curses));
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedScroll2", ChatFormatting.GOLD, String.format("%.1f%%", Math.min(miningBoost.get() * curses, 200)));
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedScroll3", ChatFormatting.GOLD, String.format("%.1f%%", (regenBoost.get() * curses)));
+            }
             TooltipHandler.line(list);
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedScroll6");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedScroll1", ChatFormatting.GOLD, String.format("%.1f%%", damageBoost.get() * curses));
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedScroll2", ChatFormatting.GOLD, String.format("%.1f%%", Math.min(miningBoost.get() * curses, 200)));
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.cursedScroll3", ChatFormatting.GOLD, String.format("%.1f%%", (regenBoost.get() * curses)));
+            TooltipHandler.cursedOnly(list, stack);
+        } finally {
+            list.forEach(tooltip);
         }
-        TooltipHandler.line(list);
-        TooltipHandler.cursedOnly(list, stack);
     }
 
     @Mod(value = EnigmaticLegacy.MODID)

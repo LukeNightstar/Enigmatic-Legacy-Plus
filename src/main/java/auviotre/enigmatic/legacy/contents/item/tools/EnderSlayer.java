@@ -43,6 +43,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
 public class EnderSlayer extends SwordItem {
     public static final Tier TIER = new SimpleTier(BlockTags.INCORRECT_FOR_DIAMOND_TOOL, 1876, 8.5F, 3.5F, 12, () -> Ingredient.of(Blocks.OBSIDIAN));
     public static ModConfigSpec.IntValue specialDamageBoost;
@@ -59,29 +62,35 @@ public class EnderSlayer extends SwordItem {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        if (Minecraft.getInstance().hasShiftDown()) {
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.enderSlayer3", ChatFormatting.GOLD, specialDamageBoost.get() + "%");
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
+            if (Minecraft.getInstance().hasShiftDown()) {
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.enderSlayer3", ChatFormatting.GOLD, specialDamageBoost.get() + "%");
+                TooltipHandler.line(list);
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.enderSlayer5");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.enderSlayer6");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.enderSlayer7");
+                TooltipHandler.line(list);
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.enderSlayer8");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.enderSlayer9");
+                TooltipHandler.line(list);
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.enderSlayer10");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.enderSlayer11");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.enderSlayer12");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.enderSlayer13");
+            } else {
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.enderSlayer1");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.enderSlayer2");
+                TooltipHandler.line(list);
+                TooltipHandler.holdShift(list);
+            }
             TooltipHandler.line(list);
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.enderSlayer5");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.enderSlayer6");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.enderSlayer7");
-            TooltipHandler.line(list);
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.enderSlayer8");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.enderSlayer9");
-            TooltipHandler.line(list);
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.enderSlayer10");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.enderSlayer11");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.enderSlayer12");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.enderSlayer13");
-        } else {
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.enderSlayer1");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.enderSlayer2");
-            TooltipHandler.line(list);
-            TooltipHandler.holdShift(list);
+            TooltipHandler.cursedOnly(list, stack);
+        } finally {
+            list.forEach(tooltip);
         }
-        TooltipHandler.line(list);
-        TooltipHandler.cursedOnly(list, stack);
     }
 
     @Mod(value = EnigmaticLegacy.MODID)

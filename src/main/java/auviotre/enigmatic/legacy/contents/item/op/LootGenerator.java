@@ -33,6 +33,8 @@ import java.util.List;
 import java.util.Set;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
 public class LootGenerator extends BaseItem {
     public static final List<ResourceKey<LootTable>> LOOT_LIST = new ArrayList<>();
 
@@ -52,24 +54,30 @@ public class LootGenerator extends BaseItem {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        if (Minecraft.getInstance().hasShiftDown()) {
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.lootGenerator1");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.lootGenerator2");
-            TooltipHandler.line(list);
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.lootGenerator3");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.lootGenerator4");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.lootGenerator5");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.lootGenerator6");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.lootGenerator7");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.lootGenerator8");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.lootGenerator9");
-        } else TooltipHandler.line(list, "tooltip.enigmaticlegacy.holdShift");
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
+            if (Minecraft.getInstance().hasShiftDown()) {
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.lootGenerator1");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.lootGenerator2");
+                TooltipHandler.line(list);
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.lootGenerator3");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.lootGenerator4");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.lootGenerator5");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.lootGenerator6");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.lootGenerator7");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.lootGenerator8");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.lootGenerator9");
+            } else TooltipHandler.line(list, "tooltip.enigmaticlegacy.holdShift");
 
-        TooltipHandler.line(list);
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.lootGeneratorCurrent");
-        ResourceKey<LootTable> key = LOOT_LIST.get(getLootTableIndex(stack));
-        list.add(Component.literal(key.location().toString()).withStyle(ChatFormatting.GOLD));
+            TooltipHandler.line(list);
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.lootGeneratorCurrent");
+            ResourceKey<LootTable> key = LOOT_LIST.get(getLootTableIndex(stack));
+            list.add(Component.literal(key.location().toString()).withStyle(ChatFormatting.GOLD));
+        } finally {
+            list.forEach(tooltip);
+        }
     }
 
     private int getLootTableIndex(ItemStack stack) {

@@ -36,6 +36,9 @@ import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curios.api.SlotContext;
 
 import java.util.List;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
 
 public class ForgerCrystal extends CursedCurioItem {
     public static ModConfigSpec.BooleanValue unbreakableRestriction;
@@ -52,22 +55,28 @@ public class ForgerCrystal extends CursedCurioItem {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        TooltipHandler.line(list);
-        if (Minecraft.getInstance().hasShiftDown()) {
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.enchantersPearl1");
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
             TooltipHandler.line(list);
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.forgerCrystal1");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.forgerCrystal2");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.forgerCrystal3");
-            LocalPlayer player = Minecraft.getInstance().player;
-            if (RedemptionRing.Helper.canUseRelic(player) && player != null) {
+            if (Minecraft.getInstance().hasShiftDown()) {
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.enchantersPearl1");
                 TooltipHandler.line(list);
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.forgerCrystal4");
-            }
-        } else TooltipHandler.holdShift(list);
-        TooltipHandler.line(list);
-        TooltipHandler.cursedOnly(list, stack);
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.forgerCrystal1");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.forgerCrystal2");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.forgerCrystal3");
+                LocalPlayer player = Minecraft.getInstance().player;
+                if (RedemptionRing.Helper.canUseRelic(player) && player != null) {
+                    TooltipHandler.line(list);
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.forgerCrystal4");
+                }
+            } else TooltipHandler.holdShift(list);
+            TooltipHandler.line(list);
+            TooltipHandler.cursedOnly(list, stack);
+        } finally {
+            list.forEach(tooltip);
+        }
     }
 
     public boolean canEquip(SlotContext context, ItemStack stack) {

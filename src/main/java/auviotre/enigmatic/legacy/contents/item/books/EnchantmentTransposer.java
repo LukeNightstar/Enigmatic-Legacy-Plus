@@ -26,6 +26,9 @@ import net.neoforged.neoforge.event.ItemStackedOnOtherEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
 
 public class EnchantmentTransposer extends BaseItem {
     public EnchantmentTransposer() {
@@ -37,11 +40,17 @@ public class EnchantmentTransposer extends BaseItem {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.enchantmentTransposer1");
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.enchantmentTransposer2");
-        TooltipHandler.line(list);
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.enchantmentTransposer3");
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.enchantmentTransposer1");
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.enchantmentTransposer2");
+            TooltipHandler.line(list);
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.enchantmentTransposer3");
+        } finally {
+            list.forEach(tooltip);
+        }
     }
 
     protected boolean canDisenchant(Player player, ItemStack transposer, @NotNull ItemStack target) {

@@ -41,6 +41,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
 
 public class VoidStone extends BaseItem {
     private static final List<String> DEFAULT_LIST = List.of(
@@ -78,20 +80,26 @@ public class VoidStone extends BaseItem {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.voidStone1");
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.voidStone2");
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.voidStone3");
-        TempStorage storage = stack.get(EnigmaticComponents.TEMPORARY_STORAGE);
-        if (storage != null) {
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.voidStone1");
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.voidStone2");
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.voidStone3");
+            TempStorage storage = stack.get(EnigmaticComponents.TEMPORARY_STORAGE);
+            if (storage != null) {
+                TooltipHandler.line(list);
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.voidStoneStorage", ChatFormatting.GOLD, storage.stack().getDisplayName());
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.voidStoneAlt");
+            }
             TooltipHandler.line(list);
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.voidStoneStorage", ChatFormatting.GOLD, storage.stack().getDisplayName());
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.voidStoneAlt");
+            String s = stack.getOrDefault(EnigmaticComponents.BOOLEAN, false) ? "tooltip.enigmaticlegacy.enabled" : "tooltip.enigmaticlegacy.disabled";
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.voidStoneAutoDestory", ChatFormatting.GOLD, Component.translatable(s));
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.voidStoneShift");
+        } finally {
+            list.forEach(tooltip);
         }
-        TooltipHandler.line(list);
-        String s = stack.getOrDefault(EnigmaticComponents.BOOLEAN, false) ? "tooltip.enigmaticlegacy.enabled" : "tooltip.enigmaticlegacy.disabled";
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.voidStoneAutoDestory", ChatFormatting.GOLD, Component.translatable(s));
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.voidStoneShift");
     }
 
     public InteractionResult use(Level level, Player player, InteractionHand hand) {

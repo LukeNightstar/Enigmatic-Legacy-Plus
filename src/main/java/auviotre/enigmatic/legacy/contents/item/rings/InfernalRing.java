@@ -35,6 +35,9 @@ import org.jetbrains.annotations.NotNull;
 import top.theillusivec4.curios.api.SlotContext;
 
 import java.util.List;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
 
 public class InfernalRing extends BaseCurioItem {
     public static ModConfigSpec.IntValue resistance;
@@ -51,16 +54,22 @@ public class InfernalRing extends BaseCurioItem {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        TooltipHandler.line(list);
-        if (Minecraft.getInstance().hasShiftDown()) {
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.infernalRing1");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.infernalRing2");
-            int value = resistance.get();
-            if (EnigmaticHandler.hasCurio(Minecraft.getInstance().player, EnigmaticItems.HELL_BLADE_CHARM))
-                value = Math.min(99, value / 3 * 4);
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.infernalRing3", ChatFormatting.GOLD, value + "%");
-        } else TooltipHandler.holdShift(list);
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
+            TooltipHandler.line(list);
+            if (Minecraft.getInstance().hasShiftDown()) {
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.infernalRing1");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.infernalRing2");
+                int value = resistance.get();
+                if (EnigmaticHandler.hasCurio(Minecraft.getInstance().player, EnigmaticItems.HELL_BLADE_CHARM))
+                    value = Math.min(99, value / 3 * 4);
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.infernalRing3", ChatFormatting.GOLD, value + "%");
+            } else TooltipHandler.holdShift(list);
+        } finally {
+            list.forEach(tooltip);
+        }
     }
 
     public Multimap<Holder<Attribute>, AttributeModifier> getAttributeModifiers(SlotContext context, Identifier id, ItemStack stack) {

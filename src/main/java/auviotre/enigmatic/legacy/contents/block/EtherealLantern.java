@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.block;
 
+import auviotre.enigmatic.legacy.registries.RegistrationContext;
 import auviotre.enigmatic.legacy.api.item.IItemHelper;
 import auviotre.enigmatic.legacy.contents.block.entity.EtherealLanternEntity;
 import auviotre.enigmatic.legacy.handlers.TooltipHandler;
@@ -35,6 +36,9 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
 
 public class EtherealLantern extends BaseEntityBlock implements SimpleWaterloggedBlock {
     public static final MapCodec<EtherealLantern> CODEC = simpleCodec(EtherealLantern::new);
@@ -54,7 +58,7 @@ public class EtherealLantern extends BaseEntityBlock implements SimpleWaterlogge
     );
 
     public EtherealLantern() {
-        super(Properties.ofFullCopy(Blocks.LANTERN).strength(9.5F));
+        super(Properties.ofFullCopy(Blocks.LANTERN).setId(RegistrationContext.blockKey()).strength(9.5F));
         this.registerDefaultState(this.stateDefinition.any().setValue(BlockStateProperties.WATERLOGGED, false).setValue(BlockStateProperties.HANGING, false));
     }
 
@@ -121,12 +125,18 @@ public class EtherealLantern extends BaseEntityBlock implements SimpleWaterlogge
 
     public static class Item extends BlockItem {
         public Item(Block block) {
-            super(block, IItemHelper.properties(16).fireResistant());
+            super(block, IItemHelper.properties(16).useBlockDescriptionPrefix().fireResistant());
         }
 
         @OnlyIn(Dist.CLIENT)
-        public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.etherealLantern");
+        @Override
+        public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+            List<Component> list = new ArrayList<>();
+            try {
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.etherealLantern");
+            } finally {
+                list.forEach(tooltip);
+            }
         }
     }
 }

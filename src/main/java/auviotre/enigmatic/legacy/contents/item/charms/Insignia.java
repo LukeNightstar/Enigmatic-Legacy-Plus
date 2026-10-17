@@ -44,6 +44,9 @@ import top.theillusivec4.curios.api.SlotContext;
 
 import java.util.List;
 import java.util.Optional;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
 
 public class Insignia extends BaseCurioItem {
     public Insignia() {
@@ -51,20 +54,26 @@ public class Insignia extends BaseCurioItem {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        TooltipHandler.line(list);
-        if (Minecraft.getInstance().hasShiftDown()) {
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.insignia1");
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
             TooltipHandler.line(list);
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.insignia2");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.insignia3");
-        } else TooltipHandler.holdShift(list);
-        TooltipHandler.line(list);
+            if (Minecraft.getInstance().hasShiftDown()) {
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.insignia1");
+                TooltipHandler.line(list);
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.insignia2");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.insignia3");
+            } else TooltipHandler.holdShift(list);
+            TooltipHandler.line(list);
 
-        this.getCustomName(stack).ifPresent(component -> TooltipHandler.line(list, "tooltip.enigmaticlegacy.insigniaName", component));
+            this.getCustomName(stack).ifPresent(component -> TooltipHandler.line(list, "tooltip.enigmaticlegacy.insigniaName", component));
 
-        Component option = stack.getOrDefault(EnigmaticComponents.BOOLEAN, true) ? Component.translatable("tooltip.enigmaticlegacy.enabled") : Component.translatable("tooltip.enigmaticlegacy.disabled");
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.insigniaTagDisplay", option);
+            Component option = stack.getOrDefault(EnigmaticComponents.BOOLEAN, true) ? Component.translatable("tooltip.enigmaticlegacy.enabled") : Component.translatable("tooltip.enigmaticlegacy.disabled");
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.insigniaTagDisplay", option);
+        } finally {
+            list.forEach(tooltip);
+        }
     }
 
     public Optional<Component> getCustomName(ItemStack stack) {

@@ -17,6 +17,9 @@ import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
 
 public class CurseTransposer extends EnchantmentTransposer {
     public CurseTransposer() {
@@ -24,13 +27,19 @@ public class CurseTransposer extends EnchantmentTransposer {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.curseTransposer1");
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.curseTransposer2");
-        TooltipHandler.line(list);
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.enchantmentTransposer3");
-        TooltipHandler.line(list);
-        TooltipHandler.cursedOnly(list, stack);
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.curseTransposer1");
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.curseTransposer2");
+            TooltipHandler.line(list);
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.enchantmentTransposer3");
+            TooltipHandler.line(list);
+            TooltipHandler.cursedOnly(list, stack);
+        } finally {
+            list.forEach(tooltip);
+        }
     }
 
     protected boolean canDisenchant(Player player, ItemStack transposer, @NotNull ItemStack target) {

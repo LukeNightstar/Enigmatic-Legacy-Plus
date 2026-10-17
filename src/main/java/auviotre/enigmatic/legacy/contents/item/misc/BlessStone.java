@@ -30,6 +30,9 @@ import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import top.theillusivec4.curios.api.CuriosApi;
 
 import java.util.List;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
 
 public class BlessStone extends BaseCursedItem {
     public BlessStone() {
@@ -37,19 +40,25 @@ public class BlessStone extends BaseCursedItem {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.blessStone1");
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.blessStone2");
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.blessStone3");
-        TooltipHandler.line(list);
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.canUndone");
-        if (flag.isAdvanced()) {
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.blessLevel", ChatFormatting.DARK_GRAY, RedemptionRing.Helper.getPossibleLevel(Minecraft.getInstance().player));
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.blessStone1");
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.blessStone2");
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.blessStone3");
+            TooltipHandler.line(list);
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.canUndone");
+            if (flag.isAdvanced()) {
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.blessLevel", ChatFormatting.DARK_GRAY, RedemptionRing.Helper.getPossibleLevel(Minecraft.getInstance().player));
+            }
+            TooltipHandler.line(list);
+            ChatFormatting color = EnigmaticHandler.isTheCursedOne(Minecraft.getInstance().player) ? ChatFormatting.GOLD : ChatFormatting.DARK_RED;
+            list.add(Component.translatable("tooltip.enigmaticlegacy.cursedOnesOnly1").withStyle(color));
+            list.add(Component.translatable("tooltip.enigmaticlegacy.cursedOnesOnly2").withStyle(color));
+        } finally {
+            list.forEach(tooltip);
         }
-        TooltipHandler.line(list);
-        ChatFormatting color = EnigmaticHandler.isTheCursedOne(Minecraft.getInstance().player) ? ChatFormatting.GOLD : ChatFormatting.DARK_RED;
-        list.add(Component.translatable("tooltip.enigmaticlegacy.cursedOnesOnly1").withStyle(color));
-        list.add(Component.translatable("tooltip.enigmaticlegacy.cursedOnesOnly2").withStyle(color));
     }
 
     public InteractionResult use(Level level, Player player, InteractionHand hand) {

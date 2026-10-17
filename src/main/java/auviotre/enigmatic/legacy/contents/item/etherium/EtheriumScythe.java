@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.item.etherium;
 
+import auviotre.enigmatic.legacy.api.item.IItemHelper;
 import auviotre.enigmatic.legacy.handlers.EnigmaticHandler;
 import auviotre.enigmatic.legacy.handlers.TooltipHandler;
 import auviotre.enigmatic.legacy.registries.EnigmaticEnchantments;
@@ -42,10 +43,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import net.minecraft.world.item.component.TooltipDisplay;
+import net.minecraft.world.item.ItemInstance;
 
 public class EtheriumScythe extends HoeItem {
     public EtheriumScythe() {
-        super(EtheriumProperties.TIER, new Item.Properties().fireResistant().attributes(EtheriumProperties.createAttributes(3.0F, -2.0F, 0.04F)));
+        super(EtheriumProperties.TIER, IItemHelper.properties().fireResistant().attributes(EtheriumProperties.createAttributes(3.0F, -2.0F, 0.04F)));
     }
 
     public static Consumer<UseOnContext> changeIntoState(BlockState state, BlockPos pos) {
@@ -56,15 +59,21 @@ public class EtheriumScythe extends HoeItem {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.etheriumScythe", ChatFormatting.GOLD, 3, 3);
-        TooltipHandler.line(list, "tooltip.enigmaticlegacy.etheriumDisable");
-        if (Minecraft.getInstance().level != null) {
-            var holder = EnigmaticHandler.get(Minecraft.getInstance().level, Registries.ENCHANTMENT, EnigmaticEnchantments.ETHERIC_RESONANCE);
-            if (stack.getEnchantmentLevel(holder) > 0)
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.etheriumScytheBuff");
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.etheriumScythe", ChatFormatting.GOLD, 3, 3);
+            TooltipHandler.line(list, "tooltip.enigmaticlegacy.etheriumDisable");
+            if (Minecraft.getInstance().level != null) {
+                var holder = EnigmaticHandler.get(Minecraft.getInstance().level, Registries.ENCHANTMENT, EnigmaticEnchantments.ETHERIC_RESONANCE);
+                if (stack.getEnchantmentLevel(holder) > 0)
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.etheriumScytheBuff");
+            }
+            if (stack.isEnchanted()) TooltipHandler.line(list);
+        } finally {
+            list.forEach(tooltip);
         }
-        if (stack.isEnchanted()) TooltipHandler.line(list);
     }
 
     public float getDestroySpeed(ItemStack stack, @NotNull BlockState state) {
@@ -151,7 +160,8 @@ public class EtheriumScythe extends HoeItem {
         return false;
     }
 
-    public boolean canPerformAction(ItemStack stack, ItemAbility ability) {
+    @Override
+    public boolean canPerformAction(ItemInstance stack, ItemAbility ability) {
         return ItemAbilities.DEFAULT_HOE_ACTIONS.contains(ability) || ability == ItemAbilities.SWORD_SWEEP;
     }
 }

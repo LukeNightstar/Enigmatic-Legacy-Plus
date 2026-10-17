@@ -51,6 +51,12 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.EquipmentSlot;
+import org.jspecify.annotations.Nullable;
 
 public class TheInfinitum extends TheAcknowledgment implements IBagContent {
     public static ModConfigSpec.IntValue specialDamageBoost;
@@ -80,10 +86,11 @@ public class TheInfinitum extends TheAcknowledgment implements IBagContent {
         return builder.build();
     }
 
-    public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
+    @Override
+    public void inventoryTick(ItemStack stack, ServerLevel level, Entity entity, @Nullable EquipmentSlot slotId) {
         if (entity instanceof LivingEntity livingEntity && !level.isClientSide()) {
             float timer = stack.getOrDefault(EnigmaticComponents.ELDRITCH_TIMER, 0.0F);
-            if (isSelected && EnigmaticHandler.isTheWorthyOne(livingEntity))
+            if ((slotId == EquipmentSlot.MAINHAND) && EnigmaticHandler.isTheWorthyOne(livingEntity))
                 stack.set(EnigmaticComponents.ELDRITCH_TIMER, Math.min(1.0F, timer + 0.3F));
             else stack.set(EnigmaticComponents.ELDRITCH_TIMER, Math.max(0.0F, timer - 0.3F));
         }
@@ -94,32 +101,38 @@ public class TheInfinitum extends TheAcknowledgment implements IBagContent {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        if (Minecraft.getInstance().hasShiftDown()) {
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.curseAlteration", ChatFormatting.GOLD, Component.translatable("tooltip.enigmaticlegacy.fourthCurse"));
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.fourthCurseAlteration");
-            TooltipHandler.line(list);
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.theTwist1", ChatFormatting.GOLD, String.format("%d%%", specialDamageBoost.get()));
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.theInfinitum1", ChatFormatting.GOLD, String.format("%d%%", knockbackModifier.get()));
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.theInfinitum2", ChatFormatting.GOLD, lifeSteal.get() + "%");
-            TooltipHandler.line(list);
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.theInfinitum3");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.theInfinitum4");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.theInfinitum5", ChatFormatting.GOLD, undeadProbability.get() + "%");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.theInfinitum6");
-            if (EnigmaticHandler.isAbyssBoosted(Minecraft.getInstance().player)) {
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
+            if (Minecraft.getInstance().hasShiftDown()) {
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.curseAlteration", ChatFormatting.GOLD, Component.translatable("tooltip.enigmaticlegacy.fourthCurse"));
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.fourthCurseAlteration");
                 TooltipHandler.line(list);
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.abyssBoost");
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.theInfinitumBoost1");
-                TooltipHandler.line(list, "tooltip.enigmaticlegacy.theInfinitumBoost2");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.theTwist1", ChatFormatting.GOLD, String.format("%d%%", specialDamageBoost.get()));
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.theInfinitum1", ChatFormatting.GOLD, String.format("%d%%", knockbackModifier.get()));
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.theInfinitum2", ChatFormatting.GOLD, lifeSteal.get() + "%");
+                TooltipHandler.line(list);
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.theInfinitum3");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.theInfinitum4");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.theInfinitum5", ChatFormatting.GOLD, undeadProbability.get() + "%");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.theInfinitum6");
+                if (EnigmaticHandler.isAbyssBoosted(Minecraft.getInstance().player)) {
+                    TooltipHandler.line(list);
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.abyssBoost");
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.theInfinitumBoost1");
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.theInfinitumBoost2");
+                }
+            } else {
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.theInfinitumLore");
+                TooltipHandler.line(list);
+                TooltipHandler.holdShift(list);
             }
-        } else {
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.theInfinitumLore");
             TooltipHandler.line(list);
-            TooltipHandler.holdShift(list);
+            TooltipHandler.worthyOnly(list, stack);
+        } finally {
+            list.forEach(tooltip);
         }
-        TooltipHandler.line(list);
-        TooltipHandler.worthyOnly(list, stack);
     }
 
     public List<Component> getTooltipInBag(List<Component> list) {

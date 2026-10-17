@@ -45,6 +45,11 @@ import java.util.List;
 import java.util.function.Predicate;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.EquipmentSlot;
 public class GuardianHeart extends BaseCursedItem {
     public static ModConfigSpec.IntValue cooldown;
     public static ModConfigSpec.DoubleValue effectiveRange;
@@ -88,29 +93,36 @@ public class GuardianHeart extends BaseCursedItem {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        TooltipHandler.line(list);
-        if (Minecraft.getInstance().hasShiftDown()) {
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.guardianHeart1", ChatFormatting.GOLD, String.format("%.0f", effectiveRange.get()));
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.guardianHeart2");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.guardianHeart3");
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
             TooltipHandler.line(list);
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.guardianHeart4");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.guardianHeart5", ChatFormatting.GOLD, String.format("%.0f", effectiveRange.get()));
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.guardianHeart6");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.guardianHeart7");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.guardianHeart8", ChatFormatting.GOLD, String.format("%.0f", effectiveRange.get()));
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.guardianHeart9");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.guardianHeart10");
+            if (Minecraft.getInstance().hasShiftDown()) {
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.guardianHeart1", ChatFormatting.GOLD, String.format("%.0f", effectiveRange.get()));
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.guardianHeart2");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.guardianHeart3");
+                TooltipHandler.line(list);
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.guardianHeart4");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.guardianHeart5", ChatFormatting.GOLD, String.format("%.0f", effectiveRange.get()));
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.guardianHeart6");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.guardianHeart7");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.guardianHeart8", ChatFormatting.GOLD, String.format("%.0f", effectiveRange.get()));
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.guardianHeart9");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.guardianHeart10");
+                TooltipHandler.line(list);
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.guardianHeart11");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.guardianHeart12", ChatFormatting.GOLD, cooldown.get() / 20);
+            } else TooltipHandler.holdShift(list);
             TooltipHandler.line(list);
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.guardianHeart11");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.guardianHeart12", ChatFormatting.GOLD, cooldown.get() / 20);
-        } else TooltipHandler.holdShift(list);
-        TooltipHandler.line(list);
-        TooltipHandler.cursedOnly(list, stack);
+            TooltipHandler.cursedOnly(list, stack);
+        } finally {
+            list.forEach(tooltip);
+        }
     }
 
-    public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
+    @Override
+    public void inventoryTick(ItemStack stack, ServerLevel level, Entity entity, @Nullable EquipmentSlot slotId) {
         if (entity instanceof Player player && !level.isClientSide()) {
             List<Monster> monsters = player.level().getEntitiesOfClass(Monster.class, player.getBoundingBox().inflate(effectiveRange.get()));
             if (EnigmaticHandler.isTheCursedOne(player) && Inventory.isHotbarSlot(slotId) && !player.getCooldowns().isOnCooldown(this)) {

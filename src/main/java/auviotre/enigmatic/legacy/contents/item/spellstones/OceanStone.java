@@ -55,6 +55,9 @@ import top.theillusivec4.curios.api.SlotContext;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
 public class OceanStone extends SpellstoneItem {
     public static ModConfigSpec.IntValue underwaterCreaturesResistance;
     public static ModConfigSpec.DoubleValue xpCostModifier;
@@ -78,24 +81,30 @@ public class OceanStone extends SpellstoneItem {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        TooltipHandler.line(list);
-        if (Minecraft.getInstance().hasShiftDown()) {
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstoneSkill");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.oceanStoneSkill");
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
             TooltipHandler.line(list);
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstoneCooldown", ChatFormatting.GOLD, String.format("%.01f", 0.05F * getCooldown(stack)));
-            TooltipHandler.line(list);
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstonePassive");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.oceanStone1", ChatFormatting.GOLD, underwaterCreaturesResistance.get() + "%");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.oceanStone2");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.oceanStone3");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.oceanStone4");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.oceanStone5");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.oceanStone6");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.oceanStone7");
-        } else TooltipHandler.line(list, "tooltip.enigmaticlegacy.holdShift");
-        this.addKeyText(list);
+            if (Minecraft.getInstance().hasShiftDown()) {
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstoneSkill");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.oceanStoneSkill");
+                TooltipHandler.line(list);
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstoneCooldown", ChatFormatting.GOLD, String.format("%.01f", 0.05F * getCooldown(stack)));
+                TooltipHandler.line(list);
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstonePassive");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.oceanStone1", ChatFormatting.GOLD, underwaterCreaturesResistance.get() + "%");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.oceanStone2");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.oceanStone3");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.oceanStone4");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.oceanStone5");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.oceanStone6");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.oceanStone7");
+            } else TooltipHandler.line(list, "tooltip.enigmaticlegacy.holdShift");
+            this.addKeyText(list);
+        } finally {
+            list.forEach(tooltip);
+        }
     }
 
     @OnlyIn(Dist.CLIENT)

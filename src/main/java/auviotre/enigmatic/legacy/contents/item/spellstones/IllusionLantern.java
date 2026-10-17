@@ -53,6 +53,9 @@ import java.util.List;
 import java.util.function.Predicate;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.item.component.TooltipDisplay;
+import java.util.function.Consumer;
+import java.util.ArrayList;
 public class IllusionLantern extends SpellstoneItem {
     public static ModConfigSpec.IntValue bypassDamageResistance;
     public static ModConfigSpec.DoubleValue ILVulnerabilityModifier;
@@ -72,24 +75,30 @@ public class IllusionLantern extends SpellstoneItem {
     }
 
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        TooltipHandler.line(list);
-        if (Minecraft.getInstance().hasShiftDown()) {
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstoneSkill");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstoneSkillAbsent");
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
+        List<Component> list = new ArrayList<>();
+        try {
             TooltipHandler.line(list);
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstoneCooldown", ChatFormatting.GOLD, String.format("%.01f", 0.05F * getCooldown(stack)));
-            TooltipHandler.line(list);
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstonePassive");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.illusionLantern1");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.illusionLantern2");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.illusionLantern3");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.illusionLantern4", ChatFormatting.GOLD, String.format("%d%%", bypassDamageResistance.get()));
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.illusionLantern5");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.illusionLantern6");
-            TooltipHandler.line(list, "tooltip.enigmaticlegacy.illusionLantern7");
-        } else TooltipHandler.line(list, "tooltip.enigmaticlegacy.holdShift");
-        this.addKeyText(list);
+            if (Minecraft.getInstance().hasShiftDown()) {
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstoneSkill");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstoneSkillAbsent");
+                TooltipHandler.line(list);
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstoneCooldown", ChatFormatting.GOLD, String.format("%.01f", 0.05F * getCooldown(stack)));
+                TooltipHandler.line(list);
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstonePassive");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.illusionLantern1");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.illusionLantern2");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.illusionLantern3");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.illusionLantern4", ChatFormatting.GOLD, String.format("%d%%", bypassDamageResistance.get()));
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.illusionLantern5");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.illusionLantern6");
+                TooltipHandler.line(list, "tooltip.enigmaticlegacy.illusionLantern7");
+            } else TooltipHandler.line(list, "tooltip.enigmaticlegacy.holdShift");
+            this.addKeyText(list);
+        } finally {
+            list.forEach(tooltip);
+        }
     }
 
     @OnlyIn(Dist.CLIENT)
