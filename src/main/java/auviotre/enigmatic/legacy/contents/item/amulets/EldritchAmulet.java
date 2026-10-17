@@ -1,5 +1,7 @@
 package auviotre.enigmatic.legacy.contents.item.amulets;
 
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.resources.RegistryOps;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.api.SubscribeConfig;
 import auviotre.enigmatic.legacy.api.item.IItemHelper;
@@ -78,25 +80,34 @@ public class EldritchAmulet extends BaseCurioItem {
         builder.pop(2);
     }
 
-    private static Map<String, NonNullList<ItemStack>> inventoryMap(Player player) {
-        Map<String, NonNullList<ItemStack>> inventories = new HashMap<>();
-        inventories.put("Armor", player.getInventory().armor);
-        inventories.put("Main", player.getInventory().items);
-        inventories.put("Offhand", player.getInventory().offhand);
-        return inventories;
+    // 26.1.2 port: armor and offhand moved from Inventory into the entity equipment
+    private static final Map<String, List<EquipmentSlot>> EQUIPMENT_SECTIONS = Map.of(
+            "Armor", List.of(EquipmentSlot.FEET, EquipmentSlot.LEGS, EquipmentSlot.CHEST, EquipmentSlot.HEAD),
+            "Offhand", List.of(EquipmentSlot.OFFHAND));
+
+    private static boolean shouldVanish(ServerPlayer player, ItemStack stack) {
+        return !stack.isEmpty() && !player.level().getGameRules().get(GameRules.KEEP_INVENTORY) && EnchantmentHelper.has(stack, EnchantmentEffectComponents.PREVENT_EQUIPMENT_DROP);
     }
 
     public static void storeInventory(ServerPlayer player) {
-        Map<String, NonNullList<ItemStack>> inventories = inventoryMap(player);
+        RegistryOps<Tag> ops = player.registryAccess().createSerializationContext(NbtOps.INSTANCE);
         CompoundTag tag = new CompoundTag();
-        inventories.forEach((key, value) -> {
+        ListTag main = new ListTag();
+        NonNullList<ItemStack> items = player.getInventory().getNonEquipmentItems();
+        for (int i = 0; i < items.size(); i++) {
+            ItemStack stack = items.get(i);
+            if (shouldVanish(player, stack)) stack = ItemStack.EMPTY;
+            main.add(ItemStack.OPTIONAL_CODEC.encodeStart(ops, stack).getOrThrow());
+            items.set(i, ItemStack.EMPTY);
+        }
+        tag.put("InventoryMain", main);
+        EQUIPMENT_SECTIONS.forEach((key, slots) -> {
             ListTag list = new ListTag();
-            for (int i = 0; i < value.size(); i++) {
-                ItemStack stack = value.get(i);
-                if (!stack.isEmpty() && !player.level().getGameRules().get(GameRules.KEEP_INVENTORY) && EnchantmentHelper.has(stack, EnchantmentEffectComponents.PREVENT_EQUIPMENT_DROP))
-                    stack = ItemStack.EMPTY;
-                list.add(stack.saveOptional(player.registryAccess()));
-                value.set(i, ItemStack.EMPTY);
+            for (EquipmentSlot slot : slots) {
+                ItemStack stack = player.getItemBySlot(slot);
+                if (shouldVanish(player, stack)) stack = ItemStack.EMPTY;
+                list.add(ItemStack.OPTIONAL_CODEC.encodeStart(ops, stack).getOrThrow());
+                player.setItemSlot(slot, ItemStack.EMPTY);
             }
             tag.put("Inventory" + key, list);
         });
@@ -104,24 +115,22 @@ public class EldritchAmulet extends BaseCurioItem {
     }
 
     public static boolean reclaimInventory(ServerPlayer oldPlayer, ServerPlayer newPlayer) {
-        Map<String, NonNullList<ItemStack>> inventories = inventoryMap(newPlayer);
         Tag maybeTag = EnigmaticHandler.getPersistedData(oldPlayer).get("ELPersistentInventory");
-        boolean hadTag = false;
-        if (maybeTag instanceof CompoundTag tag) {
-            EnigmaticHandler.getPersistedData(oldPlayer).remove("ELPersistentInventory");
-            hadTag = true;
-            inventories.forEach((key, value) -> {
-                Tag maybeList = tag.get("Inventory" + key);
-                if (maybeList instanceof ListTag list) {
-                    for (int i = 0; i < value.size(); i++) {
-                        CompoundTag stackTag = list.getCompoundOrEmpty(i);
-                        ItemStack stack = ItemStack.parseOptional(newPlayer.registryAccess(), stackTag);
-                        value.set(i, stack);
-                    }
-                }
-            });
+        if (!(maybeTag instanceof CompoundTag tag)) return false;
+        EnigmaticHandler.getPersistedData(oldPlayer).remove("ELPersistentInventory");
+        RegistryOps<Tag> ops = newPlayer.registryAccess().createSerializationContext(NbtOps.INSTANCE);
+        if (tag.get("InventoryMain") instanceof ListTag main) {
+            NonNullList<ItemStack> items = newPlayer.getInventory().getNonEquipmentItems();
+            for (int i = 0; i < items.size() && i < main.size(); i++)
+                items.set(i, ItemStack.OPTIONAL_CODEC.parse(ops, main.get(i)).result().orElse(ItemStack.EMPTY));
         }
-        return hadTag;
+        EQUIPMENT_SECTIONS.forEach((key, slots) -> {
+            if (tag.get("Inventory" + key) instanceof ListTag list) {
+                for (int i = 0; i < slots.size() && i < list.size(); i++)
+                    newPlayer.setItemSlot(slots.get(i), ItemStack.OPTIONAL_CODEC.parse(ops, list.get(i)).result().orElse(ItemStack.EMPTY));
+            }
+        });
+        return true;
     }
 
     public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {

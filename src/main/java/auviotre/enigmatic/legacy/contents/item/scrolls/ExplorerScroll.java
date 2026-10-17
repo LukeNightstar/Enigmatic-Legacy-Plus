@@ -62,7 +62,7 @@ public class ExplorerScroll extends BaseCurioItem {
         Iterable<BlockPos> iterable = BlockPos.betweenClosed(blockPos.offset(d, d, d), blockPos.offset(-d, -d, -d));
         for (BlockPos pos : iterable) {
             if (level.getBlockEntity(pos) instanceof RandomizableContainer container) {
-                if (container.getContainerLootTable() != null) {
+                if (container.getLootTable() != null) {
                     ExplorerMarker explorerMarker = new ExplorerMarker(level, pos, player);
                     level.addFreshEntity(explorerMarker);
                 }

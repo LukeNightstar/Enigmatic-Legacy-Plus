@@ -1,5 +1,10 @@
 package auviotre.enigmatic.legacy.contents.item.spellstones.other;
 
+import java.util.Optional;
+import net.minecraft.world.item.component.BlocksAttacks;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.world.damagesource.DamageType;
+import net.minecraft.core.HolderSet;
 import auviotre.enigmatic.legacy.ELEnumExtensions;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.api.item.IItemHelper;
@@ -229,6 +234,20 @@ public class SpellstoneSword extends Item {
         level.addFreshEntity(flameBall);
     }
 
+    /**
+     * 26.1.2 port: shields block through the BLOCKS_ATTACKS component instead of the SHIELD_BLOCK ability,
+     * so the component follows the Void Pearl resonance (values from the vanilla shield).
+     */
+    public static void updateBlocking(ItemStack stack, Level level) {
+        if (isResonatingWith(stack, EnigmaticItems.VOID_PEARL)) {
+            HolderSet<DamageType> bypassedBy = level.registryAccess().lookupOrThrow(Registries.DAMAGE_TYPE).getOrThrow(DamageTypeTags.BYPASSES_SHIELD);
+            stack.set(DataComponents.BLOCKS_ATTACKS, new BlocksAttacks(0.25F, 1.0F,
+                    List.of(new BlocksAttacks.DamageReduction(90.0F, Optional.empty(), 0.0F, 1.0F)),
+                    new BlocksAttacks.ItemDamageFunction(3.0F, 1.0F, 1.0F), Optional.of(bypassedBy),
+                    Optional.of(SoundEvents.SHIELD_BLOCK), Optional.of(SoundEvents.SHIELD_BREAK)));
+        } else stack.remove(DataComponents.BLOCKS_ATTACKS);
+    }
+
     public static ItemStack getResonance(@NotNull ItemStack stack) {
         Resonance resonance = stack.get(EnigmaticComponents.SPELL_RESONANCE);
         return resonance == null ? ItemStack.EMPTY : resonance.spellstone();
@@ -312,7 +331,7 @@ public class SpellstoneSword extends Item {
             if (resonance.isEmpty()) {
                 TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstoneResonateAbsent");
             } else {
-                MutableComponent component = Component.translatable(resonance.getDescriptionId());
+                MutableComponent component = Component.translatable(resonance.getItem().getDescriptionId());
                 TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstoneResonate", ChatFormatting.GOLD, component);
             }
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.spellstoneSwordLevel", ChatFormatting.GOLD, level);
@@ -435,6 +454,7 @@ public class SpellstoneSword extends Item {
                     user.setItemInHand(InteractionHand.OFF_HAND, resonance.copy());
                     stack.set(DataComponents.RARITY, Rarity.RARE);
                     stack.remove(EnigmaticComponents.SPELL_RESONANCE);
+                    updateBlocking(stack, level);
                     return stack;
                 }
             }
@@ -458,6 +478,7 @@ public class SpellstoneSword extends Item {
                         stack.set(DataComponents.RARITY, Rarity.EPIC);
                         stack.set(EnigmaticComponents.SPELL_RESONANCE, Resonance.of(itemInHand.copy()));
                         stack.set(EnigmaticComponents.INT, 0);
+                        updateBlocking(stack, level);
                     }
             }
         }
@@ -666,7 +687,8 @@ public class SpellstoneSword extends Item {
         if (isResonatingWith(stack, EnigmaticItems.LOST_ENGINE)) return ItemUseAnimation.BLOCK;
         if (isResonatingWith(stack, EnigmaticItems.VOID_PEARL)) return ItemUseAnimation.BLOCK;
         if (isResonatingWith(stack, EnigmaticItems.ILLUSION_LANTERN)) return ItemUseAnimation.BOW;
-        return ItemUseAnimation.CUSTOM;
+        // 26.1.2 port: ItemUseAnimation.CUSTOM was removed; the arm pose comes from ClientExtension#getArmPose
+        return ItemUseAnimation.NONE;
     }
 
     public AABB getSweepHitBox(ItemStack stack, Player player, Entity target) {
@@ -678,10 +700,8 @@ public class SpellstoneSword extends Item {
 
     @Override
     public boolean canPerformAction(ItemInstance stack, ItemAbility ability) {
-        if (ItemAbilities.DEFAULT_SWORD_ACTIONS.contains(ability)) return true;
-        if (isResonatingWith(stack, EnigmaticItems.VOID_PEARL))
-            return ItemAbilities.DEFAULT_SHIELD_ACTIONS.contains(ability);
-        return false;
+        // blocking is driven by the BLOCKS_ATTACKS component now, see updateBlocking
+        return ability == ItemAbilities.SWORD_SWEEP;
     }
 
     public boolean overrideOtherStackedOnMe(ItemStack stack, ItemStack other, Slot slot, ClickAction action, Player player, SlotAccess access) {
@@ -729,7 +749,7 @@ public class SpellstoneSword extends Item {
 
     public record Resonance(ItemStack spellstone) {
         public static final MapCodec<Resonance> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-                ItemStack.SINGLE_ITEM_CODEC.fieldOf("spellstone").forGetter(Resonance::spellstone)
+                ItemStack.CODEC.fieldOf("spellstone").forGetter(Resonance::spellstone)
         ).apply(instance, Resonance::of));
 
         public static final Codec<Resonance> CODEC = MAP_CODEC.codec();

@@ -94,11 +94,6 @@ public class ViolenceScroll extends BaseCurioItem {
         builder.pop(2);
     }
 
-    @Override
-    public String getDescriptionId() {
-        return super.getDescriptionId();
-    }
-
     @OnlyIn(Dist.CLIENT)
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag flag) {
@@ -106,7 +101,7 @@ public class ViolenceScroll extends BaseCurioItem {
         try {
             TooltipHandler.line(list);
             int count = AbsorbedEnchants.getCount(stack);
-            if (Screen.hasAltDown()) {
+            if (Minecraft.getInstance().hasAltDown()) {
                 TooltipHandler.line(list, "tooltip.enigmaticlegacy.violenceScrollList");
                 for (String enchantment : AbsorbedEnchants.getEnchantments(stack)) {
                     MutableComponent component = Component.translatable(Util.makeDescriptionId("enchantment", Identifier.parse(enchantment)));
