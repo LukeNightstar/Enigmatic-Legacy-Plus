@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.registries;
 
+import net.minecraft.resources.ResourceKey;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.contents.entity.IchorSprite;
 import auviotre.enigmatic.legacy.contents.entity.PiglinWanderer;
@@ -35,7 +36,7 @@ public class EnigmaticEntities {
     public static final DeferredHolder<EntityType<?>, EntityType<AbyssProjectile>> ABYSS_PROJECTILE = register("abyss_projectile", EntityType.Builder.<AbyssProjectile>of(AbyssProjectile::new, MobCategory.MISC).sized(0.5F, 0.5F).clientTrackingRange(64).updateInterval(1).fireImmune());
 
     public static <T extends Entity> DeferredHolder<EntityType<?>, EntityType<T>> register(String name, EntityType.Builder<T> builder) {
-        return ENTITY_TYPES.register(name, () -> builder.build(EnigmaticLegacy.MODID + ":" + name));
+        return ENTITY_TYPES.register(name, () -> builder.build(ResourceKey.create(Registries.ENTITY_TYPE, EnigmaticLegacy.location(name))));
     }
 
     @Mod(value = EnigmaticLegacy.MODID)

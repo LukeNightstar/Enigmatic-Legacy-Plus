@@ -84,7 +84,7 @@ public class AnnihilatingSword extends SwordItem {
     private static void parry(Level level, ItemStack stack, Player blocker, DamageSource source, float damage) {
         if (level.isClientSide()) return;
         int tick = stack.getUseDuration(blocker) - blocker.getUseItemRemainingTicks();
-        stack.hurtAndBreak(Mth.floor(damage / 2), blocker, LivingEntity.getSlotForHand(blocker.getUsedItemHand()));
+        stack.hurtAndBreak(Mth.floor(damage / 2), blocker, blocker.getUsedItemHand().asEquipmentSlot());
         blocker.getCooldowns().addCooldown(stack.getItem(), Mth.clamp(tick, 30, 50) - (tick <= 8 ? 5 : 0));
         blocker.swing(blocker.getUsedItemHand());
         blocker.stopUsingItem();
@@ -285,7 +285,7 @@ public class AnnihilatingSword extends SwordItem {
                     sweepAttack(player, energy, damage);
                 } else rangeAttack(player, energy, damage);
                 player.getCooldowns().addCooldown(this, 100 - energy * 8);
-                stack.hurtAndBreak(energy * 3, player, LivingEntity.getSlotForHand(InteractionHand.MAIN_HAND));
+                stack.hurtAndBreak(energy * 3, player, InteractionHand.MAIN_HAND.asEquipmentSlot());
                 if (!player.hasInfiniteMaterials()) {
                     var holder = EnigmaticHandler.get(level, Registries.ENCHANTMENT, Enchantments.UNBREAKING);
                     int unbreak = stack.getEnchantmentLevel(holder);

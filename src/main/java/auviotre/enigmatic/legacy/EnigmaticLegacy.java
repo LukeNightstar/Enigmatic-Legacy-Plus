@@ -60,7 +60,7 @@ import java.util.Optional;
 public class EnigmaticLegacy {
     public static final String MODID = "enigmaticlegacyplus";
     public static final Logger LOGGER = LoggerFactory.getLogger("EnigmaticLegacy");
-    public static final CommonProxy PROXY = FMLEnvironment.dist.isClient() ? new ClientProxy() : new CommonProxy();
+    public static final CommonProxy PROXY = FMLEnvironment.getDist().isClient() ? new ClientProxy() : new CommonProxy();
 
     public EnigmaticLegacy(IEventBus eventBus, @NotNull ModContainer container) {
         EnigmaticItems.ITEMS.register(eventBus);
@@ -77,6 +77,7 @@ public class EnigmaticLegacy {
         EnigmaticTriggers.TRIGGER_TYPES.register(eventBus);
         EnigmaticTabs.CREATIVE_MODE_TABS.register(eventBus);
         EnigmaticRecipes.RECIPE_SERIALIZERS.register(eventBus);
+        EnigmaticRecipes.RECIPE_BOOK_CATEGORIES.register(eventBus);
         EnigmaticParticles.PARTICLE_TYPES.register(eventBus);
         EnigmaticAttachments.ATTACHMENT_TYPES.register(eventBus);
         EnigmaticBlockEntities.BLOCK_ENTITIES.register(eventBus);
@@ -92,7 +93,7 @@ public class EnigmaticLegacy {
         eventBus.addListener(this::addCreative);
 
         container.registerConfig(ModConfig.Type.SERVER, ELConfig.SPEC);
-        if (FMLEnvironment.dist.isClient()) {
+        if (FMLEnvironment.getDist().isClient()) {
             eventBus.addListener(this::onClientSetup);
             eventBus.addListener(this::addPackFinders);
             NeoForge.EVENT_BUS.register(QuoteHandler.INSTANCE);
@@ -197,23 +198,7 @@ public class EnigmaticLegacy {
     }
 
     public void addPackFinders(final AddPackFindersEvent event) {
-        if (event.getPackType() == PackType.CLIENT_RESOURCES) {
-            IModFileInfo modFileInfo = ModList.get().getModFileById(MODID);
-            if (modFileInfo == null) return;
-            IModFile modFile = modFileInfo.getFile();
-            PackLocationInfo locationInfo = new PackLocationInfo(
-                    "enigmaticlegacyplus:3d_book_models", Component.translatable("resource.3d_book_models.title"),
-                    PackSource.BUILT_IN, Optional.empty()
-            );
-            Path resourcePath = modFile.findResource("resourcepacks/3d_book_models");
-            PackSelectionConfig config = new PackSelectionConfig(false, Pack.Position.TOP, false);
-            event.addRepositorySource(consumer -> {
-                Pack pack = Pack.readMetaAndCreate(locationInfo,
-                        BuiltInPackSource.fromName(path -> new PathPackResources(path, resourcePath)),
-                        PackType.CLIENT_RESOURCES, config);
-                if (pack != null) consumer.accept(pack);
-            });
-            new PackSelectionConfig(false, Pack.Position.BOTTOM, false);
-        }
+        event.addPackFinders(location("resourcepacks/3d_book_models"), PackType.CLIENT_RESOURCES,
+                Component.translatable("resource.3d_book_models.title"), PackSource.BUILT_IN, false, Pack.Position.TOP);
     }
 }

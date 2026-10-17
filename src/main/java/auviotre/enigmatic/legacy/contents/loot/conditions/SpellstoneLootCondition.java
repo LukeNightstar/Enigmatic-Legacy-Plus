@@ -2,7 +2,6 @@ package auviotre.enigmatic.legacy.contents.loot.conditions;
 
 import auviotre.enigmatic.legacy.handlers.EnigmaticHandler;
 import auviotre.enigmatic.legacy.registries.EnigmaticItems;
-import auviotre.enigmatic.legacy.registries.EnigmaticLoots;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -10,7 +9,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
-import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
 import org.jetbrains.annotations.NotNull;
 
 public record SpellstoneLootCondition(float baseChance, float bonusChance) implements LootItemCondition {
@@ -23,13 +21,14 @@ public record SpellstoneLootCondition(float baseChance, float bonusChance) imple
         return () -> new SpellstoneLootCondition(base, bonus);
     }
 
-    public @NotNull LootItemConditionType getType() {
-        return EnigmaticLoots.SPELLSTONE.get();
+    @Override
+    public MapCodec<SpellstoneLootCondition> codec() {
+        return CODEC;
     }
 
     public boolean test(@NotNull LootContext context) {
         float chance = this.baseChance;
-        if (context.getParamOrNull(LootContextParams.THIS_ENTITY) instanceof LivingEntity entity) {
+        if (context.getOptionalParameter(LootContextParams.THIS_ENTITY) instanceof LivingEntity entity) {
             if (EnigmaticHandler.hasCurio(entity, EnigmaticItems.SPELLTUNER)) {
                 chance += this.bonusChance;
             }

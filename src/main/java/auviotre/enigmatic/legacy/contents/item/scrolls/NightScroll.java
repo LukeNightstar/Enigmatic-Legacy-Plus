@@ -175,7 +175,7 @@ public class NightScroll extends CursedCurioItem {
             DamageSource source = event.getSource();
             if (source.getDirectEntity() instanceof LivingEntity attacker) {
                 if (EnigmaticHandler.hasCurio(attacker, EnigmaticItems.NIGHT_SCROLL)) {
-                    attacker.heal(event.getNewDamage() * 0.01F * lifeSteal.get() * getDarkModifier(attacker));
+                    attacker.heal(event.getInflictedDamage() * 0.01F * lifeSteal.get() * getDarkModifier(attacker));
                 }
             }
         }

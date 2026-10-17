@@ -110,7 +110,7 @@ public class TwistedPotion extends BaseDrinkableItem {
                 deathLocation.putInt("x", pos.getX());
                 deathLocation.putInt("y", pos.getY());
                 deathLocation.putInt("z", pos.getZ());
-                deathLocation.putString("dimension", player.level().dimension().location().toString());
+                deathLocation.putString("dimension", player.level().dimension().identifier().toString());
                 CompoundTag persistedData = EnigmaticHandler.getPersistedData(player);
                 persistedData.put("LastDeathLoc", deathLocation);
             }

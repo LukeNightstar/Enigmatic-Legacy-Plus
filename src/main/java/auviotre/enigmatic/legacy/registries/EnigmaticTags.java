@@ -25,6 +25,7 @@ public interface EnigmaticTags {
         TagKey<Item> ETERNAL_BINDING_ENCHANTABLE = register("enchantable/eternal_binding");
         TagKey<Item> ETHERIC_RESONANCE_ENCHANTABLE = register("enchantable/etheric_resonance");
         TagKey<Item> ABYSSAL_ITEMS = register("abyssal_items");
+        TagKey<Item> ETHERIUM_TOOL_MATERIALS = register("etherium_tool_materials");
 
         private static TagKey<Item> register(String name) {
             return register(EnigmaticLegacy.MODID, name);

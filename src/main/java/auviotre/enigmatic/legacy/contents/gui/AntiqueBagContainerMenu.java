@@ -55,7 +55,7 @@ public class AntiqueBagContainerMenu extends AbstractContainerMenu {
         }
 
         for (int k = 0; k < 9; ++k) {
-            if (k == this.player.getInventory().selected) {
+            if (k == this.player.getInventory().getSelectedSlot()) {
                 this.addSlot(new Slot(inventory, k, 8 + k * 18, 142) {
                     public boolean mayPickup(Player playerIn) {
                         return false;
@@ -129,8 +129,8 @@ public class AntiqueBagContainerMenu extends AbstractContainerMenu {
         }
 
         @Nullable
-        public Pair<Identifier, Identifier> getNoItemIcon() {
-            return Pair.of(InventoryMenu.BLOCK_ATLAS, EnigmaticLegacy.location("slot/empty_book_slot"));
+        public Identifier getNoItemIcon() {
+            return EnigmaticLegacy.location("slot/empty_book_slot");
         }
     }
 }

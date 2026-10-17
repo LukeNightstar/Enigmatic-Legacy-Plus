@@ -43,8 +43,8 @@ public class LoreInscriberMenu extends AbstractContainerMenu {
                 return 1;
             }
 
-            public Pair<Identifier, Identifier> getNoItemIcon() {
-                return Pair.of(InventoryMenu.BLOCK_ATLAS, EnigmaticLegacy.location("slot/empty_lore_fragment_slot"));
+            public Identifier getNoItemIcon() {
+                return EnigmaticLegacy.location("slot/empty_lore_fragment_slot");
             }
         });
         this.addSlot(new Slot(this.result, 1, 116, 51) {
@@ -71,7 +71,7 @@ public class LoreInscriberMenu extends AbstractContainerMenu {
         }
 
         for (int k = 0; k < 9; ++k) {
-            if (k == this.player.getInventory().selected) {
+            if (k == this.player.getInventory().getSelectedSlot()) {
                 this.addSlot(new Slot(inventory, k, 8 + k * 18, 142) {
                     public boolean mayPickup(Player playerIn) {
                         return false;

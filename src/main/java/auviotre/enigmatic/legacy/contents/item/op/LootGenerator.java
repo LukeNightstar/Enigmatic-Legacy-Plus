@@ -48,7 +48,7 @@ public class LootGenerator extends BaseItem {
         Set<ResourceKey<LootTable>> all = BuiltInLootTables.all();
         List<ResourceKey<LootTable>> list = all.stream().sorted().toList();
         for (ResourceKey<LootTable> key : list) {
-            String path = key.location().getPath();
+            String path = key.identifier().getPath();
             if (path.startsWith("chests/")) LOOT_LIST.add(key);
         }
     }
@@ -74,7 +74,7 @@ public class LootGenerator extends BaseItem {
             TooltipHandler.line(list);
             TooltipHandler.line(list, "tooltip.enigmaticlegacy.lootGeneratorCurrent");
             ResourceKey<LootTable> key = LOOT_LIST.get(getLootTableIndex(stack));
-            list.add(Component.literal(key.location().toString()).withStyle(ChatFormatting.GOLD));
+            list.add(Component.literal(key.identifier().toString()).withStyle(ChatFormatting.GOLD));
         } finally {
             list.forEach(tooltip);
         }
@@ -93,7 +93,7 @@ public class LootGenerator extends BaseItem {
         player.swing(hand);
 
         if (player instanceof ServerPlayer)
-            player.displayClientMessage(Component.literal("Table: " + LOOT_LIST.get(getLootTableIndex(stack)).location()), true);
+            player.displayClientMessage(Component.literal("Table: " + LOOT_LIST.get(getLootTableIndex(stack)).identifier()), true);
         return InteractionResult.SUCCESS;
     }
 

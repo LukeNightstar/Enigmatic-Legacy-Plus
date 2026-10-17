@@ -1,5 +1,7 @@
 package auviotre.enigmatic.legacy.contents.item.etherium;
 
+import net.minecraft.world.item.equipment.ArmorType;
+import net.minecraft.world.item.Item;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.api.SubscribeConfig;
 import auviotre.enigmatic.legacy.api.item.IItemHelper;
@@ -10,7 +12,6 @@ import auviotre.enigmatic.legacy.registries.EnigmaticAttachments;
 import auviotre.enigmatic.legacy.registries.EnigmaticAttributes;
 import auviotre.enigmatic.legacy.registries.EnigmaticEnchantments;
 import auviotre.enigmatic.legacy.registries.EnigmaticSounds;
-import com.google.common.base.Suppliers;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -24,8 +25,6 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
 import net.minecraft.world.entity.projectile.hurtingprojectile.AbstractHurtingProjectile;
-import net.minecraft.world.item.ArmorItem;
-import net.minecraft.world.item.equipment.ArmorMaterial;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
@@ -44,32 +43,23 @@ import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.function.Supplier;
 import net.minecraft.world.item.component.TooltipDisplay;
 import java.util.function.Consumer;
 import java.util.ArrayList;
 
-public class EtheriumArmor extends ArmorItem {
+public class EtheriumArmor extends Item {
     public static ModConfigSpec.BooleanValue etheriumShieldRenderLayer;
     public static ModConfigSpec.BooleanValue etheriumShieldIcon;
     public static ModConfigSpec.IntValue iconOffsetX;
     public static ModConfigSpec.IntValue iconOffsetY;
-    private final Supplier<ItemAttributeModifiers> defaultModifiers;
+    public EtheriumArmor(ArmorType type) {
+        super(IItemHelper.properties().fireResistant().humanoidArmor(EtheriumProperties.MATERIAL, type).attributes(createAttributes(type)));
+    }
 
-    public EtheriumArmor(Type type) {
-        super(EtheriumProperties.MATERIAL, type, IItemHelper.properties().fireResistant().durability(type.getDurability(132)));
-        this.defaultModifiers = Suppliers.memoize(() -> {
-            ArmorMaterial material = EtheriumProperties.MATERIAL.value();
-            int i = material.getDefense(type);
-            float f = material.toughness();
-            ItemAttributeModifiers.Builder builder = ItemAttributeModifiers.builder();
-            EquipmentSlotGroup group = EquipmentSlotGroup.bySlot(type.getSlot());
-            Identifier location = Identifier.withDefaultNamespace("armor." + type.getName());
-            builder.add(Attributes.ARMOR, new AttributeModifier(location, i, AttributeModifier.Operation.ADD_VALUE), group);
-            builder.add(Attributes.ARMOR_TOUGHNESS, new AttributeModifier(location, f, AttributeModifier.Operation.ADD_VALUE), group);
-            builder.add(EnigmaticAttributes.ETHERIUM_SHIELD, new AttributeModifier(location, 0.08F, AttributeModifier.Operation.ADD_VALUE), group);
-            return builder.build();
-        });
+    private static ItemAttributeModifiers createAttributes(ArmorType type) {
+        Identifier location = Identifier.withDefaultNamespace("armor." + type.getName());
+        return EtheriumProperties.MATERIAL.createAttributes(type).withModifierAdded(EnigmaticAttributes.ETHERIUM_SHIELD,
+                new AttributeModifier(location, 0.08F, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.bySlot(type.getSlot()));
     }
 
     @SubscribeConfig(receiveClient = true)
@@ -99,10 +89,6 @@ public class EtheriumArmor extends ArmorItem {
         } finally {
             list.forEach(tooltip);
         }
-    }
-
-    public ItemAttributeModifiers getDefaultAttributeModifiers() {
-        return this.defaultModifiers.get();
     }
 
     @Mod(value = EnigmaticLegacy.MODID)

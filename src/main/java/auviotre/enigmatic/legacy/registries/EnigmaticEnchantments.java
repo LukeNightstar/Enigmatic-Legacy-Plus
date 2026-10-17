@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.registries;
 
+import top.theillusivec4.curios.api.common.DropRule;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.contents.item.amulets.EldritchAmulet;
 import auviotre.enigmatic.legacy.contents.item.etherium.EtheriumProperties;
@@ -11,6 +12,7 @@ import net.minecraft.advancements.criterion.EntityPredicate;
 import net.minecraft.advancements.criterion.ItemPredicate;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderGetter;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.BootstrapContext;
@@ -51,7 +53,6 @@ import top.theillusivec4.curios.api.SlotContext;
 import top.theillusivec4.curios.api.event.CurioAttributeModifierEvent;
 import top.theillusivec4.curios.api.event.CurioCanUnequipEvent;
 import top.theillusivec4.curios.api.event.DropRulesEvent;
-import top.theillusivec4.curios.api.type.capability.ICurio;
 
 public class EnigmaticEnchantments {
     public static final ResourceKey<Enchantment> SLAYER = key("slayer");
@@ -67,9 +68,10 @@ public class EnigmaticEnchantments {
     public static void bootstrap(BootstrapContext<Enchantment> context) {
         HolderGetter<Enchantment> enchantmentGetter = context.lookup(Registries.ENCHANTMENT);
         HolderGetter<Item> itemGetter = context.lookup(Registries.ITEM);
+        HolderGetter<EntityType<?>> entityGetter = context.lookup(Registries.ENTITY_TYPE);
         register(context, SLAYER, Enchantment.enchantment(
                                 Enchantment.definition(
-                                        itemGetter.getOrThrow(ItemTags.WEAPON_ENCHANTABLE), itemGetter.getOrThrow(ItemTags.SWORD_ENCHANTABLE),
+                                        itemGetter.getOrThrow(ItemTags.WEAPON_ENCHANTABLE), itemGetter.getOrThrow(ItemTags.MELEE_WEAPON_ENCHANTABLE),
                                         5, 5, Enchantment.dynamicCost(5, 8), Enchantment.dynamicCost(25, 8), 2, EquipmentSlotGroup.MAINHAND
                                 )
                         ).exclusiveWith(enchantmentGetter.getOrThrow(EnchantmentTags.DAMAGE_EXCLUSIVE))
@@ -99,7 +101,7 @@ public class EnigmaticEnchantments {
                                 EnchantmentEffectComponents.DAMAGE,
                                 new AddValue(LevelBasedValue.perLevel(0.5F)),
                                 LootItemEntityPropertyCondition.hasProperties(
-                                        LootContext.EntityTarget.DIRECT_ATTACKER, EntityPredicate.Builder.entity().of(EntityTypeTags.ARROWS).build()
+                                        LootContext.EntityTarget.DIRECT_ATTACKER, EntityPredicate.Builder.entity().of(entityGetter, EntityTypeTags.ARROWS).build()
                                 )
                         )
         );
@@ -112,7 +114,7 @@ public class EnigmaticEnchantments {
                         .withEffect(
                                 EnchantmentEffectComponents.AMMO_USE,
                                 new SetValue(LevelBasedValue.constant(0.0F)),
-                                MatchTool.toolMatches(ItemPredicate.Builder.item().of(Items.ARROW))
+                                MatchTool.toolMatches(ItemPredicate.Builder.item().of(itemGetter, Items.ARROW))
                         )
         );
         register(context, WRATH, Enchantment.enchantment(
@@ -146,7 +148,7 @@ public class EnigmaticEnchantments {
         );
         register(context, NEMESIS_CURSE, Enchantment.enchantment(
                         Enchantment.definition(
-                                itemGetter.getOrThrow(ItemTags.SHARP_WEAPON_ENCHANTABLE), itemGetter.getOrThrow(ItemTags.SWORD_ENCHANTABLE),
+                                itemGetter.getOrThrow(ItemTags.SHARP_WEAPON_ENCHANTABLE), itemGetter.getOrThrow(ItemTags.MELEE_WEAPON_ENCHANTABLE),
                                 1, 1, Enchantment.constantCost(25), Enchantment.constantCost(50), 8, EquipmentSlotGroup.MAINHAND
                         )
                 )
@@ -178,7 +180,7 @@ public class EnigmaticEnchantments {
     }
 
     private static void register(BootstrapContext<Enchantment> context, ResourceKey<Enchantment> key, Enchantment.Builder builder) {
-        context.register(key, builder.build(key.location()));
+        context.register(key, builder.build(key.identifier()));
     }
 
     private static ResourceKey<Enchantment> key(String name) {
@@ -202,14 +204,14 @@ public class EnigmaticEnchantments {
                         Holder<Enchantment> holder = event.getEntity().registryAccess().holderOrThrow(ETERNAL_BINDING_CURSE);
                         return stack.is(EnigmaticItems.CURSED_RING) || stack.is(EnigmaticItems.REDEMPTION_RING) || stack.is(EnigmaticTags.Items.AMULETS)
                                 || EnchantmentHelper.getTagEnchantmentLevel(holder, stack) > 0;
-                    }, ICurio.DropRule.ALWAYS_KEEP
+                    }, DropRule.ALWAYS_KEEP
             );
             if (event.getEntity() instanceof Player player) {
                 if (CursedRing.POSSESSIONS.containsEntry(player, EnigmaticItems.ELDRITCH_AMULET) && EldritchAmulet.keepInventory.get()) {
                     event.addOverride(stack -> {
                         Holder<Enchantment> holder = event.getEntity().registryAccess().holderOrThrow(Enchantments.VANISHING_CURSE);
                         return EnchantmentHelper.getTagEnchantmentLevel(holder, stack) <= 0;
-                    }, ICurio.DropRule.ALWAYS_KEEP);
+                    }, DropRule.ALWAYS_KEEP);
                 }
             }
         }
@@ -250,7 +252,7 @@ public class EnigmaticEnchantments {
         private static void onDamaged(LivingDamageEvent.@NotNull Post event) {
             DamageSource source = event.getSource();
             LivingEntity entity = event.getEntity();
-            float damage = event.getNewDamage();
+            float damage = event.getInflictedDamage();
             if (source.getEntity() instanceof LivingEntity attacker) {
                 var nemesis = EnigmaticHandler.get(attacker.level(), Registries.ENCHANTMENT, NEMESIS_CURSE);
                 if (EnchantmentHelper.getEnchantmentLevel(nemesis, attacker) > 0) {
@@ -270,12 +272,10 @@ public class EnigmaticEnchantments {
 
         @SubscribeEvent
         private static void getCurioAttribute(@NotNull CurioAttributeModifierEvent event) {
-            SlotContext context = event.getSlotContext();
-            if (context.entity() == null) return;
+            // Curios 15 no longer passes a slot context here; it suffixes modifier ids per slot itself.
             ItemStack stack = event.getItemStack();
-            Identifier location = EnigmaticLegacy.location("enchantment.etheric_resonance/" + context.identifier().replace(':','/') + "_" + context.index());
-            var ethereal = EnigmaticHandler.get(context.entity().level(), Registries.ENCHANTMENT, ETHERIC_RESONANCE);
-            if (stack.getEnchantmentLevel(ethereal) > 0) {
+            if (stack.getEnchantments().keySet().stream().anyMatch(holder -> holder.is(ETHERIC_RESONANCE))) {
+                Identifier location = EnigmaticLegacy.location("enchantment.etheric_resonance");
                 event.addModifier(EnigmaticAttributes.ETHERIUM_SHIELD, new AttributeModifier(location, 0.01, AttributeModifier.Operation.ADD_VALUE));
             }
         }

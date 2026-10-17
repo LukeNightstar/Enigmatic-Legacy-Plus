@@ -1,5 +1,9 @@
 package auviotre.enigmatic.legacy.contents.capability;
 
+import net.minecraft.util.ProblemReporter;
+import net.minecraft.world.level.storage.TagValueInput;
+import net.minecraft.world.level.storage.TagValueOutput;
+
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.contents.attachement.AntiqueBagInventory;
 import auviotre.enigmatic.legacy.registries.EnigmaticAttachments;
@@ -55,10 +59,12 @@ public class AntiqueBagCapability implements IAntiqueBagHandler {
     }
 
     public Tag writeTag() {
-        return this.inventory.serializeNBT(this.owner.registryAccess());
+        TagValueOutput output = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, this.owner.registryAccess());
+        this.inventory.serialize(output);
+        return output.buildResult();
     }
 
     public void readTag(Tag nbt) {
-        this.inventory.deserializeNBT(this.owner.registryAccess(), (CompoundTag) nbt);
+        this.inventory.deserialize(TagValueInput.create(ProblemReporter.DISCARDING, this.owner.registryAccess(), (CompoundTag) nbt));
     }
 }

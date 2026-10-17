@@ -1,12 +1,12 @@
 package auviotre.enigmatic.legacy.contents.attachement;
 
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.neoforged.neoforge.common.util.ValueIOSerializable;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.common.util.INBTSerializable;
 import net.neoforged.neoforge.items.ItemStackHandler;
 
-public class AntiqueBagInventory implements INBTSerializable<CompoundTag> {
+public class AntiqueBagInventory implements ValueIOSerializable {
     public static final int SLOTS_COUNT = 12;
     ItemStackHandler handler = new ItemStackHandler(SLOTS_COUNT);
 
@@ -20,11 +20,13 @@ public class AntiqueBagInventory implements INBTSerializable<CompoundTag> {
         }
     }
 
-    public CompoundTag serializeNBT(HolderLookup.Provider provider) {
-        return this.handler.serializeNBT(provider);
+    @Override
+    public void serialize(ValueOutput output) {
+        this.handler.serialize(output);
     }
 
-    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag tag) {
-        this.handler.deserializeNBT(provider, tag);
+    @Override
+    public void deserialize(ValueInput input) {
+        this.handler.deserialize(input);
     }
 }

@@ -144,7 +144,7 @@ public class ThunderScroll extends CursedCurioItem {
             if (source.getEntity() instanceof LivingEntity entity && EnigmaticHandler.hasCurio(entity, EnigmaticItems.THUNDER_SCROLL)) {
                 if (entity.getWeaponItem().canPerformAction(ItemAbilities.SWORD_SWEEP) && source.is(DamageTypeTags.IS_PLAYER_ATTACK)) {
                     int electric = victim.getPersistentData().getIntOr(TAG_ID, 0);
-                    victim.getPersistentData().putInt(TAG_ID, electric + 60 + entity.getRandom().nextInt(80) + (int) (event.getNewDamage() * 10));
+                    victim.getPersistentData().putInt(TAG_ID, electric + 60 + entity.getRandom().nextInt(80) + (int) (event.getInflictedDamage() * 10));
                 }
             }
         }

@@ -304,7 +304,7 @@ public class EnigmaticEventHandler {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     private static void onDamaged(LivingDamageEvent.@NotNull Post event) {
         LivingEntity victim = event.getEntity();
-        float damage = event.getNewDamage();
+        float damage = event.getInflictedDamage();
         if (event.getSource().getEntity() instanceof LivingEntity attacker) {
             if (attacker instanceof Stray && victim.canFreeze() && EnigmaticHandler.isCurseBoosted(attacker))
                 victim.setTicksFrozen(victim.getTicksFrozen() + 65 + Mth.floor(damage * 10));

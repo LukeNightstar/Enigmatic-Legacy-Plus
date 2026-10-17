@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.item.etherium;
 
+import net.minecraft.sounds.SoundEvents;
 import auviotre.enigmatic.legacy.api.item.IItemHelper;
 import auviotre.enigmatic.legacy.handlers.EnigmaticHandler;
 import auviotre.enigmatic.legacy.handlers.TooltipHandler;
@@ -46,9 +47,10 @@ import java.util.function.Predicate;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.ItemInstance;
 
-public class EtheriumScythe extends HoeItem {
+public class EtheriumScythe extends Item {
     public EtheriumScythe() {
-        super(EtheriumProperties.TIER, IItemHelper.properties().fireResistant().attributes(EtheriumProperties.createAttributes(3.0F, -2.0F, 0.04F)));
+        // HoeItem's constructor would replace the custom attributes, so hoe behaviour is inlined below
+        super(IItemHelper.properties().fireResistant().hoe(EtheriumProperties.TIER, 3.0F, -2.0F).attributes(EtheriumProperties.createAttributes(3.0F, -2.0F, 0.04F)));
     }
 
     public static Consumer<UseOnContext> changeIntoState(BlockState state, BlockPos pos) {
@@ -77,7 +79,7 @@ public class EtheriumScythe extends HoeItem {
     }
 
     public float getDestroySpeed(ItemStack stack, @NotNull BlockState state) {
-        if (state.is(BlockTags.SWORD_EFFICIENT)) return this.getTier().getSpeed();
+        if (state.is(BlockTags.SWORD_EFFICIENT)) return EtheriumProperties.TIER.speed();
         return super.getDestroySpeed(stack, state);
     }
 
@@ -109,10 +111,10 @@ public class EtheriumScythe extends HoeItem {
                 for (BlockPos offset : BlockPos.betweenClosed(pos.offset(1, 1, 1), pos.offset(-1, -1, -1))) {
                     if (!offset.equals(pos)) tryHarvest(context, level, offset);
                 }
-                return InteractionResult.sidedSuccess(level.isClientSide());
+                return InteractionResult.SUCCESS;
             }
         }
-        InteractionResult result = super.useOn(context);
+        InteractionResult result = till(context);
         if (result.consumesAction()) {
             for (BlockPos offset : BlockPos.betweenClosed(pos.offset(1, 1, 1), pos.offset(-1, -1, -1))) {
                 if (offset.equals(pos)) continue;
@@ -126,12 +128,26 @@ public class EtheriumScythe extends HoeItem {
                     if (!level.isClientSide()) {
                         consumer.accept(context);
                         if (player != null)
-                            stack.hurtAndBreak(1, player, LivingEntity.getSlotForHand(context.getHand()));
+                            stack.hurtAndBreak(1, player, context.getHand().asEquipmentSlot());
                     }
                 }
             }
         }
         return result;
+    }
+
+    private static InteractionResult till(UseOnContext context) {
+        Level level = context.getLevel();
+        BlockPos pos = context.getClickedPos();
+        BlockState modifiedState = level.getBlockState(pos).getToolModifiedState(context, ItemAbilities.HOE_TILL, false);
+        if (modifiedState == null) return InteractionResult.PASS;
+        Player player = context.getPlayer();
+        level.playSound(player, pos, SoundEvents.HOE_TILL, SoundSource.BLOCKS, 1.0F, 1.0F);
+        if (!level.isClientSide()) {
+            HoeItem.changeIntoState(modifiedState).accept(context);
+            if (player != null) context.getItemInHand().hurtAndBreak(1, player, context.getHand().asEquipmentSlot());
+        }
+        return InteractionResult.SUCCESS;
     }
 
     private boolean tryHarvest(UseOnContext context, Level level, BlockPos pos) {
@@ -153,7 +169,7 @@ public class EtheriumScythe extends HoeItem {
                 changeIntoState(modifiedState, pos).accept(context);
                 server.playSound(null, pos, state.getSoundType(level, pos, player).getBreakSound(), SoundSource.BLOCKS, 0.5F, 1.0F);
                 if (player != null)
-                    context.getItemInHand().hurtAndBreak(1, player, LivingEntity.getSlotForHand(context.getHand()));
+                    context.getItemInHand().hurtAndBreak(1, player, context.getHand().asEquipmentSlot());
                 return true;
             }
         }
