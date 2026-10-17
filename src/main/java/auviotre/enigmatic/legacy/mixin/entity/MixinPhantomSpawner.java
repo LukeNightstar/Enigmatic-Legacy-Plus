@@ -24,15 +24,16 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(PhantomSpawner.class)
 public class MixinPhantomSpawner {
     @Unique
     private int ticksUntilSpawn = 0;
 
-    @Inject(at = @At("RETURN"), method = "tick", cancellable = true)
-    private void onTick(ServerLevel level, boolean spawnEnemies, boolean spawnFriendlies, CallbackInfoReturnable<Integer> info) {
+    // 26.1.2 port: CustomSpawner#tick no longer returns a spawn count.
+    @Inject(at = @At("RETURN"), method = "tick")
+    private void onTick(ServerLevel level, boolean spawnEnemies, CallbackInfo info) {
         if (spawnEnemies && level.getGameRules().get(GameRules.SPAWN_PHANTOMS)) {
             var random = level.getRandom();
             --this.ticksUntilSpawn;
@@ -78,7 +79,6 @@ public class MixinPhantomSpawner {
                         }
                     }
                 }
-                info.setReturnValue(info.getReturnValue() + i);
             }
         }
     }

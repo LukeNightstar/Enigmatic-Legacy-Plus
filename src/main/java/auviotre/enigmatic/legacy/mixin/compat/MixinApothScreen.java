@@ -24,12 +24,12 @@ public abstract class MixinApothScreen extends EnchantmentScreen {
         super(menu, playerInventory, title);
     }
 
-    @Redirect(at = @At(value = "INVOKE", target = "Ldev/shadowsoffire/apothic_enchanting/table/ApothEnchantmentMenu;getGoldCount()I"), method = "renderBg")
+    @Redirect(at = @At(value = "INVOKE", target = "Ldev/shadowsoffire/apothic_enchanting/table/ApothEnchantmentMenu;getGoldCount()I"), method = "extractBackground")
     private int onRenderBg(ApothEnchantmentMenu instance) {
         return getLapisCount();
     }
 
-    @Redirect(at = @At(value = "INVOKE", target = "Ldev/shadowsoffire/apothic_enchanting/table/ApothEnchantmentMenu;getGoldCount()I"), method = "render")
+    @Redirect(at = @At(value = "INVOKE", target = "Ldev/shadowsoffire/apothic_enchanting/table/ApothEnchantmentMenu;getGoldCount()I"), method = "extractRenderState")
     private int onRender(ApothEnchantmentMenu instance) {
         return getLapisCount();
     }
