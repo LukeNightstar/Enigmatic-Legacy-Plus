@@ -113,8 +113,21 @@ public class NightScroll extends CursedCurioItem {
 
     public Multimap<Holder<Attribute>, AttributeModifier> getAttributeModifiers(SlotContext slotContext, Identifier id, ItemStack stack) {
         Multimap<Holder<Attribute>, AttributeModifier> attributes = HashMultimap.create();
+        // 26.1.2 port: Curios 15 computes curio modifiers without a wearer; the darkness-scaled bonus is applied in onEquip.
+        if (slotContext.entity() == null) return attributes;
         attributes.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(IItemHelper.getLocation(this), damageBoost.get() / 100.0F * getDarkModifier(slotContext.entity()), AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
         return attributes;
+    }
+
+    // Like Curios 1.21.1, the bonus is computed with the wearer's light level when the scroll is equipped or changes.
+    public void onEquip(SlotContext slotContext, ItemStack prevStack, ItemStack stack) {
+        slotContext.entity().getAttributes().addTransientAttributeModifiers(this.getAttributeModifiers(slotContext, IItemHelper.getLocation(this), stack));
+        super.onEquip(slotContext, prevStack, stack);
+    }
+
+    public void onUnequip(SlotContext slotContext, ItemStack newStack, ItemStack stack) {
+        slotContext.entity().getAttributes().removeAttributeModifiers(this.getAttributeModifiers(slotContext, IItemHelper.getLocation(this), stack));
+        super.onUnequip(slotContext, newStack, stack);
     }
 
     @Mod(value = EnigmaticLegacy.MODID)

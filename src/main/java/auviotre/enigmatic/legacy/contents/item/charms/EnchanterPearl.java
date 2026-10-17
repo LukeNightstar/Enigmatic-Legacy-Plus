@@ -58,7 +58,8 @@ public class EnchanterPearl extends CursedCurioItem {
 
     public Multimap<Holder<Attribute>, AttributeModifier> getAttributeModifiers(SlotContext context, Identifier id, ItemStack stack) {
         Multimap<Holder<Attribute>, AttributeModifier> attributes = HashMultimap.create();
-        if (EnigmaticHandler.canUse(context.entity(), stack))
+        // 26.1.2 port: Curios 15 computes these without a wearer (null entity); curio slots only exist on players.
+        if (context.entity() == null || EnigmaticHandler.canUse(context.entity(), stack))
             attributes.put(SlotAttribute.getOrCreate("charm"), new AttributeModifier(IItemHelper.getLocation(this), 1.0, AttributeModifier.Operation.ADD_VALUE));
         return attributes;
     }

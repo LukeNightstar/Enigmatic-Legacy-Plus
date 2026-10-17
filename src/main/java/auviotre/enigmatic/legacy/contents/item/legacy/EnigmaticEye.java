@@ -182,7 +182,8 @@ public class EnigmaticEye extends BaseCurioItem {
     public Multimap<Holder<Attribute>, AttributeModifier> getAttributeModifiers(SlotContext context, Identifier id, ItemStack stack) {
         Multimap<Holder<Attribute>, AttributeModifier> attributes = HashMultimap.create();
         if (this.isDormant(stack)) return attributes;
-        if (!(context.entity() instanceof Player)) return attributes;
+        // 26.1.2 port: Curios 15 computes these without a wearer (null entity); curio slots only exist on players.
+        if (context.entity() != null && !(context.entity() instanceof Player)) return attributes;
         attributes.put(SlotAttribute.getOrCreate("charm"), new AttributeModifier(IItemHelper.getLocation(this), 1.0, AttributeModifier.Operation.ADD_VALUE));
         return attributes;
     }
