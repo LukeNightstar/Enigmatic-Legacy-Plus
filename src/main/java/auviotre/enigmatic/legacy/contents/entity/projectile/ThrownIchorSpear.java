@@ -38,7 +38,7 @@ public class ThrownIchorSpear extends AbstractSpear {
 
     public void tick() {
         super.tick();
-        if (this.level().isClientSide() && !this.inGround) {
+        if (this.level().isClientSide() && !this.isInGround()) {
             Vec3 vec3 = this.getDeltaMovement();
             double dx = vec3.x;
             double dy = vec3.y;
@@ -55,7 +55,7 @@ public class ThrownIchorSpear extends AbstractSpear {
         Entity owner = this.getOwner();
         double damage = IchorSpear.baseDamage.get() * Math.sqrt(this.getDeltaMovement().length());
         DamageSource damageSource = this.damageSources().trident(this, owner == null ? this : owner);
-        if (entity.hurt(damageSource, (float) damage)) {
+        if (entity.hurtOrSimulate(damageSource, (float) damage)) {
             if (entity.getType() == EntityType.ENDERMAN) return;
             if (entity instanceof LivingEntity living) this.doPostHurtEffects(living);
         }

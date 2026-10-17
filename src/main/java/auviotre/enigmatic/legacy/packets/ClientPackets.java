@@ -158,7 +158,7 @@ public class ClientPackets {
     }
 
     public static void handle(final SlotUnlockToastPacket packet) {
-        ToastManager toasts = Minecraft.getInstance().getToasts();
+        ToastManager toasts = Minecraft.getInstance().getToastManager();
         ItemStack stack = switch (packet.identifier()) {
             case "ring" -> EnigmaticItems.IRON_RING.toStack();
             case "scroll" -> EnigmaticItems.BLANK_SCROLL.toStack();
@@ -267,7 +267,7 @@ public class ClientPackets {
                     double range = Math.random() * 0.2 + 0.2;
                     level.addParticle(ParticleTypes.SNOWFLAKE, packet.x, packet.y + 0.2 * Math.random(), packet.z, range * Math.sin(Math.PI / amount * i), 0.05, range * Math.cos(Math.PI / amount * i));
                 }
-                ItemParticleOption option = new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(Blocks.BLUE_ICE));
+                ItemParticleOption option = new ItemParticleOption(ParticleTypes.ITEM, Blocks.BLUE_ICE.asItem());
                 for (int i = 0; i < amount * 3; i++) {
                     level.addParticle(option, packet.x, packet.y, packet.z, Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() * 2 - 1);
                 }

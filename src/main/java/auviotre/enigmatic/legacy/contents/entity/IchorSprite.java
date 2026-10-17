@@ -432,7 +432,7 @@ public class IchorSprite extends PathfinderMob implements TraceableEntity {
                         if (EnigmaticHandler.isTheCursedOne(target)) f *= 1.6F;
                         PacketDistributor.sendToPlayersNear(level, null, sprite.getX(), sprite.getY(), sprite.getZ(), 16,
                                 new IchorSpriteBeamPacket(sprite.getEyePosition(), target.position().add(0, target.getBbHeight() * 0.5, 0)));
-                        if (target.hurt(sprite.damageSources().indirectMagic(sprite, sprite), f)) {
+                        if (target.hurtOrSimulate(sprite.damageSources().indirectMagic(sprite, sprite), f)) {
                             if (effect != null && random.nextBoolean()) {
                                 target.addEffect(new MobEffectInstance(EnigmaticEffects.ICHOR_CORROSION, 600, effect.getAmplifier() + 1), sprite);
                             } else {

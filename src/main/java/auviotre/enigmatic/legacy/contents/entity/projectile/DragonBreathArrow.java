@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.entity.projectile;
 
+import net.minecraft.core.particles.PowerParticleOption;
 import auviotre.enigmatic.legacy.registries.EnigmaticEntities;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
@@ -21,6 +22,7 @@ import net.minecraft.world.phys.Vec3;
 import javax.annotation.Nullable;
 import java.util.List;
 
+import net.minecraft.core.particles.ColorParticleOption;
 public class DragonBreathArrow extends AbstractArrow {
 
     public DragonBreathArrow(EntityType<? extends AbstractArrow> type, Level world) {
@@ -43,9 +45,9 @@ public class DragonBreathArrow extends AbstractArrow {
             double dz = movement.z;
             double length = movement.length() * 1.25D;
             for (int i = 0; i < length; ++i) {
-                this.level().addParticle(ParticleTypes.DRAGON_BREATH, this.getRandomX(0.0F) + dx * (double) i / length, this.getRandomY() + dy * (double) i / length, this.getRandomZ(0.0F) + dz * (double) i / length, -dx * 0.1, -dy * 0.1, -dz * 0.1);
+                this.level().addParticle(PowerParticleOption.create(ParticleTypes.DRAGON_BREATH, 1.0F), this.getRandomX(0.0F) + dx * (double) i / length, this.getRandomY() + dy * (double) i / length, this.getRandomZ(0.0F) + dz * (double) i / length, -dx * 0.1, -dy * 0.1, -dz * 0.1);
             }
-        } else if (this.inGround) this.summonAreaEffect();
+        } else if (this.isInGround()) this.summonAreaEffect();
     }
 
     protected void onHit(HitResult hitResult) {
@@ -67,7 +69,7 @@ public class DragonBreathArrow extends AbstractArrow {
         List<LivingEntity> entities = this.level().getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(4.0, 2.0, 4.0));
         AreaEffectCloud effectCloud = new AreaEffectCloud(this.level(), this.getX(), this.getY(), this.getZ());
         if (this.getOwner() instanceof LivingEntity owner) effectCloud.setOwner(owner);
-        effectCloud.setParticle(ParticleTypes.DRAGON_BREATH);
+        effectCloud.setCustomParticle(PowerParticleOption.create(ParticleTypes.DRAGON_BREATH, 1.0F));
         effectCloud.setRadius(1.5F);
         effectCloud.setDuration(100);
         effectCloud.setRadiusOnUse(0.1F);

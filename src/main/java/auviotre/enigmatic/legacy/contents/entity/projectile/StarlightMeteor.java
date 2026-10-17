@@ -15,6 +15,8 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 
+import net.minecraft.core.particles.ColorParticleOption;
+import net.minecraft.core.particles.PowerParticleOption;
 public class StarlightMeteor extends ThrowableItemProjectile {
     public StarlightMeteor(EntityType<? extends ThrowableItemProjectile> type, Level level) {
         super(type, level);
@@ -40,7 +42,7 @@ public class StarlightMeteor extends ThrowableItemProjectile {
                 this.level().addParticle(ParticleTypes.END_ROD, this.getX(), this.getY(), this.getZ(), (this.random.nextFloat() - 0.5F) * d0, (this.random.nextFloat() - 0.5F) * d0, (this.random.nextFloat() - 0.5F) * d0);
             }
             this.level().addParticle(ParticleTypes.EXPLOSION, this.getX(), this.getY(), this.getZ(), 0, 0, 0);
-            this.level().addParticle(ParticleTypes.FLASH, this.getX(), this.getY(), this.getZ(), 0, 0, 0);
+            this.level().addParticle(ColorParticleOption.create(ParticleTypes.FLASH, -1), this.getX(), this.getY(), this.getZ(), 0, 0, 0);
         }
     }
 
@@ -59,7 +61,7 @@ public class StarlightMeteor extends ThrowableItemProjectile {
         super.onHitEntity(result);
         Entity entity = result.getEntity();
         if (entity instanceof LivingEntity livingEntity) {
-            if (livingEntity.hurt(livingEntity.damageSources().magic(), 8.0F)) {
+            if (livingEntity.hurtOrSimulate(livingEntity.damageSources().magic(), 8.0F)) {
                 livingEntity.kill();
             }
         }

@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.entity;
 
+import auviotre.enigmatic.legacy.handlers.EnigmaticHandler;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.api.entity.SpearAttackMob;
 import auviotre.enigmatic.legacy.contents.entity.behavior.SpearAttack;
@@ -209,14 +210,14 @@ public class PiglinWanderer extends AbstractPiglin implements SpearAttackMob {
             if (target == null) return;
             ItemStack backup = ItemStack.EMPTY;
             if (!piglin.getPersistentData().getCompound("BackupItem").isEmpty())
-                backup = ItemStack.parseOptional(piglin.registryAccess(), piglin.getPersistentData().getCompound("BackupItem"));
+                backup = EnigmaticHandler.parseStack(piglin.registryAccess(), piglin.getPersistentData().getCompoundOrEmpty("BackupItem"));
             if (target.closerThan(piglin, 5) && piglin.isHolding(is -> is.getItem() instanceof IchorSpear)) {
                 InteractionHand hand = piglin.getMainHandItem().getItem() instanceof IchorSpear ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND;
                 ItemStack copy = piglin.getItemInHand(hand).copy();
                 if (backup.isEmpty())
                     piglin.setItemSlot(EquipmentSlot.MAINHAND, Items.GOLDEN_SWORD.getDefaultInstance());
                 else piglin.setItemSlot(EquipmentSlot.MAINHAND, backup.copy());
-                piglin.getPersistentData().put("BackupItem", copy.save(piglin.registryAccess()));
+                piglin.getPersistentData().put("BackupItem", EnigmaticHandler.saveStack(piglin.registryAccess(), copy));
                 piglin.setCharging(false);
             }
             if (!target.closerThan(piglin, 9) && piglin.isHolding(is -> is.getItem() instanceof SwordItem)) {
@@ -225,7 +226,7 @@ public class PiglinWanderer extends AbstractPiglin implements SpearAttackMob {
                 if (backup.isEmpty())
                     piglin.setItemSlot(EquipmentSlot.MAINHAND, EnigmaticItems.ICHOR_SPEAR.toStack());
                 else piglin.setItemSlot(EquipmentSlot.MAINHAND, backup.copy());
-                piglin.getPersistentData().put("BackupItem", copy.save(piglin.registryAccess()));
+                piglin.getPersistentData().put("BackupItem", EnigmaticHandler.saveStack(piglin.registryAccess(), copy));
                 piglin.setCharging(false);
             }
             doStop(level, piglin, gameTime);

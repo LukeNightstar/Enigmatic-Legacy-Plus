@@ -72,7 +72,7 @@ public class CobwebBall extends Projectile implements ItemSupplier {
         this.updateRotation();
         if (this.level().getBlockStates(this.getBoundingBox()).noneMatch(BlockBehaviour.BlockStateBase::isAir)) {
             this.discard();
-        } else if (this.isInWaterOrBubble()) {
+        } else if (this.isInWater()) {
             this.discard();
         } else {
             this.setDeltaMovement(vec3.scale(0.98F));
@@ -84,7 +84,7 @@ public class CobwebBall extends Projectile implements ItemSupplier {
     }
 
     private ItemParticleOption getParticle() {
-        return new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(Blocks.COBWEB));
+        return new ItemParticleOption(ParticleTypes.ITEM, Blocks.COBWEB.asItem());
     }
 
     protected void onHitEntity(EntityHitResult hitResult) {
@@ -94,7 +94,7 @@ public class CobwebBall extends Projectile implements ItemSupplier {
             Entity target = hitResult.getEntity();
             AttributeInstance attribute = spider.getAttribute(Attributes.ATTACK_DAMAGE);
             float damage = attribute == null ? 1.0F : (float) attribute.getValue() / 2;
-            if (!(target instanceof Spider) && target.hurt(this.damageSources().mobProjectile(this, spider), Math.max(damage, 1.0F))) {
+            if (!(target instanceof Spider) && target.hurtOrSimulate(this.damageSources().mobProjectile(this, spider), Math.max(damage, 1.0F))) {
                 if (target == spider.getTarget() && target instanceof LivingEntity living) {
                     entity.level().playSound(null, target.blockPosition(), SoundEvents.HONEY_BLOCK_PLACE, SoundSource.BLOCKS);
                     int difficulty = this.level().getDifficulty().getId();

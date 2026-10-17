@@ -1,5 +1,8 @@
 package auviotre.enigmatic.legacy.handlers;
 
+import net.minecraft.world.item.Items;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
@@ -53,7 +56,6 @@ import net.minecraft.world.entity.ai.goal.target.TargetGoal;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.monster.Guardian;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
@@ -141,6 +143,15 @@ public interface EnigmaticHandler {
 
     static boolean isAbyssBoosted(LivingEntity entity) {
         return hasCurio(entity, EnigmaticItems.DIMNESS_CHARM);
+    }
+
+    // 26.1.2 port: replaces the removed ItemStack#save(Provider) / ItemStack.parseOptional
+    static Tag saveStack(HolderLookup.Provider provider, ItemStack stack) {
+        return ItemStack.OPTIONAL_CODEC.encodeStart(provider.createSerializationContext(NbtOps.INSTANCE), stack).getOrThrow();
+    }
+
+    static ItemStack parseStack(HolderLookup.Provider provider, Tag tag) {
+        return ItemStack.OPTIONAL_CODEC.parse(provider.createSerializationContext(NbtOps.INSTANCE), tag).result().orElse(ItemStack.EMPTY);
     }
 
     // 26.1.2 port: replaces the removed Player#sweepAttack (sweep particle only, as in 1.21.1)
@@ -488,7 +499,7 @@ public interface EnigmaticHandler {
             return false;
         else {
             List<ItemStack> allInventories = new ArrayList<>();
-            allInventories.addAll(player.getInventory().items);
+            allInventories.addAll(player.getInventory().getNonEquipmentItems());
             allInventories.addAll(player.getInventory().offhand);
             for (ItemStack invStack : allInventories) {
                 if (canMergeStacks(invStack, stack, player.getInventory().getMaxStackSize()))
@@ -540,7 +551,7 @@ public interface EnigmaticHandler {
             }
 
             boolean compatible = input.supportsEnchantment(mergedEnchantHolder);
-            if (input.getItem() instanceof EnchantedBookItem) compatible = true;
+            if (input.getItem() == Items.ENCHANTED_BOOK) compatible = true;
 
             for (Holder<Enchantment> originalEnchant : inputEnchants.keySet()) {
                 if (originalEnchant != mergedEnchantHolder && mergedEnchant.exclusiveSet().contains(originalEnchant)) {

@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.entity.misc;
 
+import auviotre.enigmatic.legacy.handlers.EnigmaticHandler;
 
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.api.item.IPermanentCrystal;
@@ -52,6 +53,8 @@ import java.util.Set;
 import java.util.UUID;
 
 import net.minecraft.core.UUIDUtil;
+import net.minecraft.core.particles.ColorParticleOption;
+import net.minecraft.core.particles.PowerParticleOption;
 public class PermanentItemEntity extends Entity {
     private static final EntityDataAccessor<ItemStack> ITEM = SynchedEntityData.defineId(PermanentItemEntity.class, EntityDataSerializers.ITEM_STACK);
     public float hoverStart = (float) (Math.random() * Math.PI * 2.0D);
@@ -216,7 +219,7 @@ public class PermanentItemEntity extends Entity {
         compound.putShort("PickupDelay", (short) this.pickupDelay);
         if (this.getThrowerId() != null) compound.store("Thrower", UUIDUtil.CODEC, this.getThrowerId());
         if (this.getOwnerId() != null) compound.store("Owner", UUIDUtil.CODEC, this.getOwnerId());
-        if (!this.getItem().isEmpty()) compound.put("Item", this.getItem().save(this.registryAccess()));
+        if (!this.getItem().isEmpty()) compound.put("Item", EnigmaticHandler.saveStack(this.registryAccess(), this.getItem()));
         if (this.position != null) {
             compound.putDouble("BoundX", this.position.x);
             compound.putDouble("BoundY", this.position.y);
@@ -226,7 +229,7 @@ public class PermanentItemEntity extends Entity {
         if (restoreMap != null) {
             for (String key : restoreMap.keySet()) {
                 ItemStack item = restoreMap.get(key);
-                if (!item.isEmpty()) mapTag.put(key, item.save(this.registryAccess()));
+                if (!item.isEmpty()) mapTag.put(key, EnigmaticHandler.saveStack(this.registryAccess(), item));
             }
         }
         compound.put("restoreMap", mapTag);
@@ -260,7 +263,7 @@ public class PermanentItemEntity extends Entity {
         ImmutableMap.Builder<String, ItemStack> builder = ImmutableMap.builder();
         CompoundTag mapTag = compound.getCompoundOrEmpty("restoreMap");
         for (String key : mapTag.getAllKeys()) {
-            ItemStack stack = ItemStack.parseOptional(this.registryAccess(), mapTag.getCompound(key));
+            ItemStack stack = EnigmaticHandler.parseStack(this.registryAccess(), mapTag.getCompoundOrEmpty(key));
             if (!stack.isEmpty()) builder.put(key, stack);
         }
         this.restoreMap = builder.build();
@@ -277,7 +280,7 @@ public class PermanentItemEntity extends Entity {
 
         if (compound.contains("Item", 10)) {
             CompoundTag compoundtag = compound.getCompoundOrEmpty("Item");
-            this.setItem(ItemStack.parseOptional(this.registryAccess(), compoundtag));
+            this.setItem(EnigmaticHandler.parseStack(this.registryAccess(), compoundtag));
         } else this.discard();
         if (this.getItem().isEmpty()) this.discard();
     }
@@ -304,7 +307,7 @@ public class PermanentItemEntity extends Entity {
                 if (acceptors != null && acceptors.contains(player.getUUID())) {
                     if (player.getInventory().add(copy)) {
                         acceptors.remove(player.getUUID());
-                        level.sendParticles((ServerPlayer) player, ParticleTypes.DRAGON_BREATH, false, this.getX(), this.getY(0.5), this.getZ(), 48, 0, 0, 0, 0.03);
+                        level.sendParticles((ServerPlayer) player, PowerParticleOption.create(ParticleTypes.DRAGON_BREATH, 1.0F), false, this.getX(), this.getY(0.5), this.getZ(), 48, 0, 0, 0, 0.03);
                         EnigmaticLegacy.LOGGER.info("Player {} picking up (share: {}): {}", player.getGameProfile().name(), stack, this);
                         player.awardStat(Stats.ITEM_PICKED_UP.get(item), count);
                         if (acceptors.isEmpty()) this.discard();
@@ -326,7 +329,7 @@ public class PermanentItemEntity extends Entity {
                     if (!SoulCrystal.retrieveSoulFromCrystal(player)) return;
                     else SoulArchive.getInstance().removeItem(this);
                 }
-                level.sendParticles(ParticleTypes.DRAGON_BREATH, this.getX(), this.getY(0.5), this.getZ(), 48, 0, 0, 0, 0.03);
+                level.sendParticles(PowerParticleOption.create(ParticleTypes.DRAGON_BREATH, 1.0F), this.getX(), this.getY(0.5), this.getZ(), 48, 0, 0, 0, 0.03);
                 player.take(this, count);
                 EnigmaticLegacy.LOGGER.info("Player {} picking up (crystal): {}", player.getGameProfile().name(), this);
                 this.discard();
@@ -357,7 +360,7 @@ public class PermanentItemEntity extends Entity {
             if (flag && player.getUUID().equals(this.getOwnerId())) {
                 if (player.addItem(stack.copy())) {
                     this.discard();
-                    level.sendParticles(ParticleTypes.DRAGON_BREATH, this.getX(), this.getY(0.5), this.getZ(), 48, 0, 0, 0, 0.03);
+                    level.sendParticles(PowerParticleOption.create(ParticleTypes.DRAGON_BREATH, 1.0F), this.getX(), this.getY(0.5), this.getZ(), 48, 0, 0, 0, 0.03);
                     return InteractionResult.CONSUME;
                 }
             }

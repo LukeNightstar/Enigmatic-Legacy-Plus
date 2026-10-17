@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.mixin.entity.dragon;
 
+import net.minecraft.core.particles.PowerParticleOption;
 import auviotre.enigmatic.legacy.handlers.EnigmaticHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -51,7 +52,7 @@ public abstract class MixinChargePhase extends AbstractDragonPhaseInstance {
                 flame.setOwner(this.dragon);
                 flame.setRadius(4.0F);
                 flame.setDuration(160);
-                flame.setParticle(ParticleTypes.DRAGON_BREATH);
+                flame.setCustomParticle(PowerParticleOption.create(ParticleTypes.DRAGON_BREATH, 1.0F));
                 flame.addEffect(new MobEffectInstance(MobEffects.INSTANT_DAMAGE));
                 ++this.flameAmount;
                 this.dragon.level().addFreshEntity(flame);

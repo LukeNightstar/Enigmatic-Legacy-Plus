@@ -109,13 +109,13 @@ public class UltimateWitherSkull extends AbstractHurtingProjectile {
             boolean flag;
             if (this.getOwner() instanceof LivingEntity owner) {
                 DamageSource source = this.damageSources().indirectMagic(this, owner);
-                flag = entity.hurt(source, this.isDangerous() ? 24.0F : 8.0F);
+                flag = entity.hurtOrSimulate(source, this.isDangerous() ? 24.0F : 8.0F);
                 if (flag) {
                     if (entity.isAlive()) {
                         EnchantmentHelper.doPostAttackEffects(level, entity, source);
                     }
                 }
-            } else flag = entity.hurt(this.damageSources().magic(), this.isDangerous() ? 16.0F : 5.0F);
+            } else flag = entity.hurtOrSimulate(this.damageSources().magic(), this.isDangerous() ? 16.0F : 5.0F);
 
 
             if (flag && entity instanceof LivingEntity living) {
