@@ -55,7 +55,7 @@ public class ClientProxy extends CommonProxy {
             LegacyItemProperty.register(EnigmaticItems.ETHERIUM_SWORD.get(), Identifier.withDefaultNamespace("blocking"), (stack, level, entity, owner, i) -> entity != null && entity.isUsingItem() && entity.getUseItem() == stack ? 1.0F : 0.0F);
             LegacyItemProperty.register(EnigmaticItems.INFERNAL_SHIELD.get(), Identifier.withDefaultNamespace("blocking"), (stack, level, entity, owner, i) -> entity != null && entity.isUsingItem() && entity.getUseItem() == stack ? 1.0F : 0.0F);
             EnigmaticItems.SOUL_COMPASS.get().registerVariants();
-            EnigmaticItems.ENIGMATIC_EYE.get().registerVariants();
+            LegacyItemProperty.register(EnigmaticItems.ENIGMATIC_EYE.get(), Identifier.withDefaultNamespace("enigmatic_eye_activated"), (stack, level, entity, owner, i) -> EnigmaticItems.ENIGMATIC_EYE.get().getActivationProperty(stack));
         } catch (Exception exception) {
             EnigmaticLegacy.LOGGER.warn("Could not load item models.");
         }

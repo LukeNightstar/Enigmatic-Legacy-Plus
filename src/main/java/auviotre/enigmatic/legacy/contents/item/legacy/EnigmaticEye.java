@@ -1,6 +1,5 @@
 package auviotre.enigmatic.legacy.contents.item.legacy;
 
-import auviotre.enigmatic.legacy.client.item.LegacyItemProperty;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.api.SubscribeConfig;
 import auviotre.enigmatic.legacy.api.event.EndPortalActivatedEvent;
@@ -81,14 +80,13 @@ public class EnigmaticEye extends BaseCurioItem {
         }
     }
 
-    @OnlyIn(Dist.CLIENT)
-    public void registerVariants() {
-        LegacyItemProperty.register(this, Identifier.withDefaultNamespace("enigmatic_eye_activated"), (stack, world, entity, owner, number) -> {
-            if (!this.isDormant(stack)) return 1F;
-            int animTicks = stack.getOrDefault(EnigmaticComponents.ACTIVATION_ANIMATION.get(), -1);
-            if (animTicks > -1) return animTicks > 2 ? 0.4F : 0.8F;
-            return 0F;
-        });
+    // 26.1.2 port: registered from ClientProxy; a lambda here would put ClientLevel into this class's
+    // method signatures, which breaks the reflective config dispatch on dedicated servers.
+    public float getActivationProperty(ItemStack stack) {
+        if (!this.isDormant(stack)) return 1F;
+        int animTicks = stack.getOrDefault(EnigmaticComponents.ACTIVATION_ANIMATION.get(), -1);
+        if (animTicks > -1) return animTicks > 2 ? 0.4F : 0.8F;
+        return 0F;
     }
 
     @OnlyIn(Dist.CLIENT)
