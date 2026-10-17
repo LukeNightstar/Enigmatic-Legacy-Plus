@@ -94,7 +94,7 @@ public class IchorCurse extends MobEffect {
                 if (!data.isInfected() && monster.hasLineOfSight(attacker)) {
                     data.setInfected(true);
                     for (int i = 0; i < monster.getRandom().nextInt(1, 3 + amplifier / 2); i++) {
-                        IchorSprite sprite = EnigmaticEntities.ICHOR_SPRITE.get().create(level);
+                        IchorSprite sprite = EnigmaticEntities.ICHOR_SPRITE.get().create(level, EntitySpawnReason.TRIGGERED);
                         if (sprite != null) {
                             sprite.setPos(monster.getEyePosition());
                             sprite.setOwner(monster);

@@ -1,5 +1,8 @@
 package auviotre.enigmatic.legacy.contents.item.potions;
 
+import net.minecraft.world.item.consume_effects.ApplyStatusEffectsConsumeEffect;
+import net.minecraft.world.item.component.Consumables;
+import net.minecraft.world.item.component.Consumable;
 import auviotre.enigmatic.legacy.api.item.IItemHelper;
 import auviotre.enigmatic.legacy.contents.item.generic.BaseDrinkableItem;
 import auviotre.enigmatic.legacy.handlers.EnigmaticHandler;
@@ -29,15 +32,16 @@ import java.util.function.Consumer;
 import java.util.ArrayList;
 
 public class IchorCurseBottle extends BaseDrinkableItem {
-    public static final FoodProperties FOOD_PROPERTIES = new FoodProperties.Builder()
-            .effect(() -> new MobEffectInstance(EnigmaticEffects.ICHOR_CURSE, 9600 * 4), 1.0F)
-            .effect(() -> new MobEffectInstance(EnigmaticEffects.ICHOR_CORROSION, 1200), 0.8F)
-            .effect(() -> new MobEffectInstance(EnigmaticEffects.ICHOR_CORROSION, 1200), 0.4F)
-            .effect(() -> new MobEffectInstance(EnigmaticEffects.ICHOR_CORROSION, 1200), 0.2F)
-            .alwaysEdible().build();
+    public static final FoodProperties FOOD_PROPERTIES = new FoodProperties.Builder().alwaysEdible().build();
+    public static final Consumable FOOD_PROPERTIES_CONSUMABLE = Consumables.defaultDrink()
+            .onConsume(new ApplyStatusEffectsConsumeEffect(new MobEffectInstance(EnigmaticEffects.ICHOR_CURSE, 9600 * 4)))
+            .onConsume(new ApplyStatusEffectsConsumeEffect(new MobEffectInstance(EnigmaticEffects.ICHOR_CORROSION, 1200), 0.8F))
+            .onConsume(new ApplyStatusEffectsConsumeEffect(new MobEffectInstance(EnigmaticEffects.ICHOR_CORROSION, 1200), 0.4F))
+            .onConsume(new ApplyStatusEffectsConsumeEffect(new MobEffectInstance(EnigmaticEffects.ICHOR_CORROSION, 1200), 0.2F))
+            .build();
 
     public IchorCurseBottle() {
-        super(IItemHelper.singleProperties().craftRemainder(Items.GLASS_BOTTLE).food(FOOD_PROPERTIES).rarity(Rarity.RARE)
+        super(IItemHelper.singleProperties().craftRemainder(Items.GLASS_BOTTLE).food(FOOD_PROPERTIES, FOOD_PROPERTIES_CONSUMABLE).rarity(Rarity.RARE)
                 .component(EnigmaticComponents.CURSED, true)
                 .component(EnigmaticComponents.BLESSED, true)
         );
@@ -63,7 +67,7 @@ public class IchorCurseBottle extends BaseDrinkableItem {
     }
 
     public void onConsumed(Level level, Player player, ItemStack stack) {
-        player.eat(level, stack);
+        applyConsumption(level, player, stack);
         if (EnigmaticHandler.isTheBlessedOne(player)) {
             player.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 2400, 4));
         }

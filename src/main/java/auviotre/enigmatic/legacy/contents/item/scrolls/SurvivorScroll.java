@@ -54,8 +54,15 @@ public class SurvivorScroll extends BaseCurioItem {
         builder.pop(2);
     }
 
+    // 26.1.2 port: Level#getTimeOfDay was removed; same curve as 1.21.1 DimensionType#timeOfDay
+    private static float getTimeOfDay(Level level) {
+        double fraction = Mth.frac(level.getDefaultClockTime() / 24000.0 - 0.25);
+        double smoothed = 0.5 - Math.cos(fraction * Math.PI) / 2.0;
+        return (float) (fraction * 2.0 + smoothed) / 3.0F;
+    }
+
     public static int getBrightness(Level level, BlockPos blockPos) {
-        float timeOfDay = level.getTimeOfDay(0.0F);
+        float timeOfDay = getTimeOfDay(level);
         boolean hasSkyLight = level.dimensionType().hasSkyLight();
         int skyLight = level.getLightEngine().getRawBrightness(blockPos, 0);
         int blockLight = level.getLightEngine().getRawBrightness(blockPos, 15);

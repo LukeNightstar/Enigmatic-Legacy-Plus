@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.item.rings;
 
+import net.minecraft.world.item.ItemStackTemplate;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.api.item.IItemHelper;
 import auviotre.enigmatic.legacy.contents.item.generic.BaseCurioItem;
@@ -94,9 +95,11 @@ public class MinerRing extends BaseCurioItem {
 
     public boolean overrideOtherStackedOnMe(ItemStack stack, ItemStack other, Slot slot, ClickAction action, Player player, SlotAccess access) {
         if (action != ClickAction.PRIMARY && slot.mayPickup(player) && slot.hasItem()) {
-            if (other.getBurnTime(RecipeType.BLASTING) > 200 && getPoint(stack) < MAX_POINT) {
-                setPoint(stack, getPoint(stack) + other.getBurnTime(RecipeType.BLASTING) / 200);
-                ItemStack remain = other.getCraftingRemainingItem();
+            int burnTime = other.getBurnTime(RecipeType.BLASTING, player.level().fuelValues());
+            if (burnTime > 200 && getPoint(stack) < MAX_POINT) {
+                setPoint(stack, getPoint(stack) + burnTime / 200);
+                ItemStackTemplate remainder = other.getCraftingRemainder();
+                ItemStack remain = remainder != null ? remainder.create() : ItemStack.EMPTY;
                 if (remain.isEmpty()) other.consume(1, player);
                 else access.set(remain);
                 player.playSound(SoundEvents.GENERIC_BURN, 1.0F, 0.9F + 0.5F * player.getRandom().nextFloat());
@@ -115,10 +118,10 @@ public class MinerRing extends BaseCurioItem {
             for (ItemEntity itemEntity : entities) {
                 if (getPoint(stack) <= 0) return;
                 ItemStack item = itemEntity.getItem();
-                RecipeHolder<BlastingRecipe> holder = quickCheck.getRecipeFor(new SingleRecipeInput(item), level).orElse(null);
+                RecipeHolder<BlastingRecipe> holder = quickCheck.getRecipeFor(new SingleRecipeInput(item), serverLevel).orElse(null);
                 if (holder != null && itemEntity.onGround()) {
                     int count = item.getCount();
-                    ItemStack output = holder.value().assemble(new SingleRecipeInput(item), level.registryAccess());
+                    ItemStack output = holder.value().assemble(new SingleRecipeInput(item));
                     if (!output.isEmpty() && getPoint(stack) >= count * 2) {
                         item.shrink(count);
                         serverLevel.sendParticles(ParticleTypes.FLAME, itemEntity.getX(), itemEntity.getY(), itemEntity.getZ(), 4, 0.2, 0.2, 0.2, 0);
@@ -164,7 +167,7 @@ public class MinerRing extends BaseCurioItem {
                     ItemStack stack = drop.getItem();
                     if (getPoint(curio) <= 0) return;
                     CHECK.getRecipeFor(new SingleRecipeInput(stack), level).ifPresent(holder -> {
-                        ItemStack output = holder.value().assemble(new SingleRecipeInput(stack), level.registryAccess());
+                        ItemStack output = holder.value().assemble(new SingleRecipeInput(stack));
                         int count = output.getCount() * stack.getCount();
                         if (!output.isEmpty() && getPoint(curio) >= count * 2) {
                             setPoint(curio, getPoint(curio) - count * 2);

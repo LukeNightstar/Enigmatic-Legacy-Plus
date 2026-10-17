@@ -33,7 +33,6 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.ModConfigSpec;
-import net.neoforged.neoforge.event.entity.player.AnvilRepairEvent;
 import org.jetbrains.annotations.NotNull;
 import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curios.api.SlotContext;
@@ -117,15 +116,14 @@ public class ForgerGem extends BaseCurioItem {
         }
     }
 
+    public static float modifyAnvilBreakChance(Player player, float chance) {
+        if (EnigmaticHandler.hasCurio(player, EnigmaticItems.FORGER_CRYSTAL)) return 0.0F;
+        if (EnigmaticHandler.hasCurio(player, EnigmaticItems.FORGER_GEM)) return chance * breakChanceModifier.get() * 0.01F;
+        return chance;
+    }
+
     @Mod(value = EnigmaticLegacy.MODID)
     @EventBusSubscriber(modid = EnigmaticLegacy.MODID)
     public static class Events {
-        @SubscribeEvent
-        private static void onAnvilRepair(@NotNull AnvilRepairEvent event) {
-            Player player = event.getEntity();
-            if (EnigmaticHandler.hasCurio(player, EnigmaticItems.FORGER_GEM)) {
-                event.setBreakChance(event.getBreakChance() * breakChanceModifier.get() * 0.01F);
-            }
-        }
     }
 }

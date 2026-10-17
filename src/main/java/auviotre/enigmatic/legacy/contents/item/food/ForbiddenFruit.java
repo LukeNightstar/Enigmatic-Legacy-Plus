@@ -1,5 +1,8 @@
 package auviotre.enigmatic.legacy.contents.item.food;
 
+import net.minecraft.world.item.consume_effects.ApplyStatusEffectsConsumeEffect;
+import net.minecraft.world.item.component.Consumables;
+import net.minecraft.world.item.component.Consumable;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.api.item.IItemHelper;
 import auviotre.enigmatic.legacy.contents.attachement.EnigmaticData;
@@ -40,15 +43,16 @@ import net.minecraft.world.item.component.TooltipDisplay;
 import java.util.function.Consumer;
 import java.util.ArrayList;
 public class ForbiddenFruit extends BaseItem {
-    public static final FoodProperties FOOD_PROPERTIES = new FoodProperties.Builder()
-            .effect(() -> new MobEffectInstance(MobEffects.WITHER, 400, 3), 1.0F)
-            .effect(() -> new MobEffectInstance(MobEffects.NAUSEA, 400, 2), 1.0F)
-            .effect(() -> new MobEffectInstance(MobEffects.WEAKNESS, 480, 3), 1.0F)
-            .effect(() -> new MobEffectInstance(MobEffects.SLOWNESS, 640, 2), 1.0F)
-            .nutrition(2).saturationModifier(0.5F).alwaysEdible().build();
+    public static final FoodProperties FOOD_PROPERTIES = new FoodProperties.Builder().nutrition(2).saturationModifier(0.5F).alwaysEdible().build();
+    public static final Consumable FOOD_PROPERTIES_CONSUMABLE = Consumables.defaultFood()
+            .onConsume(new ApplyStatusEffectsConsumeEffect(new MobEffectInstance(MobEffects.WITHER, 400, 3)))
+            .onConsume(new ApplyStatusEffectsConsumeEffect(new MobEffectInstance(MobEffects.NAUSEA, 400, 2)))
+            .onConsume(new ApplyStatusEffectsConsumeEffect(new MobEffectInstance(MobEffects.WEAKNESS, 480, 3)))
+            .onConsume(new ApplyStatusEffectsConsumeEffect(new MobEffectInstance(MobEffects.SLOWNESS, 640, 2)))
+            .build();
 
     public ForbiddenFruit() {
-        super(IItemHelper.singleProperties().food(FOOD_PROPERTIES).rarity(Rarity.RARE).fireResistant());
+        super(IItemHelper.singleProperties().food(FOOD_PROPERTIES, FOOD_PROPERTIES_CONSUMABLE).rarity(Rarity.RARE).fireResistant());
     }
 
     public static boolean isForbiddenCursed(LivingEntity entity) {

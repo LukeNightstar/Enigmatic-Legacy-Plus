@@ -58,6 +58,16 @@ import top.theillusivec4.curios.api.event.CurioCanEquipEvent;
 
 import java.util.function.Predicate;
 
+import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.monster.zombie.Zombie;
+import net.minecraft.world.entity.monster.skeleton.WitherSkeleton;
+import net.minecraft.world.entity.monster.illager.AbstractIllager;
+import net.minecraft.world.entity.monster.skeleton.Stray;
+import net.minecraft.world.entity.monster.zombie.Drowned;
+import net.minecraft.world.entity.monster.spider.Spider;
+import net.minecraft.world.entity.monster.skeleton.AbstractSkeleton;
+import net.minecraft.world.entity.monster.illager.Evoker;
+import net.minecraft.world.entity.monster.illager.Vindicator;
 @Mod(value = EnigmaticLegacy.MODID)
 @EventBusSubscriber(modid = EnigmaticLegacy.MODID)
 public class EnigmaticEventHandler {

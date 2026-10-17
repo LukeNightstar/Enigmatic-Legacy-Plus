@@ -1,5 +1,7 @@
 package auviotre.enigmatic.legacy.contents.item.charms;
 
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.api.SubscribeConfig;
 import auviotre.enigmatic.legacy.api.item.IItemHelper;
@@ -46,6 +48,8 @@ import net.minecraft.world.item.component.TooltipDisplay;
 import java.util.function.Consumer;
 
 public class ScorchedCharm extends CursedCurioItem {
+    // 26.1.2 port: LiquidBlock.STABLE_SHAPE was removed (it was this shape)
+    private static final VoxelShape LAVA_STABLE_SHAPE = Block.box(0.0, 0.0, 0.0, 16.0, 8.0, 16.0);
     public static ModConfigSpec.IntValue lavaHealAmount;
     public static ModConfigSpec.IntValue lifestealModifier;
     public static ModConfigSpec.IntValue resistanceProbability;
@@ -96,7 +100,7 @@ public class ScorchedCharm extends CursedCurioItem {
             if (entity.tickCount % 20 == 0) entity.heal((float) lavaHealAmount.get());
             if (entity instanceof Player player && !player.isAffectedByFluids()) return;
             CollisionContext collisionContext = CollisionContext.of(entity);
-            if (collisionContext.isAbove(LiquidBlock.STABLE_SHAPE, entity.blockPosition(), true) && !entity.level().getFluidState(entity.blockPosition().above()).is(FluidTags.LAVA)) {
+            if (collisionContext.isAbove(LAVA_STABLE_SHAPE, entity.blockPosition(), true) && !entity.level().getFluidState(entity.blockPosition().above()).is(FluidTags.LAVA)) {
                 entity.setOnGround(true);
             } else {
                 entity.setDeltaMovement(entity.getDeltaMovement().add(0.0, entity.isCrouching() ? -0.01 : 0.07, 0.0));

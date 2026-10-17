@@ -99,7 +99,7 @@ public class Spelltuner extends BaseCurioItem {
             } else {
                 if (spellContext != null) {
                     Item spellstone = spellContext.spellstone.getItem();
-                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.spelltunerContext", ChatFormatting.GOLD, spellContext.spellstone().getItem().getDescription());
+                    TooltipHandler.line(list, "tooltip.enigmaticlegacy.spelltunerContext", ChatFormatting.GOLD, spellContext.spellstone().getItem().getName());
                     TooltipHandler.line(list, "tooltip.enigmaticlegacy.spelltunerEffect");
                     try {
                         assert spellstone instanceof SpellstoneItem;
@@ -184,7 +184,7 @@ public class Spelltuner extends BaseCurioItem {
 
     public record Context(ItemStack spellstone, int color) {
         public static final MapCodec<Context> MAP_CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-                ItemStack.SINGLE_ITEM_CODEC.fieldOf("spellstone").forGetter(Context::spellstone),
+                ItemStack.CODEC.fieldOf("spellstone").forGetter(Context::spellstone),
                 Codec.INT.fieldOf("color").forGetter(Context::color)
         ).apply(instance, Context::of));
 

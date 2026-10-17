@@ -1,5 +1,8 @@
 package auviotre.enigmatic.legacy.contents.item.potions;
 
+import net.minecraft.world.item.consume_effects.ApplyStatusEffectsConsumeEffect;
+import net.minecraft.world.item.component.Consumables;
+import net.minecraft.world.item.component.Consumable;
 import auviotre.enigmatic.legacy.api.item.IItemHelper;
 import auviotre.enigmatic.legacy.compat.CompatHandler;
 import auviotre.enigmatic.legacy.contents.attachement.EnigmaticData;
@@ -18,15 +21,16 @@ import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
 public class ForbiddenJuice extends BaseDrinkableItem {
-    public static final FoodProperties FOOD_PROPERTIES = new FoodProperties.Builder()
-            .effect(() -> new MobEffectInstance(MobEffects.WITHER, 400, 3), 1.0F)
-            .effect(() -> new MobEffectInstance(MobEffects.NAUSEA, 400, 2), 1.0F)
-            .effect(() -> new MobEffectInstance(MobEffects.WEAKNESS, 480, 3), 1.0F)
-            .effect(() -> new MobEffectInstance(MobEffects.SLOWNESS, 640, 2), 1.0F)
-            .alwaysEdible().build();
+    public static final FoodProperties FOOD_PROPERTIES = new FoodProperties.Builder().alwaysEdible().build();
+    public static final Consumable FOOD_PROPERTIES_CONSUMABLE = Consumables.defaultDrink()
+            .onConsume(new ApplyStatusEffectsConsumeEffect(new MobEffectInstance(MobEffects.WITHER, 400, 3)))
+            .onConsume(new ApplyStatusEffectsConsumeEffect(new MobEffectInstance(MobEffects.NAUSEA, 400, 2)))
+            .onConsume(new ApplyStatusEffectsConsumeEffect(new MobEffectInstance(MobEffects.WEAKNESS, 480, 3)))
+            .onConsume(new ApplyStatusEffectsConsumeEffect(new MobEffectInstance(MobEffects.SLOWNESS, 640, 2)))
+            .build();
 
     public ForbiddenJuice() {
-        super(IItemHelper.singleProperties().food(FOOD_PROPERTIES).craftRemainder(Items.GLASS_BOTTLE).rarity(Rarity.RARE).fireResistant());
+        super(IItemHelper.singleProperties().food(FOOD_PROPERTIES, FOOD_PROPERTIES_CONSUMABLE).craftRemainder(Items.GLASS_BOTTLE).rarity(Rarity.RARE).fireResistant());
     }
 
     public static boolean isForbiddenCursed(LivingEntity entity) {
@@ -42,7 +46,7 @@ public class ForbiddenJuice extends BaseDrinkableItem {
     }
 
     public void onConsumed(Level level, @NotNull Player player, ItemStack stack) {
-        player.eat(level, stack);
+        applyConsumption(level, player, stack);
         EnigmaticData data = player.getData(EnigmaticAttachments.ENIGMATIC_DATA);
         data.setThirstForbiddenCursed(true);
     }

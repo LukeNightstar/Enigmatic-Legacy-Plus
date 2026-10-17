@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.item.spellstones;
 
+import net.minecraft.world.level.Level;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.api.SubscribeConfig;
 import auviotre.enigmatic.legacy.api.item.IItemHelper;
@@ -117,8 +118,9 @@ public class OceanStone extends SpellstoneItem {
     }
 
     public void triggerActiveAbility(ServerLevel level, @NotNull ServerPlayer player, ItemStack stack) {
-        if (player.level().dimensionType().natural())
-            if (!level.getLevelData().isThundering()) {
+        // 26.1.2 port: DimensionType#natural was removed; the overworld was the only natural vanilla dimension
+        if (player.level().dimension() == Level.OVERWORLD)
+            if (!level.isThundering()) {
                 boolean paybackReceived = false;
                 if (player.totalExperience >= 200) {
                     player.giveExperiencePoints((int) (-200 * xpCostModifier.getAsDouble()));
@@ -127,7 +129,7 @@ public class OceanStone extends SpellstoneItem {
 
                 if (paybackReceived) {
                     int thunderstormTime = (int) (10000 + (player.getRandom().nextFloat() * 20000));
-                    level.setWeatherParameters(0, thunderstormTime, true, true);
+                    level.getServer().setWeatherParameters(0, thunderstormTime, true, true);
                     level.playSound(null, player.blockPosition(), SoundEvents.LIGHTNING_BOLT_THUNDER, SoundSource.NEUTRAL, 2.0F, 0.7F + player.getRandom().nextFloat() * 0.3F);
                     super.triggerActiveAbility(level, player, stack);
                 }

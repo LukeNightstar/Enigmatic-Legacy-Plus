@@ -39,7 +39,7 @@ public class AscensionAmulet extends EnigmaticAmulet {
     }
 
     public Component getName(ItemStack stack) {
-        return Component.translatable(this.getDescriptionId(stack));
+        return Component.translatable(this.getDescriptionId());
     }
 
     public void curioTick(@NotNull SlotContext context, ItemStack stack) {

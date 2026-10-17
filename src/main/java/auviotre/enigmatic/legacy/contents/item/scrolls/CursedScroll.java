@@ -1,5 +1,7 @@
 package auviotre.enigmatic.legacy.contents.item.scrolls;
 
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.EquipmentSlotGroup;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.api.SubscribeConfig;
 import auviotre.enigmatic.legacy.api.item.IItemHelper;
@@ -65,8 +67,8 @@ public class CursedScroll extends CursedCurioItem {
 
     public static float getCurseAmount(LivingEntity entity) {
         AtomicInteger amount = new AtomicInteger();
-        for (ItemStack armor : entity.getArmorSlots()) amount.addAndGet(getItemCurseLevel(armor));
-        for (ItemStack hand : entity.getHandSlots()) amount.addAndGet(getItemCurseLevel(hand));
+        for (EquipmentSlot slot : EquipmentSlotGroup.ARMOR.slots()) amount.addAndGet(getItemCurseLevel(entity.getItemBySlot(slot)));
+        for (EquipmentSlot slot : EquipmentSlotGroup.HAND.slots()) amount.addAndGet(getItemCurseLevel(entity.getItemBySlot(slot)));
         CuriosApi.getCuriosInventory(entity).ifPresent(handler -> {
             IItemHandlerModifiable curios = handler.getEquippedCurios();
             for (int i = 0; i < curios.getSlots(); i++) {

@@ -109,7 +109,7 @@ public class Insignia extends BaseCurioItem {
 
     public InteractionResult useOn(UseOnContext context) {
         if (context.getPlayer() == null) return InteractionResult.PASS;
-        return this.use(context.getLevel(), context.getPlayer(), context.getHand()).getResult();
+        return this.use(context.getLevel(), context.getPlayer(), context.getHand());
     }
 
     public boolean canEquipFromUse(SlotContext context, ItemStack stack) {

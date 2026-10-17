@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.item.misc;
 
+import java.util.stream.IntStream;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.api.SubscribeConfig;
 import auviotre.enigmatic.legacy.api.item.IItemHelper;
@@ -125,7 +126,7 @@ public class GuardianHeart extends BaseCursedItem {
     public void inventoryTick(ItemStack stack, ServerLevel level, Entity entity, @Nullable EquipmentSlot slotId) {
         if (entity instanceof Player player && !level.isClientSide()) {
             List<Monster> monsters = player.level().getEntitiesOfClass(Monster.class, player.getBoundingBox().inflate(effectiveRange.get()));
-            if (EnigmaticHandler.isTheCursedOne(player) && Inventory.isHotbarSlot(slotId) && !player.getCooldowns().isOnCooldown(new ItemStack(this))) {
+            if (EnigmaticHandler.isTheCursedOne(player) && IntStream.range(0, 9).anyMatch(i -> player.getInventory().getItem(i) == stack) && !player.getCooldowns().isOnCooldown(new ItemStack(this))) {
                 Monster oneWatched = null;
                 for (Monster monster : monsters) {
                     if (doesObserveEntity(player, monster) && !monster.is(EnigmaticTags.EntityTypes.GUARDIAN_HEART_EXCLUDED)) {

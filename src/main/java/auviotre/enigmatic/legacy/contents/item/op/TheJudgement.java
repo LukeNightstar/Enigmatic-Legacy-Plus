@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.item.op;
 
+import net.minecraft.server.level.ServerLevel;
 import auviotre.enigmatic.legacy.api.item.IItemHelper;
 import auviotre.enigmatic.legacy.handlers.TooltipHandler;
 import auviotre.enigmatic.legacy.registries.EnigmaticComponents;
@@ -65,22 +66,22 @@ public class TheJudgement extends Item {
 
     @Override
     public void hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-        if (attacker.level().isClientSide()) return;
+        if (!(attacker.level() instanceof ServerLevel serverLevel)) return;
         boolean player = attacker instanceof Player;
         AABB box = target.getBoundingBox().inflate(ATTACK_RADIUS);
         List<LivingEntity> targets = target.level().getEntitiesOfClass(LivingEntity.class, box, entity -> entity != attacker && entity != target && entity.distanceToSqr(target) < ATTACK_RADIUS * ATTACK_RADIUS);
-        targets.forEach(LivingEntity::kill);
+        targets.forEach(entity -> entity.kill(serverLevel));
 
         if (this.noDrops(stack)) {
             List<Entity> drops = target.level().getEntitiesOfClass(Entity.class, box, entity -> (entity instanceof ItemEntity || entity instanceof ExperienceOrb) && entity.distanceToSqr(target) < ATTACK_RADIUS * ATTACK_RADIUS);
-            drops.forEach(Entity::kill);
+            drops.forEach(entity -> entity.kill(serverLevel));
         }
         return;
     }
 
     @Override
     public boolean canPerformAction(ItemInstance stack, ItemAbility itemAbility) {
-        return ItemAbilities.DEFAULT_SWORD_ACTIONS.contains(itemAbility);
+        return itemAbility == ItemAbilities.SWORD_SWEEP;
     }
 
     public InteractionResult use(Level level, Player player, InteractionHand hand) {

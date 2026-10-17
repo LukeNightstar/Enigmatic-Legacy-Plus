@@ -61,7 +61,7 @@ public class MixinPhantomSpawner {
                                                 SpawnGroupData spawnGroupData = null;
                                                 int l = 1 + random.nextInt(difficulty.getDifficulty().getId() + 1);
                                                 for (int i1 = 0; i1 < l; ++i1) {
-                                                    Phantom phantom = EntityType.PHANTOM.create(level);
+                                                    Phantom phantom = EntityType.PHANTOM.create(level, EntitySpawnReason.TRIGGERED);
                                                     if (phantom != null) {
                                                         phantom.snapTo(blockPos, 0.0F, 0.0F);
                                                         EnigmaticHandler.setCurseBoosted(phantom, true, player);

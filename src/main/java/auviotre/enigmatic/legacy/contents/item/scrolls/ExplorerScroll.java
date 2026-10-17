@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.item.scrolls;
 
+import net.minecraft.network.protocol.game.ClientboundSoundPacket;
 import auviotre.enigmatic.legacy.api.SubscribeConfig;
 import auviotre.enigmatic.legacy.api.item.IItemHelper;
 import auviotre.enigmatic.legacy.contents.entity.misc.ExplorerMarker;
@@ -54,21 +55,21 @@ public class ExplorerScroll extends BaseCurioItem {
 
     public static void trigger(Level level, ServerPlayer player) {
         if (player.getCooldowns().isOnCooldown(new ItemStack(EnigmaticItems.EXPLORER_SCROLL.get()))) return;
-        player.playNotifySound(EnigmaticSounds.SCROLL_TRIGGER.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
+        player.connection.send(new ClientboundSoundPacket(EnigmaticSounds.SCROLL_TRIGGER, SoundSource.PLAYERS, player.getX(), player.getY(), player.getZ(), 1.0F, 1.0F, player.getRandom().nextLong()));
         player.getCooldowns().addCooldown(new ItemStack(EnigmaticItems.EXPLORER_SCROLL.get()), player.hasInfiniteMaterials() ? 20 : cooldown.get());
         BlockPos blockPos = player.blockPosition();
         int d = distance.get();
         Iterable<BlockPos> iterable = BlockPos.betweenClosed(blockPos.offset(d, d, d), blockPos.offset(-d, -d, -d));
         for (BlockPos pos : iterable) {
             if (level.getBlockEntity(pos) instanceof RandomizableContainer container) {
-                if (container.getLootTable() != null) {
+                if (container.getContainerLootTable() != null) {
                     ExplorerMarker explorerMarker = new ExplorerMarker(level, pos, player);
                     level.addFreshEntity(explorerMarker);
                 }
             }
         }
         List<Entity> entities = level.getEntitiesOfClass(Entity.class, player.getBoundingBox().inflate(d),
-                entity -> entity instanceof ContainerEntity container && container.getLootTable() != null);
+                entity -> entity instanceof ContainerEntity container && container.getContainerLootTable() != null);
         for (Entity entity : entities) entity.setGlowingTag(true);
     }
 

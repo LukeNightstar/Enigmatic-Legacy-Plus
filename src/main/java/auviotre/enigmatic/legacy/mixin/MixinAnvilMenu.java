@@ -1,5 +1,10 @@
 package auviotre.enigmatic.legacy.mixin;
 
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.entity.player.Player;
+import org.spongepowered.asm.mixin.injection.Constant;
+import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import auviotre.enigmatic.legacy.contents.item.charms.ForgerGem;
 import auviotre.enigmatic.legacy.handlers.EnigmaticHandler;
 import auviotre.enigmatic.legacy.registries.EnigmaticComponents;
@@ -95,6 +100,12 @@ public abstract class MixinAnvilMenu extends ItemCombinerMenu {
                 }
             }
         }
+    }
+
+    // 26.1.2 port: replaces NeoForge's removed AnvilRepairEvent#setBreakChance
+    @ModifyConstant(method = "lambda$onTake$0", constant = @Constant(floatValue = 0.12F))
+    private static float enigmatic$anvilBreakChance(float chance, Player player, Level level, BlockPos pos) {
+        return ForgerGem.modifyAnvilBreakChance(player, chance);
     }
 
     private AttributeModifier modify(AttributeModifier modifier, double add, double mul) {

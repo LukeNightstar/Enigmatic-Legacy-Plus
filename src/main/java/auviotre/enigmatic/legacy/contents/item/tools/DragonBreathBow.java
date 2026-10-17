@@ -56,7 +56,7 @@ public class DragonBreathBow extends ProjectileWeaponItem {
             PotionContents potioncontents = stack.get(DataComponents.POTION_CONTENTS);
             if (potioncontents != null) {
                 TooltipHandler.line(list, "tooltip.enigmaticlegacy.dragonBreathBowEffects");
-                potioncontents.addPotionTooltip(list::add, 1.0F, context.tickRate());
+                PotionContents.addPotionTooltip(potioncontents.getAllEffects(), list::add, 1.0F, context.tickRate());
             } else {
                 TooltipHandler.line(list, "tooltip.enigmaticlegacy.dragonBreathBowNoEffects1");
                 TooltipHandler.line(list, "tooltip.enigmaticlegacy.dragonBreathBowNoEffects2");
@@ -158,7 +158,7 @@ public class DragonBreathBow extends ProjectileWeaponItem {
                         int index = 0;
                         while (newEffects.size() < 4 && remains.size() > index) newEffects.add(remains.get(index++));
                         access.set(Items.GLASS_BOTTLE.getDefaultInstance());
-                        stack.set(DataComponents.POTION_CONTENTS, new PotionContents(Optional.empty(), Optional.empty(), newEffects));
+                        stack.set(DataComponents.POTION_CONTENTS, new PotionContents(Optional.empty(), Optional.empty(), newEffects, Optional.empty()));
                         return true;
                     }
                 }

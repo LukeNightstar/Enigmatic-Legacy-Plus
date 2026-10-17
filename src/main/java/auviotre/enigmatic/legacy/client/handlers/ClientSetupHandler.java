@@ -48,6 +48,8 @@ import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsE
 import org.jetbrains.annotations.NotNull;
 import top.theillusivec4.curios.api.client.ICuriosScreen;
 
+import net.minecraft.client.model.Model;
+import net.minecraft.world.item.Item;
 @Mod(value = EnigmaticLegacy.MODID, dist = Dist.CLIENT)
 @EventBusSubscriber(modid = EnigmaticLegacy.MODID, value = Dist.CLIENT)
 public class ClientSetupHandler {

@@ -56,6 +56,7 @@ import javax.annotation.Nullable;
 import java.util.Optional;
 
 import net.minecraft.util.profiling.Profiler;
+import net.minecraft.world.entity.EntitySpawnReason;
 public class PiglinWanderer extends AbstractPiglin implements SpearAttackMob {
     protected static final ImmutableList<SensorType<? extends Sensor<? super PiglinWanderer>>> SENSOR_TYPES = ImmutableList.of(
             SensorType.NEAREST_LIVING_ENTITIES,

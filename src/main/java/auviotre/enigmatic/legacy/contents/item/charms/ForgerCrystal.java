@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.item.charms;
 
+import net.minecraft.util.Unit;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.api.SubscribeConfig;
 import auviotre.enigmatic.legacy.api.item.IItemHelper;
@@ -21,7 +22,6 @@ import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
-import net.minecraft.world.item.component.Unbreakable;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -30,7 +30,6 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import net.neoforged.neoforge.event.AnvilUpdateEvent;
-import net.neoforged.neoforge.event.entity.player.AnvilRepairEvent;
 import org.jetbrains.annotations.NotNull;
 import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curios.api.SlotContext;
@@ -100,32 +99,24 @@ public class ForgerCrystal extends CursedCurioItem {
     @EventBusSubscriber(modid = EnigmaticLegacy.MODID)
     public static class Events {
         @SubscribeEvent
-        private static void onAnvilRepair(@NotNull AnvilRepairEvent event) {
-            Player player = event.getEntity();
-            if (EnigmaticHandler.hasCurio(player, EnigmaticItems.FORGER_CRYSTAL)) {
-                event.setBreakChance(0.0F);
-            }
-        }
-
-        @SubscribeEvent
         private static void onAnvilUse(@NotNull AnvilUpdateEvent event) {
             Player player = event.getPlayer();
             if (EnigmaticHandler.hasCurio(player, EnigmaticItems.FORGER_CRYSTAL)) {
                 ItemStack left = event.getLeft();
                 ItemStack right = event.getRight();
                 if (!left.isEmpty() && !right.isEmpty()) {
-                    boolean check = left.isDamageableItem() && !left.has(DataComponents.UNBREAKABLE) && !right.has(DataComponents.UNBREAKABLE) && left.isRepairable();
+                    boolean check = left.isDamageableItem() && !left.has(DataComponents.UNBREAKABLE) && !right.has(DataComponents.UNBREAKABLE);
                     if (check && unbreakableRestriction.get())
-                        check = (left.getItem() instanceof TieredItem || left.getItem() instanceof ArmorItem);
+                        check = left.has(DataComponents.TOOL) || left.has(DataComponents.WEAPON) || left.has(DataComponents.EQUIPPABLE);
                     if (player.getAbilities().instabuild && left.isDamageableItem()) check = true;
                     if (left.is(right.getItem()) && check && left.getDamageValue() == 0 && right.getDamageValue() == 0 && !left.isEnchanted() && !right.isEnchanted()) {
                         ItemStack copy = left.copy();
-                        copy.set(DataComponents.UNBREAKABLE, new Unbreakable(true));
+                        copy.set(DataComponents.UNBREAKABLE, Unit.INSTANCE);
                         copy.set(DataComponents.REPAIR_COST, copy.getOrDefault(DataComponents.REPAIR_COST, 0) + 8);
                         if (event.getName() != null && !event.getName().isEmpty())
                             copy.set(DataComponents.CUSTOM_NAME, Component.literal(event.getName()));
                         event.setOutput(copy);
-                        event.setCost(50);
+                        event.setXpCost(50);
                     }
                 }
             }

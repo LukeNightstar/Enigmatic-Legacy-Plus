@@ -136,7 +136,7 @@ public class EtheriumArmor extends Item {
                     float modifier = (float) (0.9F - 0.4F * Math.sqrt(EtheriumProperties.getShieldThreshold(entity)));
 
                     int piece = 0, level = 0;
-                    for (ItemStack armor : entity.getArmorSlots()) {
+                    for (ItemStack armor : EquipmentSlotGroup.ARMOR.slots().stream().map(entity::getItemBySlot).toList()) {
                         if (armor.getItem() instanceof EtheriumArmor) piece++;
                         var holder = EnigmaticHandler.get(entity.level(), Registries.ENCHANTMENT, EnigmaticEnchantments.ETHERIC_RESONANCE);
                         if (armor.getEnchantmentLevel(holder) > 0) level++;

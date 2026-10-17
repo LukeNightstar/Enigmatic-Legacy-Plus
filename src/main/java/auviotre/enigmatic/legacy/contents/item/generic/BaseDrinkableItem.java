@@ -1,5 +1,9 @@
 package auviotre.enigmatic.legacy.contents.item.generic;
 
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.item.component.Consumable;
+import net.minecraft.world.food.FoodProperties;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
@@ -31,7 +35,8 @@ public class BaseDrinkableItem extends BaseItem {
 
     public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entity) {
         if (entity instanceof Player player) {
-            ItemStack remainingItem = stack.getCraftingRemainingItem();
+            ItemStackTemplate remainder = stack.getCraftingRemainder();
+            ItemStack remainingItem = remainder != null ? remainder.create() : ItemStack.EMPTY;
             this.onConsumed(level, player, stack);
 
             if (player instanceof ServerPlayer serverPlayer) CriteriaTriggers.CONSUME_ITEM.trigger(serverPlayer, stack);
@@ -65,5 +70,16 @@ public class BaseDrinkableItem extends BaseItem {
     }
 
     public void onConsumed(Level level, @NotNull Player player, ItemStack stack) {
+    }
+
+    /**
+     * 26.1.2 port: replaces the removed Player#eat, applying the stack's food and consume effects without consuming it.
+     */
+    protected static void applyConsumption(Level level, Player player, ItemStack stack) {
+        FoodProperties food = stack.get(DataComponents.FOOD);
+        if (food != null) player.getFoodData().eat(food);
+        Consumable consumable = stack.get(DataComponents.CONSUMABLE);
+        if (consumable != null && !level.isClientSide())
+            consumable.onConsumeEffects().forEach(effect -> effect.apply(level, stack, player));
     }
 }

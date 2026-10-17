@@ -92,7 +92,7 @@ public class MiningCharm extends BaseCurioItem {
         SoundEvent soundEvent = enable ? EnigmaticSounds.CHARGED_OFF.get() : EnigmaticSounds.CHARGED_ON.get();
         level.playSound(null, player.blockPosition(), soundEvent, SoundSource.PLAYERS, (float) (0.8F + (Math.random() * 0.2F)), (float) (0.8F + (Math.random() * 0.2F)));
         player.swing(hand);
-        return new InteractionResult<>(InteractionResult.SUCCESS, stack);
+        return InteractionResult.SUCCESS;
     }
 
     public Multimap<Holder<Attribute>, AttributeModifier> getAttributeModifiers(SlotContext context, Identifier id, ItemStack stack) {

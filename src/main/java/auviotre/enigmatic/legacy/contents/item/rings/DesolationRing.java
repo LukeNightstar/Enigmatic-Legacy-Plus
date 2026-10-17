@@ -190,7 +190,7 @@ public class DesolationRing extends BaseCurioItem {
                 float health = 0;
                 for (Mob mob : list) {
                     health = mob.getHealth();
-                    if (mob.hurt(event.getSource(), Float.MAX_VALUE)) {
+                    if (mob.hurtOrSimulate(event.getSource(), Float.MAX_VALUE)) {
                         flag = true;
                         break;
                     }

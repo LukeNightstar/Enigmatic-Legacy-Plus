@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.item.misc;
 
+import net.minecraft.core.particles.PowerParticleOption;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.api.item.IItemHelper;
 import auviotre.enigmatic.legacy.api.item.IPermanentCrystal;
@@ -103,7 +104,7 @@ public class SoulCrystal extends BaseItem implements IPermanentCrystal {
         if (retrieveSoulFromCrystal(player)) {
             updatePlayerSoulMap(player);
             if (level instanceof ServerLevel serverLevel) {
-                serverLevel.sendParticles(ParticleTypes.DRAGON_BREATH, player.getX(), player.getY(0.5), player.getZ(), 48, 0, 0, 0, 0.03);
+                serverLevel.sendParticles(PowerParticleOption.create(ParticleTypes.DRAGON_BREATH, 1.0F), player.getX(), player.getY(0.5), player.getZ(), 48, 0, 0, 0, 0.03);
             }
             player.swing(hand);
             stack.consume(1, player);

@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.item.rings;
 
+import net.minecraft.core.particles.ColorParticleOption;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.api.SubscribeConfig;
 import auviotre.enigmatic.legacy.api.item.IItemHelper;
@@ -126,7 +127,7 @@ public class EarthPromise extends CursedCurioItem {
                         int tick = RedemptionRing.Helper.canUseRelic(player) ? cooldown.get() * 4 / 5 : cooldown.get();
                         player.getCooldowns().addCooldown(new ItemStack(EnigmaticItems.EARTH_PROMISE.get()), tick);
                         if (player.level() instanceof ServerLevel level) {
-                            level.sendParticles(ParticleTypes.FLASH, player.getX(), player.getY(), player.getZ(), 1, 0.0, 0.0, 0.0, 0.0);
+                            level.sendParticles(ColorParticleOption.create(ParticleTypes.FLASH, -1), player.getX(), player.getY(), player.getZ(), 1, 0.0, 0.0, 0.0, 0.0);
                             level.sendParticles(EnigmaticParticles.ICHOR.get(), player.getX(), player.getY(0.5F), player.getZ(), 36, 0.1D, 0.1D, 0.1D, 0.2D);
                             player.level().playSound(null, player, SoundEvents.ENDER_EYE_DEATH, SoundSource.PLAYERS, 5.0F, 1.5F);
                         }

@@ -461,7 +461,7 @@ public interface EnigmaticHandler {
                 HolderLookup<MobEffect> lookup = entity.level().holderLookup(Registries.MOB_EFFECT);
                 List<ResourceKey<MobEffect>> keys = lookup.listElementIds().toList();
                 for (ResourceKey<MobEffect> key : keys) {
-                    MobEffect effect = BuiltInRegistries.MOB_EFFECT.get(key);
+                    MobEffect effect = BuiltInRegistries.MOB_EFFECT.getValue(key);
                     if (effect != null && effect.getCategory().equals(MobEffectCategory.HARMFUL) && !effect.isInstantenous()) {
                         if (lookup.getOrThrow(EnigmaticTags.Effects.SHOULD_NOT_RANDOM_OUT).stream().anyMatch(holder -> holder.value().equals(effect)))
                             continue;

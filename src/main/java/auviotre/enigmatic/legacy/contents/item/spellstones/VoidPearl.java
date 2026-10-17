@@ -1,5 +1,7 @@
 package auviotre.enigmatic.legacy.contents.item.spellstones;
 
+import net.minecraft.world.entity.monster.Phantom;
+import net.minecraft.world.entity.monster.Ghast;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.api.SubscribeConfig;
 import auviotre.enigmatic.legacy.api.item.IItemHelper;
@@ -20,7 +22,6 @@ import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.FlyingMob;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.OwnableEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -121,9 +122,9 @@ public class VoidPearl extends SpellstoneItem {
             entities.removeIf(victim -> victim instanceof OwnableEntity ownable && entity == ownable.getOwner());
             entities.remove(entity);
             for (LivingEntity victim : entities) {
-                if (SurvivorScroll.getBrightness(victim.level(), victim.blockPosition()) < 6 || victim instanceof FlyingMob) {
+                if (SurvivorScroll.getBrightness(victim.level(), victim.blockPosition()) < 6 || (victim instanceof Ghast || victim instanceof Phantom)) {
                     if (!(entity instanceof Player player) || !(victim instanceof Player vPlayer) || player.canHarmPlayer(vPlayer)) {
-                        if (victim.hurt(EnigmaticDamageTypes.source(victim.level(), EnigmaticDamageTypes.DARKNESS, entity), (float) (darknessDamage.getAsInt() + entity.getAttributeValue(Attributes.ATTACK_DAMAGE) * 0.5F))) {
+                        if (victim.hurtOrSimulate(EnigmaticDamageTypes.source(victim.level(), EnigmaticDamageTypes.DARKNESS, entity), (float) (darknessDamage.getAsInt() + entity.getAttributeValue(Attributes.ATTACK_DAMAGE) * 0.5F))) {
                             entity.level().playSound(null, victim.blockPosition(), SoundEvents.PHANTOM_BITE, SoundSource.PLAYERS, 1.0F, 0.3F + entity.getRandom().nextFloat() * 0.4F);
 
                             victim.addEffect(new MobEffectInstance(MobEffects.WITHER, 80, 1, false, true), entity);

@@ -96,6 +96,7 @@ import java.util.function.Consumer;
 import java.util.ArrayList;
 import net.minecraft.world.entity.EquipmentSlot;
 
+import net.minecraft.world.entity.EntitySpawnReason;
 public class CursedRing extends CursedCurioItem {
     public static final Multimap<Player, ItemLike> POSSESSIONS = ArrayListMultimap.create();
     public static final Map<Player, Map<String, ItemStack>> RESTORE_MAP = new HashMap<>();
@@ -235,7 +236,7 @@ public class CursedRing extends CursedCurioItem {
                 if (mob instanceof Piglin piglin && !EnigmaticHandler.hasCurio(player, EnigmaticItems.AVARICE_SCROLL)) {
                     if (piglin.getTarget() == null || !piglin.getTarget().isAlive())
                         if (player.hasLineOfSight(mob) || player.distanceTo(mob) <= noCheckDistance)
-                            PiglinAi.wasHurtBy(piglin, player);
+                            PiglinAi.wasHurtBy((ServerLevel) piglin.level(), piglin, player);
                 } else if (mob instanceof NeutralMob neutral) {
                     if (neutral == player) continue;
                     if (neutral instanceof TraceableEntity ownable && ownable.getOwner() != null && player.is(ownable.getOwner()))
@@ -346,7 +347,7 @@ public class CursedRing extends CursedCurioItem {
                     // Inventory
                     Inventory inventory = player.getInventory();
                     int size = 0;
-                    for (NonNullList<ItemStack> part : inventory.compartments) size += part.size();
+                    size += inventory.getContainerSize();
                     for (int i = 0; i < size; i++) {
                         ItemStack item = inventory.getItem(i);
                         if (!item.isEmpty()) builder.put(String.valueOf(i), item);
@@ -369,7 +370,7 @@ public class CursedRing extends CursedCurioItem {
                         POSSESSIONS.put(player, EnigmaticItems.BLESS_STONE);
                         stack.shrink(1);
                         flag = true;
-                        LightningBolt lightningbolt = EntityType.LIGHTNING_BOLT.create(player.level());
+                        LightningBolt lightningbolt = EntityType.LIGHTNING_BOLT.create(player.level(), EntitySpawnReason.TRIGGERED);
                         if (lightningbolt != null) {
                             lightningbolt.snapTo(Vec3.atBottomCenterOf(player.blockPosition()));
                             lightningbolt.setCause(player instanceof ServerPlayer ? player : null);
@@ -543,7 +544,7 @@ public class CursedRing extends CursedCurioItem {
                 event.setDroppedExperience(event.getDroppedExperience() + Mth.floor(event.getOriginalExperience() * modifier));
             }
             if (event.getEntity() instanceof ServerPlayer dropper) {
-                if (POSSESSIONS.containsEntry(dropper, EnigmaticItems.ASCENSION_AMULET) && !event.getEntity().level().getGameRules().get(GameRules.KEEP_INVENTORY)) {
+                if (POSSESSIONS.containsEntry(dropper, EnigmaticItems.ASCENSION_AMULET) && !(event.getEntity().level() instanceof ServerLevel serverLevel && serverLevel.getGameRules().get(GameRules.KEEP_INVENTORY))) {
                     event.setCanceled(true);
                 }
             }

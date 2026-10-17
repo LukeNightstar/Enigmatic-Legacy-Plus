@@ -1,5 +1,6 @@
 package auviotre.enigmatic.legacy.contents.item.spellstones;
 
+import java.util.Set;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.api.SubscribeConfig;
 import auviotre.enigmatic.legacy.api.item.IItemHelper;
@@ -87,7 +88,7 @@ public class EyeOfNebula extends SpellstoneItem {
         pitch = Math.toDegrees(pitch) * 0.95;
         yaw = Math.toDegrees(yaw);
         yaw -= 90.0;
-        porter.teleportTo(level, pos.x, pos.y, pos.z, Collections.emptySet(), (float) yaw, (float) pitch);
+        porter.teleportTo(level, pos.x, pos.y, pos.z, Set.of(), (float) yaw, (float) pitch, true);
         level.playSound(null, porter.blockPosition(), SoundEvents.PLAYER_TELEPORT, SoundSource.PLAYERS, 1.0F, 0.8F + random.nextFloat() * 0.2F);
         level.sendParticles(ParticleTypes.WITCH, porter.getX(), porter.getY(0.5), porter.getZ(), 48, hOffset, yOffset, hOffset, 0.03);
     }
@@ -146,7 +147,7 @@ public class EyeOfNebula extends SpellstoneItem {
         pitch = Math.toDegrees(pitch) * 0.95;
         yaw = Math.toDegrees(yaw);
         yaw -= 90.0;
-        player.teleportTo(level, pos.x, pos.y, pos.z, (float) yaw, (float) pitch);
+        player.teleportTo(level, pos.x, pos.y, pos.z, Set.of(), (float) yaw, (float) pitch, true);
 
         level.playSound(null, player.blockPosition(), SoundEvents.PLAYER_TELEPORT, SoundSource.PLAYERS, 1.0F, 0.8F + player.getRandom().nextFloat() * 0.2F);
         level.sendParticles(ParticleTypes.WITCH, player.getX(), player.getY(0.5), player.getZ(), 48, hOffset, yOffset, hOffset, 0.03);

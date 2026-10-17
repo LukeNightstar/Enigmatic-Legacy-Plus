@@ -13,6 +13,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.NaturalSpawner;
 import net.minecraft.world.level.biome.Biomes;
 
+import net.minecraft.world.entity.EntitySpawnReason;
 public class StarlightSpawner implements CustomSpawner {
     private static final int RANGE = 36;
     private int nextTick;
@@ -51,7 +52,7 @@ public class StarlightSpawner implements CustomSpawner {
                 spawnPos = spawnPos.atY(Math.max(blockPos.getY() + random.nextInt(40, 80), 128));
 
                 var type = EnigmaticEntities.STARLIGHT_METEOR.get();
-                StarlightMeteor starlightMeteor = type.create(level);
+                StarlightMeteor starlightMeteor = type.create(level, EntitySpawnReason.TRIGGERED);
                 if (NaturalSpawner.isValidEmptySpawnBlock(level, spawnPos, level.getBlockState(spawnPos), level.getFluidState(blockPos), type)) {
                     if (starlightMeteor != null) {
                         starlightMeteor.snapTo(spawnPos, 0.0F, 0.0F);

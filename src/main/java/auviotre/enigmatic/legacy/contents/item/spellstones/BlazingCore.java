@@ -115,7 +115,7 @@ public class BlazingCore extends SpellstoneItem {
                 if (effect.is(EnigmaticEffects.MOLTEN_HEART)) {
                     effect.duration = effect.mapDuration(duration -> entity.tickCount % 2 == 0 ? duration : duration + 1);
                 } else {
-                    effect.tick(entity, () -> {
+                    if (entity.level() instanceof ServerLevel serverLevel) effect.tickServer(serverLevel, entity, () -> {
                     });
                 }
             }

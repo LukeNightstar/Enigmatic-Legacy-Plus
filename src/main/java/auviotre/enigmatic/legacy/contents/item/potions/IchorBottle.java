@@ -1,5 +1,8 @@
 package auviotre.enigmatic.legacy.contents.item.potions;
 
+import net.minecraft.world.item.consume_effects.ApplyStatusEffectsConsumeEffect;
+import net.minecraft.world.item.component.Consumables;
+import net.minecraft.world.item.component.Consumable;
 import auviotre.enigmatic.legacy.api.item.IItemHelper;
 import auviotre.enigmatic.legacy.contents.item.generic.BaseDrinkableItem;
 import auviotre.enigmatic.legacy.handlers.EnigmaticHandler;
@@ -25,16 +28,17 @@ import java.util.function.Consumer;
 import java.util.ArrayList;
 
 public class IchorBottle extends BaseDrinkableItem {
-    public static final FoodProperties FOOD_PROPERTIES = new FoodProperties.Builder()
-            .effect(() -> new MobEffectInstance(MobEffects.ABSORPTION, 1200, 4), 1.0F)
-            .effect(() -> new MobEffectInstance(MobEffects.REGENERATION, 600, 2), 1.0F)
-            .effect(() -> new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 3200), 1.0F)
-            .effect(() -> new MobEffectInstance(EnigmaticEffects.PURE_RESISTANCE, 1200, 2), 1.0F)
-            .alwaysEdible().build();
+    public static final FoodProperties FOOD_PROPERTIES = new FoodProperties.Builder().alwaysEdible().build();
+    public static final Consumable FOOD_PROPERTIES_CONSUMABLE = Consumables.defaultDrink()
+            .onConsume(new ApplyStatusEffectsConsumeEffect(new MobEffectInstance(MobEffects.ABSORPTION, 1200, 4)))
+            .onConsume(new ApplyStatusEffectsConsumeEffect(new MobEffectInstance(MobEffects.REGENERATION, 600, 2)))
+            .onConsume(new ApplyStatusEffectsConsumeEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 3200)))
+            .onConsume(new ApplyStatusEffectsConsumeEffect(new MobEffectInstance(EnigmaticEffects.PURE_RESISTANCE, 1200, 2)))
+            .build();
     private final boolean enchanted;
 
     public IchorBottle(boolean enchanted) {
-        super(IItemHelper.singleProperties().craftRemainder(Items.GLASS_BOTTLE).food(FOOD_PROPERTIES).rarity(enchanted ? Rarity.EPIC : Rarity.RARE)
+        super(IItemHelper.singleProperties().craftRemainder(Items.GLASS_BOTTLE).food(FOOD_PROPERTIES, FOOD_PROPERTIES_CONSUMABLE).rarity(enchanted ? Rarity.EPIC : Rarity.RARE)
                 .component(EnigmaticComponents.CURSED, enchanted).component(EnigmaticComponents.BLESSED, enchanted));
         this.enchanted = enchanted;
     }
@@ -59,7 +63,7 @@ public class IchorBottle extends BaseDrinkableItem {
         if (this.enchanted) {
             EnigmaticHandler.unlockSpecialSlot("charm", player, IItemHelper.getLocation(this));
         }
-        player.eat(level, stack);
+        applyConsumption(level, player, stack);
     }
 
     public boolean isFoil(ItemStack stack) {

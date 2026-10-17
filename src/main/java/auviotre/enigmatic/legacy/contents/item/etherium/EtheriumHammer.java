@@ -85,8 +85,8 @@ public class EtheriumHammer extends Item {
 
     @Override
     public boolean canPerformAction(ItemInstance stack, ItemAbility ability) {
-        return ItemAbilities.DEFAULT_PICKAXE_ACTIONS.contains(ability) || ability == ItemAbilities.AXE_DIG
-                || ability == ItemAbilities.SHOVEL_DIG || ability == ItemAbilities.HOE_DIG || ability == ItemAbilities.SWORD_DIG;
+        // digging is decided by the TOOL component now; only the sweep ability is still an ItemAbility
+        return ability == ItemAbilities.SWORD_SWEEP;
     }
 
     public void postHurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
@@ -136,7 +136,7 @@ public class EtheriumHammer extends Item {
             boolean unbreakable = state.is(BlockTags.WITHER_IMMUNE) || block == Blocks.SPAWNER || state.getDestroySpeed(level, pos) < 0F;
 
             if (isEffective && !unbreakable) {
-                boolean removed = state.onDestroyedByPlayer(level, pos, player, validHarvest, level.getFluidState(pos));
+                boolean removed = state.onDestroyedByPlayer(level, pos, player, tool, validHarvest, level.getFluidState(pos));
                 if (removed) {
                     block.destroy(level, pos, state);
                     block.playerDestroy(level, player, pos, state, blockEntity, tool);

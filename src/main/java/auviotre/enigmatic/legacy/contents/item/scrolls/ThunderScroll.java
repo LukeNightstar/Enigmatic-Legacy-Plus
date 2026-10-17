@@ -51,6 +51,7 @@ import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.minecraft.world.item.component.TooltipDisplay;
 import java.util.function.Consumer;
 import java.util.ArrayList;
+import net.minecraft.world.entity.EntitySpawnReason;
 public class ThunderScroll extends CursedCurioItem {
     public static final String TAG_ID = "ElectricPoint";
 
@@ -123,7 +124,7 @@ public class ThunderScroll extends CursedCurioItem {
                 int electric = entity.getPersistentData().getIntOr(TAG_ID, 0);
                 if (electric > 0) {
                     if (electric > 1200) {
-                        LightningBolt lightningbolt = EntityType.LIGHTNING_BOLT.create(entity.level());
+                        LightningBolt lightningbolt = EntityType.LIGHTNING_BOLT.create(entity.level(), EntitySpawnReason.TRIGGERED);
                         if (lightningbolt != null) {
                             lightningbolt.snapTo(Vec3.atBottomCenterOf(entity.blockPosition()));
                             lightningbolt.setSilent(entity.getRandom().nextBoolean());

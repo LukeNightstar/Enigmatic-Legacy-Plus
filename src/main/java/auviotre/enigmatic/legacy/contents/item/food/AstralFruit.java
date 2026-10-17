@@ -1,5 +1,8 @@
 package auviotre.enigmatic.legacy.contents.item.food;
 
+import net.minecraft.world.item.consume_effects.ApplyStatusEffectsConsumeEffect;
+import net.minecraft.world.item.component.Consumables;
+import net.minecraft.world.item.component.Consumable;
 import auviotre.enigmatic.legacy.api.item.IItemHelper;
 import auviotre.enigmatic.legacy.contents.item.generic.BaseItem;
 import auviotre.enigmatic.legacy.handlers.EnigmaticHandler;
@@ -24,23 +27,25 @@ import java.util.function.Consumer;
 import java.util.ArrayList;
 
 public class AstralFruit extends BaseItem {
-    public static final FoodProperties DEFAULT_PROPERTIES = new FoodProperties.Builder()
-            .effect(() -> new MobEffectInstance(MobEffects.REGENERATION, 400, 2), 1.0F)
-            .effect(() -> new MobEffectInstance(MobEffects.STRENGTH, 3200, 2), 1.0F)
-            .effect(() -> new MobEffectInstance(MobEffects.RESISTANCE, 3200, 1), 1.0F)
-            .effect(() -> new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 4800), 1.0F)
-            .nutrition(6).saturationModifier(1.3F).alwaysEdible().build();
-    public static final FoodProperties ENCHANTED_PROPERTIES = new FoodProperties.Builder()
-            .effect(() -> new MobEffectInstance(MobEffects.REGENERATION, 1200, 2), 1.0F)
-            .effect(() -> new MobEffectInstance(MobEffects.STRENGTH, 3200, 3), 1.0F)
-            .effect(() -> new MobEffectInstance(MobEffects.RESISTANCE, 3200, 2), 1.0F)
-            .effect(() -> new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 4800), 1.0F)
-            .nutrition(6).saturationModifier(1.3F).alwaysEdible().build();
+    public static final FoodProperties DEFAULT_PROPERTIES = new FoodProperties.Builder().nutrition(6).saturationModifier(1.3F).alwaysEdible().build();
+    public static final Consumable DEFAULT_PROPERTIES_CONSUMABLE = Consumables.defaultFood()
+            .onConsume(new ApplyStatusEffectsConsumeEffect(new MobEffectInstance(MobEffects.REGENERATION, 400, 2)))
+            .onConsume(new ApplyStatusEffectsConsumeEffect(new MobEffectInstance(MobEffects.STRENGTH, 3200, 2)))
+            .onConsume(new ApplyStatusEffectsConsumeEffect(new MobEffectInstance(MobEffects.RESISTANCE, 3200, 1)))
+            .onConsume(new ApplyStatusEffectsConsumeEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 4800)))
+            .build();
+    public static final FoodProperties ENCHANTED_PROPERTIES = new FoodProperties.Builder().nutrition(6).saturationModifier(1.3F).alwaysEdible().build();
+    public static final Consumable ENCHANTED_PROPERTIES_CONSUMABLE = Consumables.defaultFood()
+            .onConsume(new ApplyStatusEffectsConsumeEffect(new MobEffectInstance(MobEffects.REGENERATION, 1200, 2)))
+            .onConsume(new ApplyStatusEffectsConsumeEffect(new MobEffectInstance(MobEffects.STRENGTH, 3200, 3)))
+            .onConsume(new ApplyStatusEffectsConsumeEffect(new MobEffectInstance(MobEffects.RESISTANCE, 3200, 2)))
+            .onConsume(new ApplyStatusEffectsConsumeEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 4800)))
+            .build();
     private final boolean enchanted;
 
     public AstralFruit(boolean enchanted) {
         super(IItemHelper.properties().rarity(enchanted ? Rarity.EPIC : Rarity.RARE).fireResistant().component(EnigmaticComponents.CURSED, enchanted)
-                .food(enchanted ? ENCHANTED_PROPERTIES : DEFAULT_PROPERTIES));
+                .food(enchanted ? ENCHANTED_PROPERTIES : DEFAULT_PROPERTIES, enchanted ? ENCHANTED_PROPERTIES_CONSUMABLE : DEFAULT_PROPERTIES_CONSUMABLE));
         this.enchanted = enchanted;
     }
 

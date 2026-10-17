@@ -51,6 +51,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.world.item.component.TooltipDisplay;
 import java.util.function.Consumer;
 import java.util.ArrayList;
+import net.minecraft.world.entity.projectile.arrow.ThrownTrident;
+import net.minecraft.world.entity.projectile.hurtingprojectile.AbstractHurtingProjectile;
+import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
+import net.minecraft.world.entity.projectile.throwableitemprojectile.ThrowableItemProjectile;
+import net.minecraft.world.entity.projectile.hurtingprojectile.WitherSkull;
 public class AngelBlessing extends SpellstoneItem {
     public static ModConfigSpec.DoubleValue accelerationModifier;
     public static ModConfigSpec.DoubleValue accelerationModifierElytra;
