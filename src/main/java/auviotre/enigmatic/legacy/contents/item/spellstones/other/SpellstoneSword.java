@@ -97,6 +97,7 @@ import java.util.function.Consumer;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemInstance;
 
+import net.minecraft.world.item.ItemStack;
 public class SpellstoneSword extends Item {
     private static final float BASE_DAMAGE = 6.0F;
 
@@ -126,7 +127,7 @@ public class SpellstoneSword extends Item {
                 entity.hurt(entity.damageSources().mobAttack(blocker), 4.0F);
                 entity.invulnerableTime = 5;
             }
-            if (blocker instanceof Player player) player.getCooldowns().addCooldown(useItem.getItem(), 21);
+            if (blocker instanceof Player player) player.getCooldowns().addCooldown(new ItemStack(useItem.getItem()), 21);
             int sLevel = useItem.getOrDefault(SPELL_LEVEL, 0);
             useItem.set(INT, sLevel > 4 ? 4 : 2);
         }
@@ -140,7 +141,7 @@ public class SpellstoneSword extends Item {
                 stack.hurtAndBreak(3, shooter, shooter.getUsedItemHand().asEquipmentSlot());
                 stack.set(INT, Math.max(0, i - 3));
             }
-            if (shooter instanceof Player player) player.getCooldowns().addCooldown(stack.getItem(), 10);
+            if (shooter instanceof Player player) player.getCooldowns().addCooldown(new ItemStack(stack.getItem()), 10);
             shooter.playSound(SoundEvents.BREEZE_SHOOT, 0.8F, 1.5F + random.nextFloat() * 0.2F);
             shooter.playSound(SoundEvents.TRIDENT_THROW.value(), 0.6F, 0.9F + random.nextFloat() * 0.3F);
             shooter.playSound(SoundEvents.WIND_CHARGE_BURST.value(), 0.6F, 0.5F);
@@ -179,7 +180,7 @@ public class SpellstoneSword extends Item {
                 stack.hurtAndBreak(1, shooter, shooter.getUsedItemHand().asEquipmentSlot());
                 stack.set(INT, i - 1);
             }
-            if (shooter instanceof Player player) player.getCooldowns().addCooldown(stack.getItem(), 6);
+            if (shooter instanceof Player player) player.getCooldowns().addCooldown(new ItemStack(stack.getItem()), 6);
             shooter.playSound(SoundEvents.BREEZE_SHOOT, 0.6F, 1.8F + random.nextFloat() * 0.2F);
             shooter.playSound(SoundEvents.CROSSBOW_SHOOT, 1.0F, 1.6F + random.nextFloat() * 0.2F);
             Vec3 beginning = shooter.getEyePosition();
@@ -218,7 +219,7 @@ public class SpellstoneSword extends Item {
     public static void soulFire(Level level, @NotNull LivingEntity shooter, @NotNull ItemStack stack, InteractionHand hand) {
         int i = stack.getOrDefault(INT, 0);
         shooter.swing(hand);
-        if (shooter instanceof Player player) player.getCooldowns().addCooldown(stack.getItem(), 5);
+        if (shooter instanceof Player player) player.getCooldowns().addCooldown(new ItemStack(stack.getItem()), 5);
         shooter.playSound(SoundEvents.FIRECHARGE_USE, 1.0F, 1.0F);
         if (!shooter.hasInfiniteMaterials()) stack.set(INT, i - 1);
         SoulFlameBall flameBall = new SoulFlameBall(level, shooter, null);
@@ -375,7 +376,7 @@ public class SpellstoneSword extends Item {
                     if (stack.getOrDefault(INT, 0) > 0) return ItemUtils.startUsingInstantly(level, player, hand);
                     break;
                 case 3:
-                    if (player.isInWaterRainOrBubble() || stack.getOrDefault(INT, 0) > 7)
+                    if (player.isInWaterOrRain() || stack.getOrDefault(INT, 0) > 7)
                         return ItemUtils.startUsingInstantly(level, player, hand);
                     break;
                 case 6, 8:
@@ -405,7 +406,7 @@ public class SpellstoneSword extends Item {
                     return ItemUtils.startUsingInstantly(level, player, hand);
                 case 10:
                     player.startUsingItem(hand);
-                    player.getCooldowns().addCooldown(this, 64);
+                    player.getCooldowns().addCooldown(new ItemStack(this), 64);
                     return InteractionResult.CONSUME;
                 default:
                     if (itemInHand.getItem() instanceof SpellstoneItem) {
@@ -439,7 +440,7 @@ public class SpellstoneSword extends Item {
                     break;
                 case 6, 8:
                     if (stack.getOrDefault(INT, 0) <= 0) {
-                        if (user instanceof Player player) player.getCooldowns().addCooldown(this, 12);
+                        if (user instanceof Player player) player.getCooldowns().addCooldown(new ItemStack(this), 12);
                         user.swing(hand);
                         stack.set(INT, getMaxEnergy(stack));
                         level.playSound(null, user.blockPosition(), SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, 0.6F, 0.8F);
@@ -517,8 +518,8 @@ public class SpellstoneSword extends Item {
             if (isResonatingWith(stack, EnigmaticItems.BLAZING_CORE) && stack.getOrDefault(INT, 0) > 0) {
                 if (user instanceof Player player) {
                     player.playSound(SoundEvents.PLAYER_ATTACK_SWEEP, 1.0F, 1.0F);
-                    player.sweepAttack();
-                    player.getCooldowns().addCooldown(this, 20);
+                    EnigmaticHandler.sweepAttack(player);
+                    player.getCooldowns().addCooldown(new ItemStack(this), 20);
                 }
                 user.swing(InteractionHand.MAIN_HAND);
             } else if (isResonatingWith(stack, EnigmaticItems.OCEAN_STONE) && tick >= (20 - sLevel) && user instanceof Player player) {
@@ -534,7 +535,7 @@ public class SpellstoneSword extends Item {
                 y *= f / len;
                 z *= f / len;
                 player.push(x, y, z);
-                if (!player.isInWaterRainOrBubble()) stack.set(INT, Math.max(0, stack.getOrDefault(INT, 0) - 4));
+                if (!player.isInWaterOrRain()) stack.set(INT, Math.max(0, stack.getOrDefault(INT, 0) - 4));
                 float modifier = sLevel * 0.2F + 0.8F;
                 player.startAutoSpinAttack(20, (float) player.getAttributeValue(Attributes.ATTACK_DAMAGE) * modifier, stack);
                 if (player.onGround()) player.move(MoverType.SELF, new Vec3(0.0F, 1.2F, 0.0F));
@@ -564,7 +565,7 @@ public class SpellstoneSword extends Item {
                     entity.teleportTo(vec3.x, vec3.y, vec3.z);
                     user.teleportTo(position.x, position.y, position.z);
                     user.lookAt(EntityAnchorArgument.Anchor.EYES, vec3);
-                    if (user instanceof Player player) player.sweepAttack();
+                    if (user instanceof Player player) EnigmaticHandler.sweepAttack(player);
                     user.swing(hand);
                     double len = position.distanceTo(vec3) / 1.25;
                     List<LivingEntity> entities = level.getEntitiesOfClass(LivingEntity.class, user.getBoundingBox().inflate(3), living -> living.isAlive() && living != user && user.canAttack(living));
@@ -618,7 +619,7 @@ public class SpellstoneSword extends Item {
                         if (state.is(Blocks.LAVA)) heat += 9;
                         if (state.is(Blocks.MAGMA_BLOCK)) heat += 2;
                         if (heat > 8) {
-                            player.getCooldowns().addCooldown(this, 10);
+                            player.getCooldowns().addCooldown(new ItemStack(this), 10);
                             if (player instanceof ServerPlayer serverPlayer)
                                 PacketDistributor.sendToPlayer(serverPlayer, new SpellstoneSwordPacket(context.getClickLocation(), 20));
                             stack.set(INT, getMaxEnergy(stack));
@@ -627,7 +628,7 @@ public class SpellstoneSword extends Item {
                     }
                 } else if (!player.isCrouching()) {
                     int sLevel = stack.getOrDefault(SPELL_LEVEL, 0);
-                    player.getCooldowns().addCooldown(this, 40 - sLevel * 2);
+                    player.getCooldowns().addCooldown(new ItemStack(this), 40 - sLevel * 2);
                     if (player instanceof ServerPlayer serverPlayer)
                         PacketDistributor.sendToPlayer(serverPlayer, new SpellstoneSwordPacket(context.getClickLocation(), 21));
                     if (!player.hasInfiniteMaterials()) stack.set(INT, Math.max(0, energy - 10));
@@ -874,14 +875,14 @@ public class SpellstoneSword extends Item {
         public boolean render(GuiGraphicsExtractor graphics, Font font, @NotNull ItemStack stack, int x, int y) {
             int energy = stack.getOrDefault(INT, 0);
             if (energy > 0 && getMaxEnergy(stack) > 0) {
-                graphics.pose().pushPose();
+                graphics.pose().pushMatrix();
                 int j = x + 2;
                 int k = y + 12;
                 int width = Mth.floor(13.0F * energy / getMaxEnergy(stack));
                 int color = getColor(stack);
                 graphics.fill(RenderType.guiOverlay(), j, k, j + 13, k + (stack.isBarVisible() ? 1 : 2), 0xFF000000);
                 graphics.fill(RenderType.guiOverlay(), j, k, j + width, k + 1, color | 0xFF000000);
-                graphics.pose().popPose();
+                graphics.pose().popMatrix();
                 return true;
             }
             return false;
@@ -902,7 +903,7 @@ public class SpellstoneSword extends Item {
                         event.setNewDamage(event.getNewDamage() * 0.8F);
                     }
                 } else if (isResonatingWith(stack, EnigmaticItems.OCEAN_STONE)) {
-                    if (entity.isInWaterRainOrBubble()) event.setNewDamage(event.getNewDamage() * 0.6F);
+                    if (entity.isInWaterOrRain()) event.setNewDamage(event.getNewDamage() * 0.6F);
                 } else if (isResonatingWith(stack, EnigmaticItems.FORGOTTEN_ICE)) {
                     int shield = stack.getOrDefault(INT, 0);
                     if (event.getNewDamage() <= shield) {
@@ -922,7 +923,7 @@ public class SpellstoneSword extends Item {
                     int time = (int) Math.pow((double) attacker.getRemainingFireTicks() / 100, 0.9);
                     event.setNewDamage(event.getNewDamage() * (1.0F + time * 0.05F));
                 } else if (isResonatingWith(stack, EnigmaticItems.OCEAN_STONE)) {
-                    if (attacker.isInWaterRainOrBubble()) event.setNewDamage(event.getNewDamage() * 1.25F);
+                    if (attacker.isInWaterOrRain()) event.setNewDamage(event.getNewDamage() * 1.25F);
                 } else if (isResonatingWith(stack, EnigmaticItems.ANGEL_BLESSING)) {
                     if (!attacker.onGround() && attacker.level().getBlockState(attacker.blockPosition()).isAir()) {
                         event.setNewDamage(event.getNewDamage() * 1.6F);
@@ -957,7 +958,7 @@ public class SpellstoneSword extends Item {
                     if (level > 4) {
                         float width = entity.getBbWidth() * 4;
                         List<Mob> entities = entity.level().getEntitiesOfClass(Mob.class, entity.getBoundingBox().inflate(width, entity.getBbHeight() / 2, width),
-                                living -> living.isAlive() && living.getType().is(EntityTypeTags.UNDEAD));
+                                living -> living.isAlive() && living.is(EntityTypeTags.UNDEAD));
                         for (Mob living : entities) {
                             if (living == entity) continue;
                             if ((living.getTarget() == null || living.getTarget() == attacker) && living.getLastAttacker() != attacker)

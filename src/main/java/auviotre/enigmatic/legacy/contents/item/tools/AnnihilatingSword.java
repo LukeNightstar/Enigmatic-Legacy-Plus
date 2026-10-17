@@ -73,6 +73,7 @@ import java.util.ArrayList;
 import net.minecraft.world.entity.EquipmentSlot;
 import org.jspecify.annotations.Nullable;
 
+import net.minecraft.world.item.ItemStack;
 public class AnnihilatingSword extends SwordItem {
     private static final Tier TIER = new SimpleTier(BlockTags.INCORRECT_FOR_NETHERITE_TOOL, 3268, 10.8F, 8.0F, 64, () -> Ingredient.EMPTY);
 
@@ -85,7 +86,7 @@ public class AnnihilatingSword extends SwordItem {
         if (level.isClientSide()) return;
         int tick = stack.getUseDuration(blocker) - blocker.getUseItemRemainingTicks();
         stack.hurtAndBreak(Mth.floor(damage / 2), blocker, blocker.getUsedItemHand().asEquipmentSlot());
-        blocker.getCooldowns().addCooldown(stack.getItem(), Mth.clamp(tick, 30, 50) - (tick <= 8 ? 5 : 0));
+        blocker.getCooldowns().addCooldown(new ItemStack(stack.getItem()), Mth.clamp(tick, 30, 50) - (tick <= 8 ? 5 : 0));
         blocker.swing(blocker.getUsedItemHand());
         blocker.stopUsingItem();
         if (tick <= 8) addEnergy(stack, blocker);
@@ -149,7 +150,7 @@ public class AnnihilatingSword extends SwordItem {
         player.level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.PLAYER_ATTACK_SWEEP, player.getSoundSource(), 1.2F, 0.2F);
         player.swing(InteractionHand.MAIN_HAND);
         player.resetAttackStrengthTicker();
-        player.sweepAttack();
+        EnigmaticHandler.sweepAttack(player);
         player.getData(EnigmaticAttachments.ENIGMATIC_DATA).setAnnihilationSweepData((int) damage, 5, level);
     }
 
@@ -165,7 +166,7 @@ public class AnnihilatingSword extends SwordItem {
         player.level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.PLAYER_ATTACK_SWEEP, player.getSoundSource(), 1.2F, 0.2F);
         player.swing(InteractionHand.MAIN_HAND);
         player.resetAttackStrengthTicker();
-        player.sweepAttack();
+        EnigmaticHandler.sweepAttack(player);
     }
 
     public static int getMaxEnergy(LivingEntity entity) {
@@ -266,7 +267,7 @@ public class AnnihilatingSword extends SwordItem {
 
     public void releaseUsing(ItemStack stack, Level level, LivingEntity entity, int tick) {
         if (entity instanceof Player player && player.getOffhandItem().is(this)) {
-            player.getCooldowns().addCooldown(this, 8);
+            player.getCooldowns().addCooldown(new ItemStack(this), 8);
         }
     }
 
@@ -284,7 +285,7 @@ public class AnnihilatingSword extends SwordItem {
                 } else if (player.onGround() || player.level().getBlockState(player.blockPosition().below(2)).canOcclude()) {
                     sweepAttack(player, energy, damage);
                 } else rangeAttack(player, energy, damage);
-                player.getCooldowns().addCooldown(this, 100 - energy * 8);
+                player.getCooldowns().addCooldown(new ItemStack(this), 100 - energy * 8);
                 stack.hurtAndBreak(energy * 3, player, InteractionHand.MAIN_HAND.asEquipmentSlot());
                 if (!player.hasInfiniteMaterials()) {
                     var holder = EnigmaticHandler.get(level, Registries.ENCHANTMENT, Enchantments.UNBREAKING);
@@ -323,11 +324,11 @@ public class AnnihilatingSword extends SwordItem {
         public boolean render(GuiGraphicsExtractor graphics, Font font, @NotNull ItemStack stack, int x, int y) {
             int energy = stack.getOrDefault(EnigmaticComponents.ANNI_ENERGY, 0.0F).intValue();
             if (stack.getCount() == 1 && energy > 0) {
-                graphics.pose().pushPose();
+                graphics.pose().pushMatrix();
                 String s = String.valueOf(energy);
                 graphics.pose().translate(0.0F, 0.0F, 200.0F);
                 graphics.drawString(font, s, x + 19 - 2 - font.width(s), y + 6 + 3, 16733695, true);
-                graphics.pose().popPose();
+                graphics.pose().popMatrix();
                 return true;
             }
             return false;

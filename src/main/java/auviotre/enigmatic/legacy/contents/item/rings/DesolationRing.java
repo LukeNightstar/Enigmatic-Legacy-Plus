@@ -197,7 +197,7 @@ public class DesolationRing extends BaseCurioItem {
                 }
                 if (flag) {
                     if (entity instanceof Player player)
-                        player.getCooldowns().addCooldown(EnigmaticItems.DESOLATION_RING.get(), cooldown.get());
+                        player.getCooldowns().addCooldown(new ItemStack(EnigmaticItems.DESOLATION_RING.get()), cooldown.get());
                     entity.setHealth(Math.max(health * 2, entity.getHealth() + 1));
                     event.setCanceled(true);
                 }

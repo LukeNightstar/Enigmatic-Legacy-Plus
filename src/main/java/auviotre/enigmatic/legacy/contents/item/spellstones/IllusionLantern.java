@@ -117,7 +117,7 @@ public class IllusionLantern extends SpellstoneItem {
             if (!entity.getCooldowns().isOnCooldown(this)) {
                 if (count < 5) {
                     count++;
-                    entity.getCooldowns().addCooldown(this, cooldown.get());
+                    entity.getCooldowns().addCooldown(new ItemStack(this), cooldown.get());
                 }
             }
             stack.set(EnigmaticComponents.ILLUSION_COUNT, Math.clamp(count, 0, 5));
@@ -159,11 +159,11 @@ public class IllusionLantern extends SpellstoneItem {
         public boolean render(GuiGraphicsExtractor graphics, Font font, @NotNull ItemStack stack, int x, int y) {
             int count = stack.getOrDefault(EnigmaticComponents.ILLUSION_COUNT, 0);
             if (stack.getCount() == 1 && count > 0) {
-                graphics.pose().pushPose();
+                graphics.pose().pushMatrix();
                 String s = String.valueOf(count);
                 graphics.pose().translate(0.0F, 0.0F, 200.0F);
                 graphics.drawString(font, s, x + 19 - 2 - font.width(s), y + 6 + 3, Mth.hsvToRgb(0.51F, 1.0F, 0.8F + count * 0.02F), true);
-                graphics.pose().popPose();
+                graphics.pose().popMatrix();
                 return true;
             }
             return false;
@@ -179,7 +179,7 @@ public class IllusionLantern extends SpellstoneItem {
             LivingEntity target = event.getNewAboutToBeSetTarget();
             if (entity instanceof Targeting targetedEntity && ISpellstone.get(target).is(EnigmaticItems.ILLUSION_LANTERN)) {
                 if (entity.getLastHurtByMob() != target && (targetedEntity.getTarget() == null || !targetedEntity.getTarget().isAlive())) {
-                    if (entity.getType().is(EntityTypeTags.WITHER_FRIENDS)) {
+                    if (entity.is(EntityTypeTags.WITHER_FRIENDS)) {
                         event.setCanceled(true);
                     }
                 }

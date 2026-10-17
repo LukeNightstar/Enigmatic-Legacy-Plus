@@ -305,7 +305,7 @@ public class PermanentItemEntity extends Entity {
                     if (player.getInventory().add(copy)) {
                         acceptors.remove(player.getUUID());
                         level.sendParticles((ServerPlayer) player, ParticleTypes.DRAGON_BREATH, false, this.getX(), this.getY(0.5), this.getZ(), 48, 0, 0, 0, 0.03);
-                        EnigmaticLegacy.LOGGER.info("Player {} picking up (share: {}): {}", player.getGameProfile().getName(), stack, this);
+                        EnigmaticLegacy.LOGGER.info("Player {} picking up (share: {}): {}", player.getGameProfile().name(), stack, this);
                         player.awardStat(Stats.ITEM_PICKED_UP.get(item), count);
                         if (acceptors.isEmpty()) this.discard();
                         else PacketDistributor.sendToAllPlayers(new AcceptorSyncPacket(this.getId(), this.acceptors));
@@ -328,12 +328,12 @@ public class PermanentItemEntity extends Entity {
                 }
                 level.sendParticles(ParticleTypes.DRAGON_BREATH, this.getX(), this.getY(0.5), this.getZ(), 48, 0, 0, 0, 0.03);
                 player.take(this, count);
-                EnigmaticLegacy.LOGGER.info("Player {} picking up (crystal): {}", player.getGameProfile().getName(), this);
+                EnigmaticLegacy.LOGGER.info("Player {} picking up (crystal): {}", player.getGameProfile().name(), this);
                 this.discard();
                 stack.setCount(0);
             } else if (this.pickupDelay == 0 && (this.owner == null || this.owner.equals(player.getUUID())) && (count <= 0 || player.getInventory().add(stack))) {
                 copy.setCount(copy.getCount() - this.getItem().getCount());
-                EnigmaticLegacy.LOGGER.info("Player {} picking up (item: {}): {}", player.getGameProfile().getName(), copy, this);
+                EnigmaticLegacy.LOGGER.info("Player {} picking up (item: {}): {}", player.getGameProfile().name(), copy, this);
                 if (stack.isEmpty()) {
                     this.discard();
                     stack.setCount(count);

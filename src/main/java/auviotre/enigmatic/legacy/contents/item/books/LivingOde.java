@@ -113,7 +113,7 @@ public class LivingOde extends BaseItem {
             }
             if (noAction) return InteractionResult.PASS;
             level.sendParticles(ParticleTypes.HEART, target.getX(), target.getEyeY(), target.getZ(), 5, target.getBbWidth(), 0.1D, target.getBbWidth(), 0.1D);
-            if (player.hasInfiniteMaterials()) player.getCooldowns().addCooldown(this, cooldown.get());
+            if (player.hasInfiniteMaterials()) player.getCooldowns().addCooldown(new ItemStack(this), cooldown.get());
             return InteractionResult.SUCCESS;
         } else return InteractionResult.PASS;
     }

@@ -46,6 +46,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.world.item.component.TooltipDisplay;
 import java.util.function.Consumer;
 import java.util.ArrayList;
+import net.minecraft.world.item.ItemStack;
 public class EnderSlayer extends SwordItem {
     public static final Tier TIER = new SimpleTier(BlockTags.INCORRECT_FOR_DIAMOND_TOOL, 1876, 8.5F, 3.5F, 12, () -> Ingredient.of(Blocks.OBSIDIAN));
     public static ModConfigSpec.IntValue specialDamageBoost;
@@ -103,16 +104,16 @@ public class EnderSlayer extends SwordItem {
                 if (attacker.getWeaponItem().is(EnigmaticItems.ENDER_SLAYER) && EnigmaticHandler.canUse(attacker, attacker.getWeaponItem())) {
                     if (event.getEntity() instanceof ServerPlayer player) {
                         ItemCooldowns cooldowns = player.getCooldowns();
-                        cooldowns.addCooldown(Items.ENDER_PEARL, 400);
-                        cooldowns.addCooldown(EnigmaticItems.RECALL_POTION.get(), 400);
-                        cooldowns.addCooldown(EnigmaticItems.TWISTED_MIRROR.get(), 400);
-                        cooldowns.addCooldown(EnigmaticItems.EYE_OF_NEBULA.get(), 400);
-                        cooldowns.addCooldown(EnigmaticItems.THE_CUBE.get(), 400);
+                        cooldowns.addCooldown(new ItemStack(Items.ENDER_PEARL), 400);
+                        cooldowns.addCooldown(new ItemStack(EnigmaticItems.RECALL_POTION.get()), 400);
+                        cooldowns.addCooldown(new ItemStack(EnigmaticItems.TWISTED_MIRROR.get()), 400);
+                        cooldowns.addCooldown(new ItemStack(EnigmaticItems.EYE_OF_NEBULA.get()), 400);
+                        cooldowns.addCooldown(new ItemStack(EnigmaticItems.THE_CUBE.get()), 400);
                     } else if (event.getEntity() instanceof EnderMan || event.getEntity() instanceof Shulker) {
                         event.getEntity().getPersistentData().putInt("EnderSlayerTeleportForbidden", 400);
                     }
 
-                    if (event.getEntity().getType().is(EnigmaticTags.EntityTypes.END_DWELLERS)) {
+                    if (event.getEntity().is(EnigmaticTags.EntityTypes.END_DWELLERS)) {
                         if (attacker.level().dimension().equals(Level.END)) {
                             if (event.getEntity() instanceof EnderMan man && attacker instanceof Player player) {
                                 float scale = player.getAttackStrengthScale(0.5F);

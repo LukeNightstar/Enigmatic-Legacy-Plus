@@ -82,11 +82,11 @@ public class UnholyGrail extends BaseItem {
     }
 
     public SoundEvent getDrinkingSound() {
-        return SoundEvents.HONEY_DRINK;
+        return SoundEvents.HONEY_DRINK.value();
     }
 
     public SoundEvent getEatingSound() {
-        return SoundEvents.HONEY_DRINK;
+        return SoundEvents.HONEY_DRINK.value();
     }
 
     public int getUseDuration(ItemStack stack, LivingEntity entity) {

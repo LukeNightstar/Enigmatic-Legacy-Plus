@@ -1,5 +1,8 @@
 package auviotre.enigmatic.legacy.handlers;
 
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.Mth;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.api.SubscribeConfig;
 import auviotre.enigmatic.legacy.api.event.LivingCurseBoostEvent;
@@ -140,6 +143,14 @@ public interface EnigmaticHandler {
         return hasCurio(entity, EnigmaticItems.DIMNESS_CHARM);
     }
 
+    // 26.1.2 port: replaces the removed Player#sweepAttack (sweep particle only, as in 1.21.1)
+    static void sweepAttack(Player player) {
+        double dx = -Mth.sin(player.getYRot() * (float) (Math.PI / 180.0));
+        double dz = Mth.cos(player.getYRot() * (float) (Math.PI / 180.0));
+        if (player.level() instanceof ServerLevel serverLevel)
+            serverLevel.sendParticles(ParticleTypes.SWEEP_ATTACK, player.getX() + dx, player.getY(0.5), player.getZ() + dz, 0, dx, 0.0, dz, 0.0);
+    }
+
     static boolean isTheOne(LivingEntity entity) {
         return isTheCursedOne(entity) || isTheBlessedOne(entity);
     }
@@ -268,7 +279,7 @@ public interface EnigmaticHandler {
         MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
         if (server == null) return Optional.empty();
         if (server.getSingleplayerProfile() == null) return Optional.empty();
-        if (server.isSingleplayer() && Objects.equals(server.getSingleplayerProfile().getName(), EnigmaticLegacy.PROXY.getClientUsername()))
+        if (server.isSingleplayer() && Objects.equals(server.getSingleplayerProfile().name(), EnigmaticLegacy.PROXY.getClientUsername()))
             return Optional.of(server);
         return Optional.empty();
     }

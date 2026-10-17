@@ -166,9 +166,9 @@ public class HellBladeCharm extends BaseCurioItem {
         public boolean render(GuiGraphicsExtractor graphics, Font font, @NotNull ItemStack stack, int x, int y) {
             ItemStack curio = EnigmaticHandler.getCurio(Minecraft.getInstance().player, EnigmaticItems.HELL_BLADE_CHARM);
             if (curio == stack && !stack.getOrDefault(EnigmaticComponents.BOOLEAN, false)) {
-                graphics.pose().pushPose();
+                graphics.pose().pushMatrix();
                 graphics.blitSprite(SPRITE, x - 1, y - 1, 18, 18);
-                graphics.pose().popPose();
+                graphics.pose().popMatrix();
                 return true;
             }
             return false;

@@ -127,12 +127,12 @@ public class TotemOfMalice extends BaseCurioItem {
         public boolean render(GuiGraphicsExtractor graphics, Font font, @NotNull ItemStack stack, int x, int y) {
             int durability = getDurability(stack);
             if (stack.getCount() == 1 && durability > 0) {
-                graphics.pose().pushPose();
+                graphics.pose().pushMatrix();
                 String s = String.valueOf(durability);
                 float f = Math.clamp((float) getDurability(stack) / getMaxDurability(stack), 0.0F, 0.8F);
                 graphics.pose().translate(0.0F, 0.0F, 200.0F);
                 graphics.drawString(font, s, x + 19 - 2 - font.width(s), y + 6 + 3, Mth.hsvToRgb(5.0F / 6, 1.0F, 0.6F + f * 0.5F), true);
-                graphics.pose().popPose();
+                graphics.pose().popMatrix();
                 return true;
             }
             return false;
@@ -167,7 +167,7 @@ public class TotemOfMalice extends BaseCurioItem {
             Entity entity = event.getSource().getEntity();
             if (!(entity instanceof LivingEntity attacker)) return;
             if (EnigmaticHandler.hasItem(attacker, EnigmaticItems.TOTEM_OF_MALICE) || EnigmaticHandler.hasCurio(attacker, EnigmaticItems.TOTEM_OF_MALICE)) {
-                if (victim.getType().is(EntityTypeTags.ILLAGER)) {
+                if (victim.is(EntityTypeTags.ILLAGER)) {
                     event.setAmount(event.getAmount() * (1.0F + 0.01F * specialDamageBoost.get()));
                 }
             }
@@ -180,7 +180,7 @@ public class TotemOfMalice extends BaseCurioItem {
             if (event.getNewDamage() >= Float.MAX_VALUE) return;
             if (!(entity instanceof LivingEntity attacker)) return;
             if (EnigmaticHandler.hasItem(victim, EnigmaticItems.TOTEM_OF_MALICE) || EnigmaticHandler.hasCurio(victim, EnigmaticItems.TOTEM_OF_MALICE)) {
-                if (attacker.getType().is(EntityTypeTags.ILLAGER)) {
+                if (attacker.is(EntityTypeTags.ILLAGER)) {
                     event.setNewDamage(event.getNewDamage() * (1.0F - 0.01F * specialDamageResistance.get()));
                 }
             }

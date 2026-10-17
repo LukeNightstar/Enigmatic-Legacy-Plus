@@ -49,7 +49,7 @@ public class UnwitnessedAmulet extends BaseCurioItem {
 
     public InteractionResult use(Level level, @NotNull Player player, InteractionHand hand) {
         ItemStack stack = EnigmaticAmulet.randomColor(player.getRandom());
-        stack.set(EnigmaticComponents.AMULET_NAME, player.getGameProfile().getName());
+        stack.set(EnigmaticComponents.AMULET_NAME, player.getGameProfile().name());
         player.playSound(EnigmaticSounds.CHARGED_ON.get(), 1.0F, 1.0F);
         return InteractionResult.SUCCESS;
     }

@@ -57,7 +57,7 @@ public class BaseDrinkableItem extends BaseItem {
     }
 
     public SoundEvent getEatingSound() {
-        return SoundEvents.GENERIC_DRINK;
+        return SoundEvents.GENERIC_DRINK.value();
     }
 
     public boolean canDrink(Level level, Player player, ItemStack stack) {

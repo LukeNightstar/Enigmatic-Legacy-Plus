@@ -32,7 +32,7 @@ public interface ISpellstone {
     static void addCooldown(@NotNull ServerPlayer player, int cooldown) {
         BuiltInRegistries.ITEM.forEach(item -> {
             if (item.getDefaultInstance().is(EnigmaticTags.Items.SPELLSTONES)) {
-                player.getCooldowns().addCooldown(item, cooldown);
+                player.getCooldowns().addCooldown(new ItemStack(item), cooldown);
             }
         });
     }

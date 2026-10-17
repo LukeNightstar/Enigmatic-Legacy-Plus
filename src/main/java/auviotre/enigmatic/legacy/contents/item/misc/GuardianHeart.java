@@ -128,7 +128,7 @@ public class GuardianHeart extends BaseCursedItem {
             if (EnigmaticHandler.isTheCursedOne(player) && Inventory.isHotbarSlot(slotId) && !player.getCooldowns().isOnCooldown(this)) {
                 Monster oneWatched = null;
                 for (Monster monster : monsters) {
-                    if (doesObserveEntity(player, monster) && !monster.getType().is(EnigmaticTags.EntityTypes.GUARDIAN_HEART_EXCLUDED)) {
+                    if (doesObserveEntity(player, monster) && !monster.is(EnigmaticTags.EntityTypes.GUARDIAN_HEART_EXCLUDED)) {
                         oneWatched = monster;
                         break;
                     }
@@ -150,7 +150,7 @@ public class GuardianHeart extends BaseCursedItem {
                             this.setAttackTarget(otherMonster, theOne);
 
                         player.level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ELDER_GUARDIAN_CURSE, SoundSource.HOSTILE, 1.0F, 1.0F);
-                        player.getCooldowns().addCooldown(this, cooldown.get());
+                        player.getCooldowns().addCooldown(new ItemStack(this), cooldown.get());
                     }
                 }
             }

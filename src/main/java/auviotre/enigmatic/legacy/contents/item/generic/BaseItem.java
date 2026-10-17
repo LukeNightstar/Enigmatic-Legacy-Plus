@@ -65,9 +65,9 @@ public class BaseItem extends Item {
         static final Identifier SPRITE = EnigmaticLegacy.location("decorator/wip_warn");
 
         public boolean render(@NotNull GuiGraphicsExtractor graphics, Font font, @NotNull ItemStack stack, int x, int y) {
-            graphics.pose().pushPose();
+            graphics.pose().pushMatrix();
             graphics.blitSprite(SPRITE, x, y, 16, 16);
-            graphics.pose().popPose();
+            graphics.pose().popMatrix();
             return true;
         }
     }
@@ -77,9 +77,9 @@ public class BaseItem extends Item {
         static final Identifier SPRITE = EnigmaticLegacy.location("decorator/unknown");
 
         public boolean render(@NotNull GuiGraphicsExtractor graphics, Font font, @NotNull ItemStack stack, int x, int y) {
-            graphics.pose().pushPose();
+            graphics.pose().pushMatrix();
             graphics.blitSprite(SPRITE, x, y, 16, 16);
-            graphics.pose().popPose();
+            graphics.pose().popMatrix();
             return true;
         }
     }

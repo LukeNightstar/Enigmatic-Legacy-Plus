@@ -243,7 +243,7 @@ public class ChaosElytra extends BaseElytraItem {
                 if (owner instanceof Player player) {
                     boolean cooldown = player.getCooldowns().isOnCooldown(EnigmaticItems.CHAOS_ELYTRA.get());
                     if (cooldown && !player.hasInfiniteMaterials()) return;
-                    player.getCooldowns().addCooldown(EnigmaticItems.CHAOS_ELYTRA.get(), target == null ? descendingCooldown.get() : 10);
+                    player.getCooldowns().addCooldown(new ItemStack(EnigmaticItems.CHAOS_ELYTRA.get()), target == null ? descendingCooldown.get() : 10);
                     CompoundTag data = EnigmaticHandler.getPersistedData(player);
                     data.putBoolean("ChaoAchievementCheck", true);
                 }

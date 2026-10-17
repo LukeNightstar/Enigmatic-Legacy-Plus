@@ -215,7 +215,7 @@ public class TheCube extends SpellstoneItem {
         }
 
         if (location == null) {
-            EnigmaticLegacy.LOGGER.info("No cached location found for {}, generating new one synchronously.", player.getGameProfile().getName());
+            EnigmaticLegacy.LOGGER.info("No cached location found for {}, generating new one synchronously.", player.getGameProfile().name());
             Optional<GlobalPos> optional = this.findRandomLocation(player);
             if (optional.isPresent()) location = optional.get();
             else return;
@@ -232,7 +232,7 @@ public class TheCube extends SpellstoneItem {
         if (destLevel == null) destLevel = player.level().getServer().overworld();
         Vec3 vec3 = location.pos().getBottomCenter();
         if (!player.level().equals(destLevel))
-            player.changeDimension(new TeleportTransition(destLevel, vec3, player.getDeltaMovement(), player.getYRot(), player.getXRot(), TeleportTransition.DO_NOTHING));
+            player.teleport(new TeleportTransition(destLevel, vec3, player.getDeltaMovement(), player.getYRot(), player.getXRot(), TeleportTransition.DO_NOTHING));
         player.teleportTo(vec3.x, vec3.y, vec3.z);
 
         if (player.level() instanceof ServerLevel server) {
@@ -249,7 +249,7 @@ public class TheCube extends SpellstoneItem {
                 EnigmaticLegacy.LOGGER.debug("Found random location: {}", location);
                 return location;
             } catch (Exception exception) {
-                EnigmaticLegacy.LOGGER.error("Could not find random location for: {}", player.getGameProfile().getName());
+                EnigmaticLegacy.LOGGER.error("Could not find random location for: {}", player.getGameProfile().name());
                 throw exception;
             }
         });

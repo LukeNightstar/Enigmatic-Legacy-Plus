@@ -60,7 +60,7 @@ public class TwistedMirror extends BaseCursedItem {
     public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entity) {
         if (entity instanceof ServerPlayer player) {
             RecallPotion.teleportToRespawnPoint(player, ParticleTypes.WITCH);
-            player.getCooldowns().addCooldown(this, player.hasInfiniteMaterials() ? 20 : 250);
+            player.getCooldowns().addCooldown(new ItemStack(this), player.hasInfiniteMaterials() ? 20 : 250);
         }
         return stack;
     }

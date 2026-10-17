@@ -120,7 +120,7 @@ public class DimensionalAnchor extends BaseEntityBlock {
             if (!level.isClientSide()) {
                 this.explode(state, level, pos);
             }
-            return InteractionResult.sidedSuccess(level.isClientSide());
+            return InteractionResult.SUCCESS;
         } else {
             if (!level.isClientSide()) {
                 ServerPlayer serverplayer = (ServerPlayer) player;

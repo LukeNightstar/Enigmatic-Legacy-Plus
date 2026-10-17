@@ -29,6 +29,7 @@ import net.minecraft.world.item.component.TooltipDisplay;
 import java.util.function.Consumer;
 import java.util.ArrayList;
 
+import net.minecraft.world.item.ItemStack;
 public class SacredChalice extends BaseCursedItem {
     public SacredChalice() {
         super(IItemHelper.singleProperties().rarity(Rarity.RARE).fireResistant()
@@ -69,7 +70,7 @@ public class SacredChalice extends BaseCursedItem {
         boolean filled = stack.getOrDefault(EnigmaticComponents.BOOLEAN, false);
         stack.set(EnigmaticComponents.BOOLEAN, !filled);
         if (entity instanceof Player player)
-            player.getCooldowns().addCooldown(this, player.hasInfiniteMaterials() ? 20 : (filled ? 1200 : 600));
+            player.getCooldowns().addCooldown(new ItemStack(this), player.hasInfiniteMaterials() ? 20 : (filled ? 1200 : 600));
         if (filled) {
             int amount = stack.getOrDefault(EnigmaticComponents.INT, 0);
             entity.setHealth(entity.getMaxHealth());

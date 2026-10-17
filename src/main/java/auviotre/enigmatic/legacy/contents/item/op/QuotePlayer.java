@@ -60,7 +60,7 @@ public class QuotePlayer extends Item {
             player.swing(hand);
 
             if (player instanceof ServerPlayer)
-                player.displayClientMessage(Component.literal("Quote: " + Quote.getAllQuotes().get(getQuoteIndex(stack)).getName().toUpperCase()), true);
+                player.sendOverlayMessage(Component.literal("Quote: " + Quote.getAllQuotes().get(getQuoteIndex(stack)).getName().toUpperCase()));
         } else if (player instanceof ServerPlayer splayer) {
             Quote.getAllQuotes().get(getQuoteIndex(stack)).play(splayer, Quote.PlayOptions.defaultPlay().delay(10));
         }
