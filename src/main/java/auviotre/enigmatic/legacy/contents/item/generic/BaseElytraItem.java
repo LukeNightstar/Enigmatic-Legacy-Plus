@@ -5,29 +5,23 @@ import auviotre.enigmatic.legacy.contents.attachement.EnigmaticData;
 import auviotre.enigmatic.legacy.handlers.EnigmaticHandler;
 import auviotre.enigmatic.legacy.packets.server.UpdateElytraBoostPacket;
 import auviotre.enigmatic.legacy.registries.EnigmaticAttachments;
-import com.illusivesoulworks.caelus.api.CaelusApi;
 import net.minecraft.client.Minecraft;
-import net.minecraft.core.Holder;
-import net.minecraft.resources.Identifier;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.Unit;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.attributes.AttributeInstance;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ElytraItem;
-import net.minecraft.world.item.Equipable;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.item.equipment.Equippable;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curios.api.SlotContext;
@@ -37,15 +31,18 @@ import top.theillusivec4.curios.api.type.capability.ICuriosItemHandler;
 
 import java.util.Optional;
 
-import net.neoforged.neoforge.client.network.ClientPacketDistributor;
-public abstract class BaseElytraItem extends BaseCurioItem implements Equipable {
-    protected static final Identifier LOCATION = EnigmaticLegacy.location("elytra");
-    protected static final AttributeModifier ELYTRA_MODIFIER = new AttributeModifier(LOCATION, 1.0, AttributeModifier.Operation.ADD_VALUE);
+/**
+ * 26.1.2 port: gliding uses the vanilla {@link DataComponents#GLIDER} component instead of Caelus.
+ * The chest slot is handled by vanilla; curio slots are handled by {@code MixinLivingEntityGlide}.
+ */
+public abstract class BaseElytraItem extends BaseCurioItem {
     @OnlyIn(Dist.CLIENT)
     private boolean isBoosting;
 
     public BaseElytraItem(Properties properties) {
-        super(properties);
+        super(properties.component(DataComponents.GLIDER, Unit.INSTANCE)
+                .component(DataComponents.EQUIPPABLE, Equippable.builder(EquipmentSlot.CHEST)
+                        .setEquipSound(SoundEvents.ARMOR_EQUIP_ELYTRA).setDamageOnHurt(false).build()));
     }
 
     public static ItemStack getElytra(LivingEntity entity) {
@@ -56,6 +53,16 @@ public abstract class BaseElytraItem extends BaseCurioItem implements Equipable 
         }
         ItemStack itemBySlot = entity.getItemBySlot(EquipmentSlot.CHEST);
         return itemBySlot.getItem() instanceof BaseElytraItem ? itemBySlot : ItemStack.EMPTY;
+    }
+
+    /**
+     * {@return an elytra worn in a curio slot that can currently be used to glide, or an empty stack}
+     */
+    public static ItemStack getGlidingCurio(LivingEntity entity) {
+        return CuriosApi.getCuriosInventory(entity)
+                .flatMap(curios -> curios.findFirstCurio(stack -> stack.getItem() instanceof BaseElytraItem
+                        && LivingEntity.canGlideUsing(stack, EquipmentSlot.CHEST)))
+                .map(SlotResult::stack).orElse(ItemStack.EMPTY);
     }
 
     protected abstract boolean flyingBoost(Player player);
@@ -71,42 +78,15 @@ public abstract class BaseElytraItem extends BaseCurioItem implements Equipable 
         } else if (isBoosting) ClientPacketDistributor.sendToServer(new UpdateElytraBoostPacket(isBoosting = false));
     }
 
-    public boolean elytraFlightTick(ItemStack stack, @NotNull LivingEntity entity, int flightTicks) {
-        if (!entity.level().isClientSide()) {
-            int nextFlightTick = flightTicks + 1;
-            if (nextFlightTick % 10 == 0) {
-                if (nextFlightTick % 20 == 0)
-                    stack.hurtAndBreak(1, entity, EquipmentSlot.CHEST);
-                entity.gameEvent(GameEvent.ELYTRA_GLIDE);
-            }
-        } else if (entity instanceof Player player) handleBoosting(player);
-        return true;
-    }
-
-    public Holder<SoundEvent> getEquipSound() {
-        return SoundEvents.ARMOR_EQUIP_ELYTRA;
-    }
-
-    public EquipmentSlot getEquipmentSlot() {
-        return EquipmentSlot.CHEST;
-    }
-
-    public EquipmentSlot getEquipmentSlot(ItemStack stack) {
-        return EquipmentSlot.CHEST;
-    }
-
     public ICurio.SoundInfo getEquipSound(SlotContext slotContext, ItemStack stack) {
         return new ICurio.SoundInfo(SoundEvents.ARMOR_EQUIP_ELYTRA.value(), 1F, 1F);
-    }
-
-    public boolean canElytraFly(ItemStack stack, LivingEntity entity) {
-        return true;
     }
 
     public boolean canEquip(SlotContext context, ItemStack stack) {
         return super.canEquip(context, stack) && getElytra(context.entity()).isEmpty();
     }
 
+    @Override
     public boolean canEquip(ItemStack stack, EquipmentSlot slot, LivingEntity entity) {
         return super.canEquip(stack, slot, entity) && EnigmaticHandler.canUse(entity, stack) && getElytra(entity).isEmpty();
     }
@@ -118,18 +98,8 @@ public abstract class BaseElytraItem extends BaseCurioItem implements Equipable 
         private static void onTick(PlayerTickEvent.@NotNull Pre event) {
             Player player = event.getEntity();
             EnigmaticData data = player.getData(EnigmaticAttachments.ENIGMATIC_DATA);
-            ItemStack stack = ItemStack.EMPTY;
-            AttributeInstance attribute = player.getAttribute(CaelusApi.getInstance().getFallFlyingAttribute());
-            if (attribute != null) {
-                attribute.removeModifier(ELYTRA_MODIFIER);
-                if (!attribute.hasModifier(LOCATION)) {
-                    stack = getElytra(player);
-                    if (!stack.isEmpty() && ElytraItem.isFlyEnabled(stack)) {
-                        attribute.addTransientModifier(ELYTRA_MODIFIER);
-                    }
-                }
-            }
-            if (stack.isEmpty()) return;
+            ItemStack stack = getElytra(player);
+            if (stack.isEmpty() || !LivingEntity.canGlideUsing(stack, EquipmentSlot.CHEST)) return;
             BaseElytraItem elytra = (BaseElytraItem) stack.getItem();
             if (player instanceof ServerPlayer && data.isElytraBoosting()) {
                 elytra.flyingBoost(player);
@@ -143,9 +113,11 @@ public abstract class BaseElytraItem extends BaseCurioItem implements Equipable 
         @OnlyIn(Dist.CLIENT)
         private static void onClientTick(PlayerTickEvent.@NotNull Pre event) {
             Player player = event.getEntity();
+            if (!player.level().isClientSide()) return;
             EnigmaticData data = player.getData(EnigmaticAttachments.ENIGMATIC_DATA);
             ItemStack stack = getElytra(player);
-            if (player.level().isClientSide() && data.isElytraBoosting()) {
+            if (player.isFallFlying() && stack.getItem() instanceof BaseElytraItem elytra) elytra.handleBoosting(player);
+            if (data.isElytraBoosting()) {
                 if (!player.isFallFlying()) {
                     if (player == Minecraft.getInstance().player)
                         if (stack.getItem() instanceof BaseElytraItem elytra)

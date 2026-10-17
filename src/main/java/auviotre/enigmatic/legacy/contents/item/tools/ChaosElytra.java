@@ -1,5 +1,7 @@
 package auviotre.enigmatic.legacy.contents.item.tools;
 
+import auviotre.enigmatic.legacy.registries.EnigmaticTags;
+import net.minecraft.core.particles.PowerParticleOption;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.api.SubscribeConfig;
 import auviotre.enigmatic.legacy.api.item.IItemHelper;
@@ -29,12 +31,10 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
-import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
@@ -69,8 +69,7 @@ public class ChaosElytra extends BaseElytraItem {
     public static ModConfigSpec.IntValue descendingCooldown;
 
     public ChaosElytra() {
-        super(IItemHelper.singleProperties().fireResistant().rarity(Rarity.EPIC).durability(3248).component(EnigmaticComponents.ELDRITCH, true));
-        DispenserBlock.registerBehavior(this, ArmorItem.DISPENSE_ITEM_BEHAVIOR);
+        super(IItemHelper.singleProperties().fireResistant().rarity(Rarity.EPIC).durability(3248).enchantable(21).repairable(EnigmaticTags.Items.ETHERIUM_TOOL_MATERIALS).component(EnigmaticComponents.ELDRITCH, true));
     }
 
     @SubscribeConfig
@@ -116,10 +115,6 @@ public class ChaosElytra extends BaseElytraItem {
         return oldStack.getItem() != newStack.getItem();
     }
 
-    public int getEnchantmentValue(ItemStack stack) {
-        return 21;
-    }
-
     protected boolean flyingBoost(@NotNull Player player) {
         if (player.isFallFlying()) {
             Vec3 lookAngle = player.getLookAngle().scale(flyingSpeedModifier.get());
@@ -137,8 +132,8 @@ public class ChaosElytra extends BaseElytraItem {
         for (int counter = 0; counter <= amount; counter++) {
             Vec3 pos = player.position();
             pos = pos.add(Math.random() - 0.5, -1.0 + Math.random() - 0.5, Math.random() - 0.5);
-//            player.level().addParticle(ParticleTypes.DRAGON_BREATH, true, pos.x, pos.y, pos.z, ((Math.random() - 0.5D) * 2.0D) * rangeModifier, ((Math.random() - 0.5D) * 2.0D) * rangeModifier, ((Math.random() - 0.5D) * 2.0D) * rangeModifier);
-            player.level().addParticle(ParticleTypes.DRAGON_BREATH, true, pos.x, pos.y, pos.z, ((Math.random() - 0.5D) * 2.0D) * rangeModifier, ((Math.random() - 0.5D) * 2.0D) * rangeModifier, ((Math.random() - 0.5D) * 2.0D) * rangeModifier);
+//            player.level().addParticle(PowerParticleOption.create(ParticleTypes.DRAGON_BREATH, 1.0F), true, false, pos.x, pos.y, pos.z, ((Math.random() - 0.5D) * 2.0D) * rangeModifier, ((Math.random() - 0.5D) * 2.0D) * rangeModifier, ((Math.random() - 0.5D) * 2.0D) * rangeModifier);
+            player.level().addParticle(PowerParticleOption.create(ParticleTypes.DRAGON_BREATH, 1.0F), true, false, pos.x, pos.y, pos.z, ((Math.random() - 0.5D) * 2.0D) * rangeModifier, ((Math.random() - 0.5D) * 2.0D) * rangeModifier, ((Math.random() - 0.5D) * 2.0D) * rangeModifier);
         }
     }
 
@@ -153,26 +148,16 @@ public class ChaosElytra extends BaseElytraItem {
             float timer = stack.getOrDefault(EnigmaticComponents.ELDRITCH_TIMER, 0.0F);
             if (timer < 1.0F) stack.set(EnigmaticComponents.ELDRITCH_TIMER, Math.min(1.0F, timer + 0.3F));
         }
-        if (context.entity() instanceof Player player && player.level().isClientSide()) handleBoosting(player);
-        LivingEntity livingEntity = context.entity();
-        int ticks = livingEntity.getFallFlyingTicks();
-        if (ticks > 0 && livingEntity.isFallFlying()) stack.elytraFlightTick(livingEntity, ticks);
     }
 
     @Override
     public void inventoryTick(ItemStack stack, ServerLevel level, Entity entity, @Nullable EquipmentSlot slotId) {
         if (entity instanceof LivingEntity livingEntity && !level.isClientSide()) {
             float timer = stack.getOrDefault(EnigmaticComponents.ELDRITCH_TIMER, 0.0F);
-            ItemStack itemBySlot = livingEntity.getItemBySlot(getEquipmentSlot());
+            ItemStack itemBySlot = livingEntity.getItemBySlot(EquipmentSlot.CHEST);
             if (((slotId == EquipmentSlot.MAINHAND) || itemBySlot.equals(stack)) && EnigmaticHandler.isTheWorthyOne(livingEntity))
                 stack.set(EnigmaticComponents.ELDRITCH_TIMER, Math.min(1.0F, timer + 0.3F));
             else stack.set(EnigmaticComponents.ELDRITCH_TIMER, Math.max(0.0F, timer - 0.3F));
-
-            if (livingEntity.getItemBySlot(EquipmentSlot.CHEST).is(this)) {
-                if (livingEntity instanceof Player player && player.level().isClientSide()) handleBoosting(player);
-                int ticks = livingEntity.getFallFlyingTicks();
-                if (ticks > 0 && livingEntity.isFallFlying()) stack.elytraFlightTick(livingEntity, ticks);
-            }
         }
         if (entity instanceof LivingEntity living && !EnigmaticHandler.isTheWorthyOne(living)) {
             if (!living.hasEffect(EnigmaticEffects.ABYSS_CORRUPTION) && !living.hasInfiniteMaterials())
@@ -274,7 +259,7 @@ public class ChaosElytra extends BaseElytraItem {
                 if (owner instanceof Player player) {
                     CompoundTag data = EnigmaticHandler.getPersistedData(player);
                     data.remove("ChaoAchievementCheck");
-                    if (owner instanceof ServerPlayer serverPlayer && data.getInt("ChaoExplosionKillCount") >= 10)
+                    if (owner instanceof ServerPlayer serverPlayer && data.getIntOr("ChaoExplosionKillCount", 0) >= 10)
                         EnigmaticTriggers.ENIGMATIC_TRIGGER.get().trigger(serverPlayer, 4);
                     data.remove("ChaoExplosionKillCount");
                 }

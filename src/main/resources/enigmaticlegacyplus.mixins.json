@@ -11,6 +11,7 @@
     "MixinGiveCommand",
     "MixinItemStack",
     "MixinLivingEntity",
+    "MixinLivingEntityGlide",
     "MixinMob",
     "MixinPlayer",
     "MixinPlayerList",

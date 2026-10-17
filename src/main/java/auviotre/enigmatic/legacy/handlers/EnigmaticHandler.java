@@ -110,7 +110,7 @@ public interface EnigmaticHandler {
     }
 
     static boolean isTheCursedOne(LivingEntity entity) {
-        return !getCurio(entity, EnigmaticItems.CURSED_RING).isEmpty() || entity instanceof Player player && getPersistedData(player).getBoolean("SevenCursesBearing");
+        return !getCurio(entity, EnigmaticItems.CURSED_RING).isEmpty() || entity instanceof Player player && getPersistedData(player).getBooleanOr("SevenCursesBearing", false);
     }
 
     static boolean isCursedItem(@NotNull ItemStack stack) {
@@ -125,7 +125,7 @@ public interface EnigmaticHandler {
     }
 
     static boolean isTheBlessedOne(LivingEntity entity) {
-        return !getCurio(entity, EnigmaticItems.REDEMPTION_RING).isEmpty() || entity instanceof Player player && getPersistedData(player).getBoolean("RedemptionBearing");
+        return !getCurio(entity, EnigmaticItems.REDEMPTION_RING).isEmpty() || entity instanceof Player player && getPersistedData(player).getBooleanOr("RedemptionBearing", false);
     }
 
     static boolean isTheWorthyOne(LivingEntity entity) {

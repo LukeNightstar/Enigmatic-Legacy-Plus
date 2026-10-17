@@ -1,5 +1,7 @@
 package auviotre.enigmatic.legacy.contents.item.tools;
 
+import auviotre.enigmatic.legacy.registries.EnigmaticTags;
+import net.minecraft.core.particles.PowerParticleOption;
 import auviotre.enigmatic.legacy.EnigmaticLegacy;
 import auviotre.enigmatic.legacy.api.SubscribeConfig;
 import auviotre.enigmatic.legacy.api.item.IItemHelper;
@@ -27,12 +29,10 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
@@ -57,8 +57,7 @@ public class MajesticElytra extends BaseElytraItem {
     public static ModConfigSpec.IntValue resistanceModifier;
 
     public MajesticElytra() {
-        super(IItemHelper.singleProperties().fireResistant().rarity(Rarity.RARE).durability(3476));
-        DispenserBlock.registerBehavior(this, ArmorItem.DISPENSE_ITEM_BEHAVIOR);
+        super(IItemHelper.singleProperties().fireResistant().rarity(Rarity.RARE).durability(3476).enchantable(24).repairable(EnigmaticTags.Items.ETHERIUM_TOOL_MATERIALS));
     }
 
     @SubscribeConfig
@@ -111,38 +110,17 @@ public class MajesticElytra extends BaseElytraItem {
         for (int counter = 0; counter <= amount; counter++) {
             Vec3 pos = player.position();
             pos = pos.add(Math.random() - 0.5, -1.0 + Math.random() - 0.5, Math.random() - 0.5);
-            player.level().addParticle(ParticleTypes.DRAGON_BREATH, true, pos.x, pos.y, pos.z, ((Math.random() - 0.5D) * 2.0D) * rangeModifier, ((Math.random() - 0.5D) * 2.0D) * rangeModifier, ((Math.random() - 0.5D) * 2.0D) * rangeModifier);
+            player.level().addParticle(PowerParticleOption.create(ParticleTypes.DRAGON_BREATH, 1.0F), true, false, pos.x, pos.y, pos.z, ((Math.random() - 0.5D) * 2.0D) * rangeModifier, ((Math.random() - 0.5D) * 2.0D) * rangeModifier, ((Math.random() - 0.5D) * 2.0D) * rangeModifier);
         }
     }
 
-    public int getEnchantmentValue(ItemStack stack) {
-        return 24;
-    }
-
     public void curioTick(@NotNull SlotContext context, ItemStack stack) {
-        if (context.entity() instanceof Player player && player.level().isClientSide()) handleBoosting(player);
-        LivingEntity livingEntity = context.entity();
-        int ticks = livingEntity.getFallFlyingTicks();
-        if (ticks > 0 && livingEntity.isFallFlying()) stack.elytraFlightTick(livingEntity, ticks);
     }
 
     @Override
     public void inventoryTick(ItemStack stack, ServerLevel level, Entity entity, @Nullable EquipmentSlot slotId) {
         if (entity instanceof LivingEntity livingEntity && !level.isClientSide()) {
-            if (livingEntity.getItemBySlot(EquipmentSlot.CHEST).is(this)) {
-                if (livingEntity instanceof Player player && player.level().isClientSide()) handleBoosting(player);
-                int ticks = livingEntity.getFallFlyingTicks();
-                if (ticks > 0 && livingEntity.isFallFlying()) stack.elytraFlightTick(livingEntity, ticks);
-            }
         }
-    }
-
-    public InteractionResult use(Level level, Player player, InteractionHand hand) {
-        return this.swapWithEquipmentSlot(this, level, player, hand);
-    }
-
-    public boolean isValidRepairItem(ItemStack toRepair, ItemStack repair) {
-        return repair.is(EnigmaticItems.ETHERIUM_INGOT);
     }
 
     @Mod(value = EnigmaticLegacy.MODID)
