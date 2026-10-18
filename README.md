@@ -28,6 +28,10 @@ This branch **modifies** Auviotre's Enigmatic Legacy Plus (1.21.1-1.1.2). The mo
   `minecraft:enderman` is in `neutralWhiteList`; only players track time with/without curses.
 - Curse/blessing checks only apply to players and are cached per player for the current tick.
 - Korean translation (`ko_kr.json`), and the Eldritch Amulet tooltip updated in the other languages.
+- A native [EMI](https://modrinth.com/mod/emi) plugin (`compat/emi`): Spellstone Crafting and Tainting categories,
+  the Annihilating Sword recipe and recipe filling for the Spellstone Table, so these show in EMI without JEI.
+- Missing model textures (Infernal Shield in hand, Dimensional Anchor, unknown item) and the Cosmic Cake subtitle key
+  are fixed.
 - The mod version carries a `-fork` suffix (`1.21.1-1.1.2-fork`) so the jar is not confused with the original.
 
 Every individual change is recorded in the git history of the `1.21.1-fork` branch

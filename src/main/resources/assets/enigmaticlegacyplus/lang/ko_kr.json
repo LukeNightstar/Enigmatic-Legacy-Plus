@@ -1253,6 +1253,8 @@
   "gui.enigmaticlegacy.jei.spellstone_crafting": "주문석 제작",
   "gui.enigmaticlegacy.jei.spellstone_crafting.all_different": "동일한 재료는 사용할 수 없습니다.",
   "gui.enigmaticlegacy.jei.tainting": "오염",
+  "emi.category.enigmaticlegacyplus.spellstone_crafting": "주문석 제작",
+  "emi.category.enigmaticlegacyplus.tainting": "오염",
 
   "toast.enigmaticlegacy.slot_unlock.title": "%1$s이(가) 해금되었습니다!",
   "toast.enigmaticlegacy.slot_unlock.description": "큐리오 인벤토리에서 장착하세요.",

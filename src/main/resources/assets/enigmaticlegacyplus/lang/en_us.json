@@ -1306,6 +1306,8 @@
   "gui.enigmaticlegacy.jei.spellstone_crafting": "Spellstone Crafting",
   "gui.enigmaticlegacy.jei.spellstone_crafting.all_different": "No identical materials are allowed.",
   "gui.enigmaticlegacy.jei.tainting": "Tainting",
+  "emi.category.enigmaticlegacyplus.spellstone_crafting": "Spellstone Crafting",
+  "emi.category.enigmaticlegacyplus.tainting": "Tainting",
 
   "toast.enigmaticlegacy.slot_unlock.title": "%1$s are unlocked!",
   "toast.enigmaticlegacy.slot_unlock.description": "Equip them within Curios inventory.",
