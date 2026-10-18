@@ -204,7 +204,8 @@ public class IllusionLantern extends SpellstoneItem {
                 }
             }
             if (source.getDirectEntity() instanceof SoulFlameBall) {
-                event.setInvulnerabilityTicks(0);
+                // NeoForge 26.1 rejects 0 here; 1 tick is below the vanilla 10-tick threshold, so the next hit still lands fully.
+                event.setInvulnerabilityTicks(1);
             }
         }
 
