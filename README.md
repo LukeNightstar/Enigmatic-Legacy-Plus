@@ -27,6 +27,8 @@ This branch **modifies** Auviotre's Enigmatic Legacy Plus (1.21.1-1.1.2). The mo
 - Ring of the Seven Curses: "For the Worthy" mode no longer pulls endermen towards the bearer when
   `minecraft:enderman` is in `neutralWhiteList`; only players track time with/without curses.
 - Curse/blessing checks only apply to players and are cached per player for the current tick.
+- Heart of the Earth stacks to 16; untainted hearts no longer keep a `taintable: false` component, so they stack
+  with freshly crafted ones.
 - Korean translation (`ko_kr.json`), and the Eldritch Amulet tooltip updated in the other languages.
 - A native [EMI](https://modrinth.com/mod/emi) plugin (`compat/emi`): Spellstone Crafting and Tainting categories,
   the Annihilating Sword recipe and recipe filling for the Spellstone Table, so these show in EMI without JEI.

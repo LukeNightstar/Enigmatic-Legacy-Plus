@@ -21,8 +21,9 @@ public interface ITaintable {
                 stack.set(EnigmaticComponents.TAINTABLE.get(), true);
             }
         } else {
-            if (stack.getOrDefault(EnigmaticComponents.TAINTABLE.get(), false)) {
-                stack.set(EnigmaticComponents.TAINTABLE.get(), false);
+            // Fork change: drop the component instead of storing false, so untainted stacks merge with fresh ones.
+            if (stack.has(EnigmaticComponents.TAINTABLE.get())) {
+                stack.remove(EnigmaticComponents.TAINTABLE.get());
             }
         }
     }
