@@ -6,6 +6,7 @@ import net.minecraft.world.item.Rarity;
 
 public class Spellcore extends BaseItem {
     public Spellcore() {
-        super(IItemHelper.singleProperties().rarity(Rarity.RARE).fireResistant());
+        // Fork change: stacks to 16, like the Heart of the Earth.
+        super(IItemHelper.properties(16).rarity(Rarity.RARE).fireResistant());
     }
 }
