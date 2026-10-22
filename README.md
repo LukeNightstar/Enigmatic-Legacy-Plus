@@ -48,6 +48,8 @@ This repository **modifies** Auviotre's Enigmatic Legacy Plus (1.21.1-1.1.2). Th
   - Ring of the Seven Curses: "For the Worthy" mode no longer pulls endermen towards the bearer when
     `minecraft:enderman` is in `neutralWhiteList`; only players track time with/without curses.
   - Curse/blessing checks only apply to players and are cached per player for the current tick.
+  - Heart of the Earth stacks to 16; untainted hearts no longer keep a `taintable: false` component, so they stack
+    with freshly crafted ones.
   - Korean translation (`ko_kr.json`).
 - The data generators (`auviotre.enigmatic.legacy.data`) are not ported and are excluded from the build; the
   generated data that was already committed is used as is.

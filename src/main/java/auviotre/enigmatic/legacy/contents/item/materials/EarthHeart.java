@@ -38,7 +38,8 @@ import org.jspecify.annotations.Nullable;
 
 public class EarthHeart extends BaseItem implements ITaintable {
     public EarthHeart() {
-        super(IItemHelper.singleProperties().rarity(Rarity.UNCOMMON));
+        // Fork change: stacks to 16, like its fragment.
+        super(IItemHelper.properties(16).rarity(Rarity.UNCOMMON));
     }
 
     @Override
