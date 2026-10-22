@@ -96,7 +96,7 @@ public class SpellstoneTableMenu extends AbstractContainerMenu {
                 SpellstoneTableRecipe.Input input = SpellstoneTableMenu.this.getInput();
                 NonNullList<ItemStack> remains = player.level().getRecipeManager().getRemainingItemsFor(EnigmaticRecipes.SPELLSTONE_CRAFTING.get(), input, player.level());
                 debrisSlot.setItem(0, remains.getFirst());
-                coreSlot.clearContent();
+                coreSlot.removeItem(0, 1);
                 spellstoneSlot.clearContent();
                 for (int i = 2; i < remains.size(); i++) {
                     ItemStack item = ingredientSlot.getItem(i - 2);

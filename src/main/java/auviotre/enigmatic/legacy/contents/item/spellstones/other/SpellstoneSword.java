@@ -418,7 +418,12 @@ public class SpellstoneSword extends Item {
                 ItemStack resonance = getResonance(stack);
                 if (!resonance.isEmpty()) {
                     user.playSound(EnigmaticSounds.CHARGED_OFF.get(), 1.0F, 1.2F + user.getRandom().nextFloat() * 0.2F);
-                    user.setItemInHand(InteractionHand.OFF_HAND, resonance.copy());
+                    // Fork change: Spellcores stack, so only one of them turns back into the spellstone.
+                    if (itemInHand.getCount() > 1 && user instanceof Player player) {
+                        itemInHand.shrink(1);
+                        ItemStack spellstone = resonance.copy();
+                        if (!player.getInventory().add(spellstone)) player.drop(spellstone, false);
+                    } else user.setItemInHand(InteractionHand.OFF_HAND, resonance.copy());
                     stack.set(DataComponents.RARITY, Rarity.RARE);
                     stack.remove(EnigmaticComponents.SPELL_RESONANCE);
                     return stack;
