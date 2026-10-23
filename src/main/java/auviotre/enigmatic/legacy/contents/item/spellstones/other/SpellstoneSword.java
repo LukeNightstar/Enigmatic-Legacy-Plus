@@ -480,6 +480,8 @@ public class SpellstoneSword extends Item {
                         stack.set(INT, getMaxEnergy(stack));
                         level.playSound(null, user.blockPosition(), SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, 0.6F, 0.8F);
                     }
+                    // Fork change: falling through re-resonated with an off-hand spellstone and deleted the stored one.
+                    break;
                 default:
                     if (itemInHand.getItem() instanceof SpellstoneItem spellstone) {
                         user.playSound(EnigmaticSounds.CHARGED_ON.get(), 1.0F, 1.2F + user.getRandom().nextFloat() * 0.2F);

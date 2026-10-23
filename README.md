@@ -50,8 +50,11 @@ This repository **modifies** Auviotre's Enigmatic Legacy Plus (1.21.1-1.1.2). Th
   - Curse/blessing checks only apply to players and are cached per player for the current tick.
   - Heart of the Earth stacks to 16; untainted hearts no longer keep a `taintable: false` component, so they stack
     with freshly crafted ones.
-  - Spellcore stacks to 16. The Spellstone Table takes one per craft, and ending a Spellstone Sword resonance
-    with a stack of Spellcores in the off hand uses one and puts the spellstone in the inventory.
+  - Spellcore stacks to 16. The Spellstone Table's core slot still holds one, and shift-clicking a stack moves
+    only one into it; ending a Spellstone Sword resonance with a stack of Spellcores in the off hand uses one
+    and puts the spellstone in the inventory.
+  - Spellstone Sword: recharging an Angel's Blessing or Illusion Lantern resonance with another spellstone in the
+    off hand no longer re-resonates with it and deletes the stored spellstone.
   - Korean translation (`ko_kr.json`).
 - The data generators (`auviotre.enigmatic.legacy.data`) are not ported and are excluded from the build; the
   generated data that was already committed is used as is.

@@ -180,7 +180,9 @@ public class SpellstoneTableMenu extends AbstractContainerMenu {
                 if (!this.moveItemStackTo(selected, 11, 47, true)) return ItemStack.EMPTY;
                 slot.onQuickCraft(selected, stack);
             } else if (id > 10 && id < 47) {
-                if (!this.moveItemStackTo(selected, 0, 10, false))
+                // Fork change: Spellcores stack, so keep them out of the ingredient slots once the core slot is full.
+                int end = selected.is(EnigmaticItems.SPELLCORE) ? 3 : 10;
+                if (!this.moveItemStackTo(selected, 0, end, false))
                     return ItemStack.EMPTY;
             } else if (!this.moveItemStackTo(selected, 11, 47, false))
                 return ItemStack.EMPTY;
