@@ -29,8 +29,11 @@ This branch **modifies** Auviotre's Enigmatic Legacy Plus (1.21.1-1.1.2). The mo
 - Curse/blessing checks only apply to players and are cached per player for the current tick.
 - Heart of the Earth stacks to 16; untainted hearts no longer keep a `taintable: false` component, so they stack
   with freshly crafted ones.
-- Spellcore stacks to 16. The Spellstone Table takes one per craft, and ending a Spellstone Sword resonance
-  with a stack of Spellcores in the off hand uses one and puts the spellstone in the inventory.
+- Spellcore stacks to 16. The Spellstone Table's core slot still holds one, and shift-clicking a stack moves
+  only one into it; ending a Spellstone Sword resonance with a stack of Spellcores in the off hand uses one
+  and puts the spellstone in the inventory.
+- Spellstone Sword: recharging an Angel's Blessing or Illusion Lantern resonance with another spellstone in the
+  off hand no longer re-resonates with it and deletes the stored spellstone.
 - Korean translation (`ko_kr.json`), and the Eldritch Amulet tooltip updated in the other languages.
 - A native [EMI](https://modrinth.com/mod/emi) plugin (`compat/emi`): Spellstone Crafting and Tainting categories,
   the Annihilating Sword recipe and recipe filling for the Spellstone Table, so these show in EMI without JEI.
