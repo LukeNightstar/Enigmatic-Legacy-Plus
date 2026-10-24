@@ -55,6 +55,8 @@ This repository **modifies** Auviotre's Enigmatic Legacy Plus (1.21.1-1.1.2). Th
     and puts the spellstone in the inventory.
   - Spellstone Sword: recharging an Angel's Blessing or Illusion Lantern resonance with another spellstone in the
     off hand no longer re-resonates with it and deletes the stored spellstone.
+  - Wither: Nefarious Essence now drops from a LivingDropsEvent handler instead of a mixin, so it still drops
+    with mods that cancel the Wither's own death loot, such as Wither Reincarnated.
   - Korean translation (`ko_kr.json`).
 - The data generators (`auviotre.enigmatic.legacy.data`) are not ported and are excluded from the build; the
   generated data that was already committed is used as is.
