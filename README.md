@@ -41,7 +41,7 @@ This branch **modifies** Auviotre's Enigmatic Legacy Plus (1.21.1-1.1.2). The mo
   the Annihilating Sword recipe and recipe filling for the Spellstone Table, so these show in EMI without JEI.
 - Missing model textures (Infernal Shield in hand, Dimensional Anchor, unknown item) and the Cosmic Cake subtitle key
   are fixed.
-- The mod version carries a `-fork` suffix (`1.21.1-1.1.3-fork`) so the jar is not confused with the original. The
+- The mod version carries a `-fork` suffix (`1.21.1-1.1.4-fork`) so the jar is not confused with the original. The
   number before it is this fork's own release, counted on from Auviotre's 1.1.2. The suffix goes last so the version
   still sorts above earlier releases.
 
