@@ -64,6 +64,17 @@ This repository **modifies** Auviotre's Enigmatic Legacy Plus (1.21.1-1.1.2). Th
 Every individual change is recorded in the git history of the `26.1.2` branch
 (`git log main..26.1.2`). The `main` branch tracks Auviotre's upstream 1.21.1 version unmodified.
 
+## Compatibility
+
+Compatibility with other mods that this fork adds or improves:
+
+- [SEMI](https://github.com/Pandaismyname1/SEMI) (EMI): native plugin, see Modifications above.
+- [Better Combat](https://modrinth.com/mod/better-combat): the Spellstone Sword and Annihilating Sword have weapon
+  attributes, and the Annihilating Sword no longer crashes it.
+- [Wither Reincarnated](https://modrinth.com/mod/wither-reincarnated): Nefarious Essence drops again when it is
+  installed (it cancels the Wither's own death loot, which the essence drop used to hook into). The mod is only out
+  for 1.21.1 so far; the same fix is on this branch.
+
 ## Status
 
 **Work in progress.** The mod builds, and a dedicated server starts and generates a world without errors.
