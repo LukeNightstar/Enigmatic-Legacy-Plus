@@ -28,7 +28,6 @@
     "entity.MixinSwellGoal",
     "entity.MixinVillager",
     "entity.MixinWitch",
-    "entity.MixinWitherBoss",
     "entity.MixinZombie",
     "entity.dragon.MixinAbstractPhase",
     "entity.dragon.MixinChargePhase",

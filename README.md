@@ -34,6 +34,8 @@ This branch **modifies** Auviotre's Enigmatic Legacy Plus (1.21.1-1.1.2). The mo
   and puts the spellstone in the inventory.
 - Spellstone Sword: recharging an Angel's Blessing or Illusion Lantern resonance with another spellstone in the
   off hand no longer re-resonates with it and deletes the stored spellstone.
+- Wither: Nefarious Essence now drops from a LivingDropsEvent handler instead of a mixin, so it still drops with
+  mods that cancel the Wither's own death loot, such as Wither Reincarnated.
 - Korean translation (`ko_kr.json`), and the Eldritch Amulet tooltip updated in the other languages.
 - A native [EMI](https://modrinth.com/mod/emi) plugin (`compat/emi`): Spellstone Crafting and Tainting categories,
   the Annihilating Sword recipe and recipe filling for the Spellstone Table, so these show in EMI without JEI.
