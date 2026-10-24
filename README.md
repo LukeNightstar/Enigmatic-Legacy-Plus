@@ -49,6 +49,16 @@ Every individual change is recorded in the git history of the `1.21.1-fork` bran
 (`git log main..1.21.1-fork`). The `main` branch tracks Auviotre's upstream 1.21.1 version unmodified. A Minecraft
 26.1.2 port with the same modifications lives on the `26.1.2` branch.
 
+## Compatibility
+
+Compatibility with other mods that this fork adds or improves:
+
+- [EMI](https://modrinth.com/mod/emi): native plugin, see Modifications above.
+- [Better Combat](https://modrinth.com/mod/better-combat): the Spellstone Sword and Annihilating Sword have weapon
+  attributes.
+- [Wither Reincarnated](https://modrinth.com/mod/wither-reincarnated): Nefarious Essence drops again when it is
+  installed (it cancels the Wither's own death loot, which the essence drop used to hook into).
+
 ## Requirements
 
 - **Minecraft Version:** 1.21.1
